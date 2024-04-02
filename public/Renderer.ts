@@ -3,6 +3,7 @@ import Game from "./Game.js";
 export default class Renderer {
   game: Game;
   context: CanvasRenderingContext2D;
+  photoContext: CanvasRenderingContext2D;
   mousePosition: { x: number, y: number } = { x: 0, y: 0 };
   constructor() {
     const game = new Game()
@@ -11,8 +12,14 @@ export default class Renderer {
     canvas.height = 1000;
     document.body.appendChild(canvas);
     const context = canvas.getContext('2d')!;
+
+    const photoCanvas = document.createElement('canvas');
+    photoCanvas.width = 50;
+    photoCanvas.height = 1000;
+    document.body.appendChild(photoCanvas);
     this.game = game;
     this.context = context;
+    this.photoContext = photoCanvas.getContext('2d')!;
 
     canvas.onmousemove = (ev) => {
       this.mousePosition.x = ev.offsetX;
@@ -20,12 +27,10 @@ export default class Renderer {
     }
 
     document.body.onkeydown = (ev) => {
-      console.log(ev.key);
       this.game.keysDown.add(ev.key);
     }
 
     document.body.onkeyup = (ev) => {
-      console.log(ev.key);
       this.game.keysDown.delete(ev.key);
     }
   }
@@ -41,7 +46,13 @@ export default class Renderer {
     this.context.closePath();
     this.game.blocks.forEach(block => {
       this.context.fillStyle = "green";
-      this.context.fillRect(block.x1, block.y1, block.x2 - block.x1, block.y2 - block.y1);
+      this.context.moveTo(block.points[0].x, block.points[0].y)
+      this.context.beginPath();
+      for (let i = 0; i != block.points.length; i++) {
+        this.context.lineTo(block.points[i].x, block.points[i].y)
+      }
+      this.context.closePath();
+      this.context.fill();
     });
 
     // draw view cone
