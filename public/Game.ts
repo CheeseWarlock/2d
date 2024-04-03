@@ -61,20 +61,19 @@ class Game {
         //   directionToLineStart += Math.PI * 2;
         // }
 
-        while (directionToLineStart > viewConeLow + Math.PI * 2) {
+        while (directionToLineStart > this.viewDirection + Math.PI) {
           directionToLineStart -= Math.PI * 2;
         }
-        while (directionToLineStart < viewConeLow) {
+        while (directionToLineStart < this.viewDirection - Math.PI) {
           directionToLineStart += Math.PI * 2;
         }
-        while (directionToLineEnd > viewConeLow + Math.PI * 2) {
+        while (directionToLineEnd > this.viewDirection + Math.PI) {
           directionToLineEnd -= Math.PI * 2;
         }
-        while (directionToLineEnd < viewConeLow) {
+        while (directionToLineEnd < this.viewDirection - Math.PI) {
           directionToLineEnd += Math.PI * 2;
         }
 
-        // Broken when diff of angles to start and end > 180 deg
 
         
 
