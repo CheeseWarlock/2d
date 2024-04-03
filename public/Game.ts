@@ -1,6 +1,8 @@
 import PolyBlock from './PolyBlock.js';
 import Player from './Player.js';
 import CameraFrame from './CameraFrame.js';
+import VisibleObject from './VisibleObject.js';
+import Line from './Line.js';
 
 type Point = {
   x: number,
@@ -8,7 +10,7 @@ type Point = {
 }
 
 class Game {
-  blocks: PolyBlock[] = [];
+  visibleObjects: VisibleObject[] = [];
   focusPoint: Point = { x: 0, y: 0 };
   viewDirection: number = 0;
   player: Player = new Player(10, 40);
@@ -17,8 +19,9 @@ class Game {
   cameraFrame: CameraFrame = new CameraFrame();
 
   constructor() {
-    // this.blocks.push(new PolyBlock(100, 100, 200, 200));
-    this.blocks.push(new PolyBlock(200, 200, 400, 400));
+    this.visibleObjects.push(new PolyBlock(100, 100, 200, 200, "green"));
+    this.visibleObjects.push(new PolyBlock(200, 200, 400, 400, "blue"));
+    this.visibleObjects.push(new Line(400, 600, 600, 600, "black"));
   }
 
   tick() {
@@ -41,7 +44,7 @@ class Game {
   calculatePhotoContent() {
     const cameraFrame = new CameraFrame();
     cameraFrame.segments = [];
-    this.blocks.forEach(block => {
+    this.visibleObjects.forEach(block => {
       // turn block into lines
       block.lineSegments.forEach(seg => {
         // is the line within fov?
@@ -103,7 +106,7 @@ class Game {
               position: 1,
               depth: 0
             },
-            color: "green"
+            color: block.color
           });
         } else {
           message = ('none')
@@ -123,7 +126,7 @@ class Game {
               position: endProportion,
               depth: 0
             },
-            color: "green"
+            color: block.color
           });
         }
       });

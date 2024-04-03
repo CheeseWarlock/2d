@@ -12,32 +12,17 @@ export default class CameraFrame {
   segments: Segment[] = [];
 
   constructor() {
-    this.segments.push({
-      start: {
-        position: 0,
-        depth: 0
-      },
-      end: {
-        position: 0.5,
-        depth: 0
-      },
-      color: "red"
-    });
-
-    this.segments.push({
-      start: {
-        position: 0.75,
-        depth: 0
-      },
-      end: {
-        position: 1,
-        depth: 0
-      },
-      color: "green"
-    });
+    
   }
 
   add(segment: Segment) {
+    let start = segment.start;
+    let end = segment.end;
+    if (start.position > end.position) {
+      const temp = start;
+      start = end;
+      end = temp;
+    }
     this.segments.push(segment);
   }
 }

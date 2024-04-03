@@ -1,5 +1,7 @@
 import CameraFrame from "./CameraFrame.js";
 import Game from "./Game.js";
+import Line from "./Line.js";
+import PolyBlock from "./PolyBlock.js";
 
 export default class Renderer {
   game: Game;
@@ -49,15 +51,27 @@ export default class Renderer {
     this.context.arc(this.game.player.x, this.game.player.y, 20, 0, Math.PI * 2);
     this.context.fill();
     this.context.closePath();
-    this.game.blocks.forEach(block => {
-      this.context.fillStyle = "green";
-      this.context.moveTo(block.points[0].x, block.points[0].y)
-      this.context.beginPath();
-      for (let i = 0; i != block.points.length; i++) {
-        this.context.lineTo(block.points[i].x, block.points[i].y)
+    this.game.visibleObjects.forEach(block => {
+      if (block instanceof PolyBlock) {
+        this.context.fillStyle = block.color;
+        this.context.moveTo(block.points[0].x, block.points[0].y)
+        this.context.beginPath();
+        for (let i = 0; i != block.points.length; i++) {
+          this.context.lineTo(block.points[i].x, block.points[i].y)
+        }
+        this.context.closePath();
+        this.context.fill();
       }
-      this.context.closePath();
-      this.context.fill();
+
+      if (block instanceof Line) {
+        this.context.strokeStyle = block.color;
+        this.context.beginPath();
+        this.context.moveTo(block.lineSegments[0].from.x, block.lineSegments[0].from.y);
+        this.context.lineTo(block.lineSegments[0].to.x, block.lineSegments[0].to.y);
+        this.context.closePath();
+        this.context.stroke();
+      }
+      
     });
 
     // draw view cone

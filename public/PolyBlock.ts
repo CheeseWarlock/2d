@@ -1,18 +1,23 @@
+import VisibleObject from "./VisibleObject.js";
+
 type Point = {
   x: number,
   y: number
 }
 
-class PolyBlock {
+class PolyBlock extends VisibleObject {
   points: Point[] = [];
+  color: string = "black";
 
-  constructor(x1: number, y1: number, x2: number, y2: number) {
+  constructor(x1: number, y1: number, x2: number, y2: number, color: string) {
+    super();
     this.points.push(
       { x: x1, y: y1 },
-      { x: x2 - 50, y: y1 },
-      { x: x2 + 50, y: y2 },
+      { x: x2, y: y1 },
+      { x: x2, y: y2 },
       { x: x1, y: y2 }
     );
+    this.color = color;
   }
 
   get lineSegments() {
@@ -24,7 +29,7 @@ class PolyBlock {
       });
     }
 
-    return [segments[1]];
+    return segments;
   }
 }
 
