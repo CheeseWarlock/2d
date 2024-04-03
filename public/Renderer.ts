@@ -1,3 +1,4 @@
+import CameraFrame from "./CameraFrame.js";
 import Game from "./Game.js";
 
 export default class Renderer {
@@ -5,6 +6,7 @@ export default class Renderer {
   context: CanvasRenderingContext2D;
   photoContext: CanvasRenderingContext2D;
   mousePosition: { x: number, y: number } = { x: 0, y: 0 };
+  cameraFrame: CameraFrame;
   constructor() {
     const game = new Game()
     const canvas = document.createElement('canvas');
@@ -33,6 +35,9 @@ export default class Renderer {
     document.body.onkeyup = (ev) => {
       this.game.keysDown.delete(ev.key);
     }
+
+    const cf = new CameraFrame();
+    this.cameraFrame = cf;
   }
 
   draw() {
@@ -56,14 +61,14 @@ export default class Renderer {
     });
 
     // draw view cone
-    this.context.fillStyle = "#cccccc";
+    this.context.strokeStyle = "#cccccc";
     this.context.beginPath();
     this.context.moveTo(this.game.player.x, this.game.player.y);
     this.context.lineTo(this.game.player.x + Math.cos(this.game.viewDirection - this.game.fov) * 1e6, this.game.player.y + Math.sin(this.game.viewDirection - this.game.fov) * 1e6);
     this.context.lineTo(this.game.player.x + Math.cos(this.game.viewDirection + this.game.fov) * 1e6, this.game.player.y + Math.sin(this.game.viewDirection + this.game.fov) * 1e6);
     this.context.lineTo(this.game.player.x, this.game.player.y);
     this.context.closePath();
-    this.context.fill();
+    this.context.stroke();
 
     // draw view centerline
     this.context.strokeStyle = "black";
@@ -72,5 +77,19 @@ export default class Renderer {
     this.context.lineTo(this.game.player.x + Math.cos(this.game.viewDirection) * 1e6, this.game.player.y + Math.sin(this.game.viewDirection) * 1e6);
     this.context.closePath();
     this.context.stroke();
+  }
+
+  drawCameraFrame() {
+    this.photoContext.clearRect(0, 0, 50, 1000);
+    this.game.cameraFrame.segments.forEach(segment => {
+      this.photoContext.fillStyle = segment.color;
+      this.photoContext.fillRect(0, segment.start.position * 1000, 50, (segment.end.position - segment.start.position) * 1000)
+    })
+    this.photoContext.strokeStyle = "black";
+    this.photoContext.beginPath();
+    this.photoContext.moveTo(0,500);
+    this.photoContext.lineTo(50,500);
+    this.photoContext.closePath();
+    this.photoContext.stroke();
   }
 }

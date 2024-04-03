@@ -1,5 +1,6 @@
 import PolyBlock from './PolyBlock.js';
 import Player from './Player.js';
+import CameraFrame from './CameraFrame.js';
 
 type Point = {
   x: number,
@@ -13,9 +14,10 @@ class Game {
   player: Player = new Player(10, 40);
   fov: number = 0.25;
   keysDown: Set<string> = new Set();
+  cameraFrame: CameraFrame = new CameraFrame();
 
   constructor() {
-    this.blocks.push(new PolyBlock(100, 100, 200, 200));
+    // this.blocks.push(new PolyBlock(100, 100, 200, 200));
     this.blocks.push(new PolyBlock(200, 200, 400, 400));
   }
 
@@ -37,34 +39,97 @@ class Game {
   }
 
   calculatePhotoContent() {
-    let aa = 0;
+    const cameraFrame = new CameraFrame();
+    cameraFrame.segments = [];
     this.blocks.forEach(block => {
       // turn block into lines
-      for (let i = 0; i != block.points.length; i++) {
+      block.lineSegments.forEach(seg => {
         // is the line within fov?
         // it is iff:
         // one end or the other is in fov
         // OR
         // the line passes through fov
-        const j = (i + 1) % block.points.length;
 
 
+        let directionToLineStart = Math.atan2(seg.from.y - this.player.y, seg.from.x - this.player.x);
+        let directionToLineEnd = Math.atan2(seg.to.y - this.player.y, seg.to.x - this.player.x);
 
-        const directionToPoint = Math.atan2(block.points[i].y - this.player.y, block.points[i].x - this.player.x);
-        const directionToPoint2 = Math.atan2(block.points[j].y - this.player.y, block.points[j].x - this.player.x);
-        if (directionToPoint > this.viewDirection - this.fov && directionToPoint < this.viewDirection + this.fov) {
-          aa += 1;
-        } else if (directionToPoint2 > this.viewDirection - this.fov && directionToPoint2 < this.viewDirection + this.fov) {
-          aa += 1;
+        let viewConeLow = (this.viewDirection - this.fov);
+        let viewConeHigh = (this.viewDirection + this.fov);
+
+        // if (Math.abs(directionToLineEnd - directionToLineStart) > Math.PI) {
+        //   directionToLineStart += Math.PI * 2;
+        // }
+
+        while (directionToLineStart > viewConeLow + Math.PI * 2) {
+          directionToLineStart -= Math.PI * 2;
+        }
+        while (directionToLineStart < viewConeLow) {
+          directionToLineStart += Math.PI * 2;
+        }
+        while (directionToLineEnd > viewConeLow + Math.PI * 2) {
+          directionToLineEnd -= Math.PI * 2;
+        }
+        while (directionToLineEnd < viewConeLow) {
+          directionToLineEnd += Math.PI * 2;
+        }
+
+        // Broken when diff of angles to start and end > 180 deg
+
+        
+
+        let doTheThing = false;
+        let message = "";
+
+        if ((directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) && (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh)) {
+          message = ('both ends')
+          doTheThing = true;
+        } else if (directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) {
+          message = ('start')
+          doTheThing = true;
+        } else if (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh) {
+          message = ('end')
+          doTheThing = true;
         } else if (intersects(
-          block.points[i].x, block.points[i].y, block.points[j].x, block.points[j].y,
+          seg.from.x, seg.from.y, seg.to.x, seg.to.y,
           this.player.x, this.player.y, this.player.x + Math.cos(this.viewDirection) * 1e6, this.player.y + Math.sin(this.viewDirection) * 1e6
         )) {
-          aa += 100;
+          message = ('collision')
+          cameraFrame.add({
+            start: {
+              position: 0,
+              depth: 0
+            },
+            end: {
+              position: 1,
+              depth: 0
+            },
+            color: "green"
+          });
+        } else {
+          message = ('none')
         }
-      }
+
+        console.log(`VC ${(viewConeLow * 180 / Math.PI).toFixed(0)} to ${(viewConeHigh * 180 / Math.PI).toFixed(0)}... Start ${(directionToLineStart * 180 / Math.PI).toFixed(0)}, end ${(directionToLineEnd * 180 / Math.PI).toFixed(0)}... ${message}`);
+
+        if (doTheThing) {
+          const startProportion = (directionToLineStart - viewConeLow) / (viewConeHigh - viewConeLow);
+          const endProportion = (directionToLineEnd - viewConeLow) / (viewConeHigh - viewConeLow);
+          cameraFrame.add({
+            start: {
+              position: startProportion,
+              depth: 0
+            },
+            end: {
+              position: endProportion,
+              depth: 0
+            },
+            color: "green"
+          });
+        }
+      });
     });
-    console.log(aa);
+    this.cameraFrame = cameraFrame;
   }
 }
 
