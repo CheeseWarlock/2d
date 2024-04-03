@@ -112,7 +112,7 @@ class Game {
           message = ('none')
         }
 
-        console.log(`VC ${(viewConeLow * 180 / Math.PI).toFixed(0)} to ${(viewConeHigh * 180 / Math.PI).toFixed(0)}... Start ${(directionToLineStart * 180 / Math.PI).toFixed(0)}, end ${(directionToLineEnd * 180 / Math.PI).toFixed(0)}... ${message}`);
+        // console.log(`VC ${(viewConeLow * 180 / Math.PI).toFixed(0)} to ${(viewConeHigh * 180 / Math.PI).toFixed(0)}... Start ${(directionToLineStart * 180 / Math.PI).toFixed(0)}, end ${(directionToLineEnd * 180 / Math.PI).toFixed(0)}... ${message}`);
 
         if (doTheThing) {
           const startProportion = (directionToLineStart - viewConeLow) / (viewConeHigh - viewConeLow);
