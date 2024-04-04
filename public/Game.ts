@@ -1,6 +1,6 @@
 import PolyBlock from './PolyBlock.js';
 import Player from './Player.js';
-import CameraFrame from './CameraFrame.js';
+import CameraFrame, { Segment } from './CameraFrame.js';
 import VisibleObject from './VisibleObject.js';
 import Line from './Line.js';
 
@@ -43,7 +43,7 @@ class Game {
 
   calculatePhotoContent() {
     const cameraFrame = new CameraFrame();
-    cameraFrame.segments = [];
+    const segmentsToAdd: Segment[] = [];
     this.visibleObjects.forEach(block => {
       // turn block into lines
       block.lineSegments.forEach(seg => {
@@ -77,9 +77,6 @@ class Game {
           directionToLineEnd += Math.PI * 2;
         }
 
-
-        
-
         let doTheThing = false;
         let message = "";
 
@@ -96,15 +93,28 @@ class Game {
           seg.from.x, seg.from.y, seg.to.x, seg.to.y,
           this.player.x, this.player.y, this.player.x + Math.cos(this.viewDirection) * 1e6, this.player.y + Math.sin(this.viewDirection) * 1e6
         )) {
-          message = ('collision')
-          cameraFrame.add({
+          message = ('neither end')
+          // get start and end depths
+          const pointAtStart = lineSegmentsIntersect(
+            seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+            this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
+          ).point;
+          const pointAtEnd = lineSegmentsIntersect(
+            seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+            this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
+          ).point;
+
+          const distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
+          const distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
+          
+          segmentsToAdd.push({
             start: {
               position: 0,
-              depth: 0
+              depth: distanceToStart
             },
             end: {
               position: 1,
-              depth: 0
+              depth: distanceToEnd
             },
             color: block.color
           });
@@ -117,20 +127,24 @@ class Game {
         if (doTheThing) {
           const startProportion = (directionToLineStart - viewConeLow) / (viewConeHigh - viewConeLow);
           const endProportion = (directionToLineEnd - viewConeLow) / (viewConeHigh - viewConeLow);
-          cameraFrame.add({
+
+          const distanceToStart = distance(this.player.x, this.player.y, seg.from.x, seg.from.y);
+          const distanceToEnd = distance(this.player.x, this.player.y, seg.to.x, seg.to.y);
+          segmentsToAdd.push({
             start: {
               position: startProportion,
-              depth: 0
+              depth: distanceToStart
             },
             end: {
               position: endProportion,
-              depth: 0
+              depth: distanceToEnd
             },
             color: block.color
           });
         }
       });
     });
+    segmentsToAdd.forEach(seg => cameraFrame.add(seg));
     this.cameraFrame = cameraFrame;
   }
 }
@@ -146,5 +160,23 @@ function intersects(a: number,b: number,c: number,d: number,p: number,q: number,
     return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
   }
 };
+
+function lineSegmentsIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) {
+  var a_dx = x2 - x1;
+  var a_dy = y2 - y1;
+  var b_dx = x4 - x3;
+  var b_dy = y4 - y3;
+  var s = (-a_dy * (x1 - x3) + a_dx * (y1 - y3)) / (-b_dx * a_dy + a_dx * b_dy);
+  var t = (+b_dx * (y1 - y3) - b_dy * (x1 - x3)) / (-b_dx * a_dy + a_dx * b_dy);
+  const doSegmentsIntersect = (s >= 0 && s <= 1 && t >= 0 && t <= 1);
+  return {
+    direct: doSegmentsIntersect,
+    point: [x1 + t * a_dx, y1 + t * a_dy]
+  }
+}
+
+function distance(x1: number, y1: number, x2: number, y2: number) {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
 
 export default Game;

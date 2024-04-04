@@ -1,4 +1,4 @@
-type Segment = {
+export type Segment = {
   start: {
     position: number,
     depth: number
@@ -9,13 +9,24 @@ type Segment = {
 }
 
 export const depthAt = (segment: Segment, position: number) => {
+  if (segment.start.depth === Infinity || segment.end.depth === Infinity) return Infinity;
   const proportionAlong = (position - segment.start.position) / (segment.end.position - segment.start.position);
   const depth = (segment.start.depth * (1 - proportionAlong)) + (segment.end.depth * proportionAlong);
   return depth;
 }
 
 export default class CameraFrame {
-  segments: Segment[] = [];
+  segments: Segment[] = [{
+    start: {
+      position: 0,
+      depth: Infinity
+    },
+    end: {
+      position: 1,
+      depth: Infinity
+    },
+    color: "white"
+  }];
 
   add(newSegment: Segment) {
     // Start by flipping the segment so end is after start
@@ -26,22 +37,24 @@ export default class CameraFrame {
       newSegment.start = end;
       newSegment.end = temp;
     }
+    console.log("");
+    console.log(`~~Next new segment from ${newSegment.start.position} to ${newSegment.end.position}`)
     // TODO: Does the range need to be reduced to [0,1]?
 
     // get the existing segments that overlap the new one
     // Candidates... FOR REMOVAL!
     const candidates = this.segments.filter(existingSegment => {
-      if (existingSegment.start.position <= newSegment.end.position && newSegment.start.position <= existingSegment.end.position) {
+      if (existingSegment.start.position < newSegment.end.position && newSegment.start.position < existingSegment.end.position) {
         return true;
       }
       return false;
     });
 
     const finalSegments = this.segments.filter(existingSegment => {
-      if (existingSegment.start.position <= newSegment.end.position && newSegment.start.position <= existingSegment.end.position) {
-        return true;
+      if (existingSegment.start.position < newSegment.end.position && newSegment.start.position < existingSegment.end.position) {
+        return false;
       }
-      return false;
+      return true;
     });
 
 
@@ -57,32 +70,40 @@ export default class CameraFrame {
     }
 
     candidates.forEach((candidate) => {
-      if (newSegment.end.position > candidate.end.position && newSegment.start.position < candidate.end.position) {
+      console.log(`Next candidate! From ${candidate.start.position} to ${candidate.end.position}`)
+      if (newSegment.end.position >= candidate.end.position && newSegment.start.position <= candidate.start.position) {
+        console.log("  New overlaps old")
         // New segment completely covers candidate
         // Choose any position
-        const pos = (newSegment.start.position + newSegment.end.position) / 2;
+        const pos = (candidate.start.position + candidate.end.position) / 2;
         const newSegmentDepth = depthAt(newSegment, pos);
         const candidateDepth = depthAt(candidate, pos);
+        console.log("........", newSegmentDepth, candidateDepth);
         if (newSegmentDepth > candidateDepth) {
+          console.log("    Old segment is closer");
           // Candidate is closer than new segment
           finalSegments.push(candidate);
         } else {
+          console.log("    New Segment is closer");
           validRangesOfNewSegment.push({
             from: candidate.start.position,
             to: candidate.end.position
           });
         }
-      } else if (newSegment.end.position < candidate.end.position && newSegment.start.position > candidate.end.position) {
+      } else if (newSegment.end.position <= candidate.end.position && newSegment.start.position >= candidate.start.position) {
+        console.log("  Old overlaps new")
         // New segment's range is within candidate's
         // Choose any position
-        const pos = (candidate.start.position + candidate.end.position) / 2;
+        const pos = (newSegment.start.position + newSegment.end.position) / 2;
         const newSegmentDepth = depthAt(newSegment, pos);
         const candidateDepth = depthAt(candidate, pos);
         if (newSegmentDepth > candidateDepth) {
+          console.log("    Old segment is closer");
           // Candidate is closer than new segment
           // So we don't change anything
           finalSegments.push(candidate);
         } else {
+          console.log("    New Segment is closer");
           // There will only be this candidate
           finalSegments.push({
             start: {
@@ -101,7 +122,7 @@ export default class CameraFrame {
               depth: depthAt(candidate, newSegment.end.position)
             },
             end: {
-              position: newSegment.end.position,
+              position: candidate.end.position,
               depth: candidate.end.position
             },
             color: candidate.color
@@ -111,12 +132,18 @@ export default class CameraFrame {
       } else if (newSegment.end.position > candidate.end.position) {
         // New segment hangs on higher end (new segment is overlap and greater)
         // Choose any position
+        console.log("  Hanging on higher")
         const pos = (newSegment.start.position + candidate.end.position) / 2;
         const newSegmentDepth = depthAt(newSegment, pos);
         const candidateDepth = depthAt(candidate, pos);
         if (newSegmentDepth > candidateDepth) {
+          console.log("    Old segment is closer");
           finalSegments.push(candidate);
         } else {
+          console.log("    New Segment is closer");
+          console.log(`    Pushing ${candidate.start.position} to ${newSegment.start.position}`);
+          console.log(`    Validing ${newSegment.start.position} to ${candidate.end.position}`);
+          
           finalSegments.push({
             start: {
               position: candidate.start.position,
@@ -133,15 +160,20 @@ export default class CameraFrame {
             to: candidate.end.position
           });
         }
-      } else {
+      } else if (newSegment.start.position < candidate.start.position) {
+        console.log("  Hanging on lower")
         // New segment hangs on lower end
         // Choose any position
         const pos = (candidate.start.position + newSegment.end.position) / 2;
         const newSegmentDepth = depthAt(newSegment, pos);
         const candidateDepth = depthAt(candidate, pos);
         if (newSegmentDepth > candidateDepth) {
+          console.log("    Old segment is closer");
           finalSegments.push(candidate);
         } else {
+          console.log("    New Segment is closer");
+          console.log(`    Pushing ${newSegment.end.position} to ${candidate.end.position}`);
+          console.log(`    Validing ${candidate.start.position} to ${newSegment.end.position}`);
           finalSegments.push({
             start: {
               position: newSegment.end.position,
@@ -158,24 +190,24 @@ export default class CameraFrame {
             to: newSegment.end.position
           });
         }
+      } else {
+        console.log("BQAD BNSFSEJNTFHG SEIARSAJHETSEDIT SEHRTFGSEDITRSEHISEDRTGHISEHRTGEITGSERTGHER THIS SHOULD NEVER HAPPEN")
       }
     });
 
-    // let actualRangesForNewSegment: { from: number, to: number }[] = [];
-    // let lastValue: number | undefined;
-
-    // validRangesOfNewSegment.forEach(range => {
-    //   if (lastValue === undefined) {
-    //     actualRangesForNewSegment.push({
-    //       from: range.from,
-    //       to: range.to
-    //     });
-    //   } else if ()
-    // });
-
-    console.log("VALID RANGES", validRangesOfNewSegment.length);
+    let actualRangesForNewSegment: { from: number, to: number }[] = [];
+    
 
     validRangesOfNewSegment.forEach(range => {
+      if (actualRangesForNewSegment.length && actualRangesForNewSegment[actualRangesForNewSegment.length - 1].to === range.from) {
+        actualRangesForNewSegment[actualRangesForNewSegment.length - 1].to = range.to;
+      } else {
+        actualRangesForNewSegment.push(range);
+      }
+    });
+    console.log(actualRangesForNewSegment.length + " ranges from " + validRangesOfNewSegment.length);
+
+    actualRangesForNewSegment.forEach(range => {
       finalSegments.push({
         start: {
           position: range.from,
@@ -188,14 +220,21 @@ export default class CameraFrame {
         color: newSegment.color
       });
     });
+    this.segments = finalSegments.filter(seg => seg.start.position !== seg.end.position).sort((a, b) => a.start.position - b.start.position);
 
-    this.segments = finalSegments;
+    
+    let segis = "";
+    this.segments.forEach(seg => {
+      segis += (`${seg.color} from ${seg.start.position.toFixed(3)} to ${seg.end.position.toFixed(3)},`);
+    })
+    console.log("Segments:", segis);
   }
 
   test() {
     const sorted = this.segments.slice().sort((a, b) => a.start.position - b.start.position);
     
     for (let i = 0; i < sorted.length - 1; i++) {
+      // console.log(`TEST ${sorted[i].start.position} - ${sorted[i].end.position}, ${sorted[i + 1].start.position} - ${sorted[i + 1].end.position}`);
       // compare i with i+1
       if (sorted[i].end.position > sorted[i+1].start.position) {
         // Overlap!
