@@ -125,11 +125,38 @@ class Game {
         // console.log(`VC ${(viewConeLow * 180 / Math.PI).toFixed(0)} to ${(viewConeHigh * 180 / Math.PI).toFixed(0)}... Start ${(directionToLineStart * 180 / Math.PI).toFixed(0)}, end ${(directionToLineEnd * 180 / Math.PI).toFixed(0)}... ${message}`);
 
         if (doTheThing) {
-          const startProportion = (directionToLineStart - viewConeLow) / (viewConeHigh - viewConeLow);
-          const endProportion = (directionToLineEnd - viewConeLow) / (viewConeHigh - viewConeLow);
+          let startProportion = (directionToLineStart - viewConeLow) / (viewConeHigh - viewConeLow);
+          let endProportion = (directionToLineEnd - viewConeLow) / (viewConeHigh - viewConeLow);
+          let distanceToStart = distance(this.player.x, this.player.y, seg.from.x, seg.from.y);
+          let distanceToEnd = distance(this.player.x, this.player.y, seg.to.x, seg.to.y);
 
-          const distanceToStart = distance(this.player.x, this.player.y, seg.from.x, seg.from.y);
-          const distanceToEnd = distance(this.player.x, this.player.y, seg.to.x, seg.to.y);
+          // if (endProportion < startProportion) {
+          //   const temp1 = endProportion;
+          //   endProportion = startProportion;
+          //   startProportion = temp1;
+          //   const temp2 = distanceToEnd;
+          //   distanceToEnd = distanceToStart;
+          //   distanceToStart = temp2;
+          // }
+
+          if (startProportion < 0) {
+            const pointAtStart = lineSegmentsIntersect(
+              seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+              this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
+            ).point;
+            distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
+            startProportion = 0;
+          }
+          if (endProportion > 1) {
+            const pointAtEnd = lineSegmentsIntersect(
+              seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+              this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
+            ).point;
+            distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
+            endProportion = 1;
+          }
+
+          
           segmentsToAdd.push({
             start: {
               position: startProportion,

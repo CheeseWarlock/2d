@@ -3,3 +3,4 @@ out/*
 !out/public
 out/public/*
 !out/public/index.html
+coverage/
