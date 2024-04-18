@@ -22,6 +22,7 @@ class Game {
     this.visibleObjects.push(new PolyBlock(100, 100, 200, 200, "green"));
     this.visibleObjects.push(new PolyBlock(200, 200, 400, 400, "blue"));
     this.visibleObjects.push(new Line(400, 600, 600, 600, "black"));
+    this.visibleObjects.push(new Line(490, 605, 510, 605, "red"));
   }
 
   tick() {
@@ -78,46 +79,28 @@ class Game {
         }
 
         let doTheThing = false;
+        let startInside = false;
+        let endInside = false;
         let message = "";
 
         if ((directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) && (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh)) {
           message = ('both ends')
           doTheThing = true;
+          startInside = true;
+          endInside = true;
         } else if (directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) {
           message = ('start')
           doTheThing = true;
+          startInside = true;
         } else if (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh) {
           message = ('end')
           doTheThing = true;
+          endInside = true;
         } else if (intersects(
           seg.from.x, seg.from.y, seg.to.x, seg.to.y,
           this.player.x, this.player.y, this.player.x + Math.cos(this.viewDirection) * 1e6, this.player.y + Math.sin(this.viewDirection) * 1e6
         )) {
-          message = ('neither end')
-          // get start and end depths
-          const pointAtStart = lineSegmentsIntersect(
-            seg.from.x, seg.from.y, seg.to.x, seg.to.y,
-            this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
-          ).point;
-          const pointAtEnd = lineSegmentsIntersect(
-            seg.from.x, seg.from.y, seg.to.x, seg.to.y,
-            this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
-          ).point;
-
-          const distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
-          const distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
-          
-          segmentsToAdd.push({
-            start: {
-              position: 0,
-              depth: distanceToStart
-            },
-            end: {
-              position: 1,
-              depth: distanceToEnd
-            },
-            color: block.color
-          });
+          doTheThing = true;
         } else {
           message = ('none')
         }
@@ -130,6 +113,41 @@ class Game {
           let distanceToStart = distance(this.player.x, this.player.y, seg.from.x, seg.from.y);
           let distanceToEnd = distance(this.player.x, this.player.y, seg.to.x, seg.to.y);
 
+          if (!startInside) {
+            if (startProportion > 1) {
+              const pointAtEnd = lineSegmentsIntersect(
+                seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+                this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
+              ).point;
+              distanceToStart = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
+              startProportion = 1;
+            } else {
+              const pointAtStart = lineSegmentsIntersect(
+                seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+                this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
+              ).point;
+              distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
+              startProportion = 0;
+            }
+          }
+          if (!endInside) {
+            if (endProportion > 1) {
+              const pointAtEnd = lineSegmentsIntersect(
+                seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+                this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
+              ).point;
+              distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
+              endProportion = 1;
+            } else {
+              const pointAtStart = lineSegmentsIntersect(
+                seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+                this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
+              ).point;
+              distanceToEnd = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
+              endProportion = 0;
+            }
+          }
+
           // if (endProportion < startProportion) {
           //   const temp1 = endProportion;
           //   endProportion = startProportion;
@@ -139,22 +157,22 @@ class Game {
           //   distanceToStart = temp2;
           // }
 
-          if (startProportion < 0) {
-            const pointAtStart = lineSegmentsIntersect(
-              seg.from.x, seg.from.y, seg.to.x, seg.to.y,
-              this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
-            ).point;
-            distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
-            startProportion = 0;
-          }
-          if (endProportion > 1) {
-            const pointAtEnd = lineSegmentsIntersect(
-              seg.from.x, seg.from.y, seg.to.x, seg.to.y,
-              this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
-            ).point;
-            distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
-            endProportion = 1;
-          }
+          // if (startProportion < 0) {
+            // const pointAtStart = lineSegmentsIntersect(
+            //   seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+            //   this.player.x, this.player.y, this.player.x + Math.cos(viewConeLow) * 1e6, this.player.y + Math.sin(viewConeLow) * 1e6
+            // ).point;
+            // distanceToStart = distance(this.player.x, this.player.y, pointAtStart[0], pointAtStart[1]);
+            // startProportion = 0;
+          // }
+          // if (endProportion > 1) {
+            // const pointAtEnd = lineSegmentsIntersect(
+            //   seg.from.x, seg.from.y, seg.to.x, seg.to.y,
+            //   this.player.x, this.player.y, this.player.x + Math.cos(viewConeHigh) * 1e6, this.player.y + Math.sin(viewConeHigh) * 1e6
+            // ).point;
+            // distanceToEnd = distance(this.player.x, this.player.y, pointAtEnd[0], pointAtEnd[1]);
+            // endProportion = 1;
+          // }
 
           
           segmentsToAdd.push({

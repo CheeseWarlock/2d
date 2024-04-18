@@ -9,9 +9,14 @@ export type Segment = {
 }
 
 export const depthAt = (segment: Segment, position: number) => {
+  // FOV 0.25 - so 0.5 radians from min to max
+  // const segmentSize = segment.end.position - segment.start.position;
+
   if (segment.start.depth === Infinity || segment.end.depth === Infinity) return Infinity;
   const proportionAlong = (position - segment.start.position) / (segment.end.position - segment.start.position);
-  const depth = (segment.start.depth * (1 - proportionAlong)) + (segment.end.depth * proportionAlong);
+  const depth = segment.start.depth * Math.cos(proportionAlong) + segment.end.depth * Math.sin(proportionAlong);
+  // const depth = (segment.start.depth * (1 - proportionAlong)) + (segment.end.depth * proportionAlong);
+
   return depth;
 }
 
@@ -123,7 +128,7 @@ export default class CameraFrame {
             },
             end: {
               position: candidate.end.position,
-              depth: candidate.end.position
+              depth: candidate.end.depth
             },
             color: candidate.color
           });
