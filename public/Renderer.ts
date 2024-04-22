@@ -9,7 +9,6 @@ const DEPTH_RATIO = 2;
 export default class Renderer {
   game: Game;
   context: CanvasRenderingContext2D;
-  cameraSpaceContext: CanvasRenderingContext2D;
   photoContext: CanvasRenderingContext2D;
   mousePosition: { x: number, y: number } = { x: 0, y: 0 };
   cameraFrame: CameraFrame;
@@ -20,12 +19,6 @@ export default class Renderer {
     canvas.height = 1000;
     document.body.appendChild(canvas);
     const context = canvas.getContext('2d')!;
-
-    const cameraSpaceCanvas = document.createElement('canvas');
-    cameraSpaceCanvas.width = CAMERA_SPACE_WIDTH;
-    cameraSpaceCanvas.height = 1000;
-    document.body.appendChild(cameraSpaceCanvas);
-    this.cameraSpaceContext = cameraSpaceCanvas.getContext('2d')!;
 
     const photoCanvas = document.createElement('canvas');
     photoCanvas.width = 50;
@@ -56,6 +49,8 @@ export default class Renderer {
     this.game.focusPoint = this.mousePosition;
     this.game.tick();
     this.context.clearRect(0, 0, 1000, 1000);
+    this.context.fillStyle = "white";
+    this.context.fillRect(0, 0, 1000, 1000);
     this.context.fillStyle = "red";
     this.context.beginPath();
     this.context.arc(this.game.player.x, this.game.player.y, 20, 0, Math.PI * 2);
@@ -103,29 +98,11 @@ export default class Renderer {
     this.context.stroke();
   }
 
-  drawCameraSpace() {
-    this.cameraSpaceContext.clearRect(0, 0, CAMERA_SPACE_WIDTH, 1000);
-    this.game.cameraFrame.segments.forEach(segment => {
-      this.cameraSpaceContext.strokeStyle = segment.color;
-      this.cameraSpaceContext.beginPath();
-      this.cameraSpaceContext.moveTo(segment.start.depth * DEPTH_RATIO, segment.start.position * 1000);
-      this.cameraSpaceContext.lineTo(segment.end.depth * DEPTH_RATIO, segment.end.position * 1000);
-      this.cameraSpaceContext.closePath();
-      this.cameraSpaceContext.stroke();
-    })
-    this.cameraSpaceContext.strokeStyle = "black";
-    this.cameraSpaceContext.beginPath();
-    this.cameraSpaceContext.moveTo(0,500);
-    this.cameraSpaceContext.lineTo(CAMERA_SPACE_WIDTH,500);
-    this.cameraSpaceContext.closePath();
-    this.cameraSpaceContext.stroke();
-  }
-
   drawCameraFrame() {
     this.photoContext.clearRect(0, 0, 50, 1000);
     this.game.cameraFrame.segments.forEach(segment => {
       this.photoContext.fillStyle = segment.color;
-      this.photoContext.fillRect(0, segment.start.position * 1000, 50, (segment.end.position - segment.start.position) * 1000)
+      this.photoContext.fillRect(0, segment.start * 1000, 50, (segment.end - segment.start) * 1000)
     })
     this.photoContext.strokeStyle = "black";
     this.photoContext.beginPath();
