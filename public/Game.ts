@@ -1,8 +1,9 @@
 import Player from './Player.js';
 import CameraFrame, { Segment } from './CameraFrame.js';
-import VisibleObject from './VisibleObject.js';
+import GeometryObject from './GeometryObject.js';
 import { intersects, lineSegmentsIntersect, distance, limitNearVerticalDirection } from './utils.js';
 import levelContent from './levels/Level1.js';
+import World from './World.js';
 
 type Point = {
   x: number,
@@ -10,17 +11,19 @@ type Point = {
 }
 
 class Game {
-  visibleObjects: VisibleObject[] = [];
+  visibleObjects: GeometryObject[] = [];
   focusPoint: Point = { x: 0, y: 0 };
   viewDirection: number = 0;
   player: Player;
   fov: number = 0.25;
   keysDown: Set<string> = new Set();
   cameraFrame: CameraFrame = new CameraFrame();
+  world: World;
 
   constructor() {
-    this.player = new Player(levelContent.playerPosition.x, levelContent.playerPosition.y);
-    this.visibleObjects.push(...levelContent.objects);
+    this.world = levelContent.world;
+    this.player = levelContent.world.players[0];
+    this.visibleObjects.push(...levelContent.world.geometryObjects);
   }
 
   tick() {
@@ -36,6 +39,7 @@ class Game {
     if (this.keysDown.has('d')) {
       this.player.x += 4;
     }
+    this.world.update();
     this.viewDirection = Math.atan2(this.focusPoint.y - this.player.y, this.focusPoint.x - this.player.x);
     this.calculatePhotoContent();
   }

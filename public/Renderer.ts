@@ -1,5 +1,6 @@
 import CameraFrame from "./CameraFrame.js";
 import Game from "./Game.js";
+import GrayscaleObject from "./GrayscaleObject.js";
 import Line from "./Line.js";
 import PolyBlock from "./PolyBlock.js";
 
@@ -57,7 +58,7 @@ export default class Renderer {
     this.context.fill();
     this.context.closePath();
     this.game.visibleObjects.forEach(block => {
-      if (block instanceof PolyBlock) {
+      if (block instanceof PolyBlock || block instanceof GrayscaleObject) {
         this.context.fillStyle = block.color;
         this.context.moveTo(block.points[0].x, block.points[0].y)
         this.context.beginPath();

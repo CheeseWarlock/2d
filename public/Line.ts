@@ -1,19 +1,20 @@
-import VisibleObject from "./VisibleObject.js";
+import GeometryObject from "./GeometryObject.js";
+import World from "./World.js";
 
 type Point = {
   x: number,
   y: number
 }
 
-class Line extends VisibleObject {
+class Line extends GeometryObject {
   x1: number;
   x2: number;
   y1: number;
   y2: number;
   color: string = "black";
 
-  constructor(x1: number, y1: number, x2: number, y2: number, color: string) {
-    super();
+  constructor(x1: number, y1: number, x2: number, y2: number, color: string, world: World) {
+    super(world);
     this.x1=x1;
     this.x2=x2;
     this.y1=y1;

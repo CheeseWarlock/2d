@@ -1,16 +1,23 @@
+import World from "../World.js";
 import Line from "../Line.js";
 import PolyBlock from "../PolyBlock.js";
+import GrayscaleObject from "../GrayscaleObject.js";
+import GameObject from "../IGameObject.js";
+import Player from "../Player.js";
 
-const content = [
-  new PolyBlock(100, 100, 200, 200, "green"),
-  new PolyBlock(200, 200, 400, 400, "blue"),
-  new Line(400, 600, 600, 600, "black"),
-  new Line(490, 605, 510, 605, "red"),
+const world = new World();
+
+const content: GameObject[] = [
+  new PolyBlock(100, 100, 200, 200, "green", world),
+  new PolyBlock(200, 200, 400, 400, "blue", world),
+  new Line(400, 600, 600, 600, "black", world),
+  new Line(490, 605, 510, 605, "red", world),
+  new GrayscaleObject(world, [{ x: 800, y: 800 }, { x: 900, y: 850 }, { x: 800, y: 900 }]),
+  new Player(10, 40, world),
 ];
 
-const playerPosition = { x: 10, y: 40 };
+world.objects = content;
 
 export default {
-  objects: content,
-  playerPosition,
+  world,
 };
