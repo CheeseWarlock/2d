@@ -57,19 +57,14 @@ class Game {
     const viewConeLow = (this.viewDirection - this.fov);
     const viewConeHigh = (this.viewDirection + this.fov);
     this.visibleObjects.forEach(block => {
-      // turn block into lines
       block.lineSegments.forEach(seg => {
         // is the line within fov?
         // it is iff:
         // one end or the other is in fov
         // OR
         // the line passes through fov
-
-
         let directionToLineStart = Math.atan2(seg.from.y - this.player.y, seg.from.x - this.player.x);
         let directionToLineEnd = Math.atan2(seg.to.y - this.player.y, seg.to.x - this.player.x);
-
-        
 
         // if (Math.abs(directionToLineEnd - directionToLineStart) > Math.PI) {
         //   directionToLineStart += Math.PI * 2;

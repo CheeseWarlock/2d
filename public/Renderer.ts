@@ -54,7 +54,12 @@ export default class Renderer {
     this.context.fillRect(0, 0, 1000, 1000);
     this.context.fillStyle = "red";
     this.context.beginPath();
-    this.context.arc(this.game.player.x, this.game.player.y, 20, 0, Math.PI * 2);
+    // this.context.arc(this.game.player.x, this.game.player.y, 20, 0, Math.PI * 2);
+    this.context.moveTo(this.game.player.x - 10, this.game.player.y - 20);
+    this.context.lineTo(this.game.player.x + 10, this.game.player.y - 20);
+    this.context.lineTo(this.game.player.x + 10, this.game.player.y + 20);
+    this.context.lineTo(this.game.player.x - 10, this.game.player.y + 20);
+    
     this.context.fill();
     this.context.closePath();
     this.game.visibleObjects.forEach(block => {

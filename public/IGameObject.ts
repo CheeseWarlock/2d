@@ -1,4 +1,4 @@
-import World from "./World";
+import World from "./World.js";
 
 export default interface GameObject {
   world: World;

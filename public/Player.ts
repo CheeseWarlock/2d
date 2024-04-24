@@ -1,5 +1,5 @@
-import GameObject from "./IGameObject";
-import World from "./World";
+import GameObject from "./IGameObject.js";
+import World from "./World.js";
 
 export default class Player implements GameObject {
   x: number;
@@ -15,7 +15,11 @@ export default class Player implements GameObject {
   }
 
   tick() {
-    this.acc += 0.01;
+    this.acc += 0.025;
+    // collision test
+    if (this.world.collisionTest(this.x - 10, this.y - 20, this.x + 10, this.y + 20)) {
+      this.acc = 0;
+    }
     this.y += this.acc;
   }
 }
