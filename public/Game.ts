@@ -27,18 +27,9 @@ class Game {
   }
 
   tick() {
-    if (this.keysDown.has('w')) {
-      this.player.y -= 4;
-    }
-    if (this.keysDown.has('s')) {
-      this.player.y += 4;
-    }
-    if (this.keysDown.has('a')) {
-      this.player.x -= 4;
-    }
-    if (this.keysDown.has('d')) {
-      this.player.x += 4;
-    }
+    this.player.moveLeft = this.keysDown.has('a');
+    this.player.moveRight = this.keysDown.has('d');
+    this.player.jump = this.keysDown.has('w');
     this.world.update();
     this.viewDirection = Math.atan2(this.focusPoint.y - this.player.y, this.focusPoint.x - this.player.x);
     this.calculatePhotoContent();
