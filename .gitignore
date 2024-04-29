@@ -4,3 +4,5 @@ out/*
 out/public/*
 !out/public/index.html
 coverage/
+.parcel-cache/
+dist/
