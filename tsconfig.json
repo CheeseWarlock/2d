@@ -10,7 +10,7 @@
       "es6",
       "dom"
     ],
-    "rootDir": "public",
+    "rootDir": "src",
     "moduleResolution": "node"
   },
   "exclude": ["**/*.test.ts", "./dist/**/*", "./coverage/**/*", "jest.config.cjs"]
