@@ -5,15 +5,12 @@ import Player from "./Player.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import { Quadtree, Line, Rectangle } from "@timohausmann/quadtree-ts/src/index.esm.js";
 
-type Point = { x: number, y: number};
+const rangesOverlap = (a: { start: number; finish: number; }, b: { start: number; finish: number; }) => b.start < a.start ? b.finish > a.start : b.start < a.finish;
 
 export default class World {
+  size = { width: 1000, height: 1000 };
   objects: GameObject[] = [];
   quadtree = new Quadtree<Line<GeometryObject>>({ width: 1000, height: 1000 });
-
-  constructor() {
-    console.log("Outer from ESM", Quadtree);
-  }
 
   addGeometry(geometry: GeometryObject) {
     this.objects.push(geometry);
@@ -42,9 +39,28 @@ export default class World {
 
     const viewConeLow = (viewDirection - fov);
     const viewConeHigh = (viewDirection + fov);
+    // console.log(viewConeLow / Math.PI, viewDirection / Math.PI, viewConeHigh / Math.PI);
 
     // Find all the relevant lines from the quadtree
-    const lineSegments = this.quadtree.retrieve(new Rectangle({ x: 0, y: 0, width: 1000, height: 1000 }));
+    // For now, get the quadrants that are within the view cone
+    let ul = false, ur = false, ll = false, lr = false;
+    if (viewConeLow < -(Math.PI / 2) || viewConeHigh > Math.PI) {
+      ul = true;
+    }
+    if (rangesOverlap({ start: viewConeLow, finish: viewConeHigh }, { start: -Math.PI / 2, finish: 0 })) {
+      ur = true;
+    }
+    if (rangesOverlap({ start: viewConeLow, finish: viewConeHigh }, { start: 0, finish: Math.PI / 2 })) {
+      lr = true;
+    }
+    if (viewConeHigh > Math.PI / 2 || viewConeLow < -Math.PI) {
+      ll = true;
+    }
+    const x1 = (ul || ll) ? 0 : origin.x;
+    const y1 = (ul || ur) ? 0 : origin.y;
+    const w = ((ul && ur) || (ll && lr)) ? 1000 : (ul || ll) ? origin.x : 1000 - origin.x;
+    const h = ((ul && ll) || (ur && lr)) ? 1000 : (ul || ur) ? origin.y : 1000 - origin.y;
+    const lineSegments = this.quadtree.retrieve(new Rectangle({ x: x1, y: y1, width: w, height: h }));
 
     lineSegments.forEach(seg => {
       // is the line within fov?
@@ -54,10 +70,6 @@ export default class World {
       // the line passes through fov
       let directionToLineStart = Math.atan2(seg.y1 - origin.y, seg.x1 - origin.x);
       let directionToLineEnd = Math.atan2(seg.y2 - origin.y, seg.x2 - origin.x);
-
-      // if (Math.abs(directionToLineEnd - directionToLineStart) > Math.PI) {
-      //   directionToLineStart += Math.PI * 2;
-      // }
 
       while (directionToLineStart > viewDirection + Math.PI) {
         directionToLineStart -= Math.PI * 2;
@@ -72,20 +84,25 @@ export default class World {
         directionToLineEnd += Math.PI * 2;
       }
 
+      let shouldConsiderSegment = false;
+
       if ((directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) && (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh)) {
-        segmentsToConsider.push({ ...seg, color: seg.data!.color });
+        shouldConsiderSegment = true;
         breakpoints.push(directionToLineStart);
         breakpoints.push(directionToLineEnd);
       } else if (directionToLineStart > viewConeLow && directionToLineStart < viewConeHigh) {
-        segmentsToConsider.push({ ...seg, color: seg.data!.color });
+        shouldConsiderSegment = true;
         breakpoints.push(directionToLineStart);
       } else if (directionToLineEnd > viewConeLow && directionToLineEnd < viewConeHigh) {
-        segmentsToConsider.push({ ...seg, color: seg.data!.color });
+        shouldConsiderSegment = true;
         breakpoints.push(directionToLineEnd);
       } else if (intersects(
         seg.x1, seg.y1, seg.x2, seg.y2,
         origin.x, origin.y, origin.x + Math.cos(viewDirection) * 1e6, origin.y + Math.sin(viewDirection) * 1e6
       )) {
+        shouldConsiderSegment = true;
+      }
+      if (shouldConsiderSegment) {
         segmentsToConsider.push({ ...seg, color: seg.data!.color });
       }
     });
@@ -191,6 +208,9 @@ export default class World {
     };
   }
 
+  /*
+  How far can a line move in a direction before colliding?
+   */
   distanceToCollision(x1: number, y1: number, x2: number, y2: number, direction: number = Math.PI / 2) {
     
   }

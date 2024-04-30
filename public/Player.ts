@@ -37,7 +37,7 @@ export default class Player implements GameObject {
         123;
 
       } else {
-        console.log(collisionTest.maxSafe);
+        // console.log(collisionTest.maxSafe);
         this.x -= HSPEED;
         this.y -= ANGLETHING;
         this.y += collisionTest.maxSafe < ANGLETHING * 2 ? collisionTest.maxSafe : ANGLETHING;
