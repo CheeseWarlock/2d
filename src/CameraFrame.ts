@@ -1,3 +1,6 @@
+/**
+ * A coloured segment of a camera frame.
+ */
 export type Segment = {
   start: number,
   end: number,
@@ -5,24 +8,33 @@ export type Segment = {
 }
 
 /**
- * Essentially a data class for a camera image-
+ * A data class for a camera image-
  * either a goal or the result of a field of view calculation.
  */
 export default class CameraFrame {
-  segments: Segment[] = [];
+  segments: Segment[];
 
+  constructor(segments: Segment[] = []) {
+    this.segments = segments;
+  }
+
+  /**
+   * Flip the contents of this camera frame.
+   * Something at 1 will move to 0 and vice versa.
+   */
   flip() {
-    // start to end
-    // becomes
-    // (1 - end) to (1 - start)
     const newSegments: Segment[] = [];
     this.segments.forEach(seg => {
-      newSegments.push({start: 1 - seg.end, end: 1 - seg.start, color: seg.color})
+      newSegments.unshift({start: 1 - seg.end, end: 1 - seg.start, color: seg.color})
     });
     this.segments = newSegments;
   }
 
+  /**
+   * Join all adjacent segments of the same color into a single segment.
+   */
   simplify() {
+    const oldlen = this.segments.length;
     const newSegments: Segment[] = [];
     let lastColor = "none";
     let lastEnd = 0;
@@ -48,6 +60,11 @@ export default class CameraFrame {
     return ret;
   }
 
+  /**
+   * Compare this camera frame to another one and determine what zones of similarity exist between them.
+   * @param otherFrame 
+   * @returns the proportion of similarity, from 0 to 1.
+   */
   compare(otherFrame: CameraFrame) {
     // find all breakpoints
     const breakpoints = new Set<number>();
