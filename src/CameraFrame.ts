@@ -2,10 +2,10 @@
  * A coloured segment of a camera frame.
  */
 export type Segment = {
-  start: number,
-  end: number,
-  color: string
-}
+  start: number;
+  end: number;
+  color: string;
+};
 
 /**
  * A data class for a camera image-
@@ -24,8 +24,12 @@ export default class CameraFrame {
    */
   flip() {
     const newSegments: Segment[] = [];
-    this.segments.forEach(seg => {
-      newSegments.unshift({start: 1 - seg.end, end: 1 - seg.start, color: seg.color})
+    this.segments.forEach((seg) => {
+      newSegments.unshift({
+        start: 1 - seg.end,
+        end: 1 - seg.start,
+        color: seg.color,
+      });
     });
     this.segments = newSegments;
   }
@@ -52,7 +56,7 @@ export default class CameraFrame {
 
   at(position: number): string {
     let ret = "none";
-    this.segments.forEach(seg => {
+    this.segments.forEach((seg) => {
       if (position >= seg.start && position < seg.end) {
         ret = seg.color;
       }
@@ -62,34 +66,36 @@ export default class CameraFrame {
 
   /**
    * Compare this camera frame to another one and determine what zones of similarity exist between them.
-   * @param otherFrame 
+   * @param otherFrame
    * @returns the proportion of similarity, from 0 to 1.
    */
   compare(otherFrame: CameraFrame) {
     // find all breakpoints
     const breakpoints = new Set<number>();
-    this.segments.forEach(seg => {
+    this.segments.forEach((seg) => {
       breakpoints.add(seg.start);
       breakpoints.add(seg.end);
     });
-    otherFrame.segments.forEach(seg => {
+    otherFrame.segments.forEach((seg) => {
       breakpoints.add(seg.start);
       breakpoints.add(seg.end);
     });
     breakpoints.add(1);
 
-    const breakpointsArray = Array.from(breakpoints.values()).sort((a, b) => a - b);
+    const breakpointsArray = Array.from(breakpoints.values()).sort(
+      (a, b) => a - b
+    );
     const similarityZones: any[] = [];
     let similarity = 0;
     breakpointsArray.forEach((breakpoint, idx) => {
-      const start = (breakpointsArray[idx - 1]) || 0;
+      const start = breakpointsArray[idx - 1] || 0;
       const position = (breakpoint + start) / 2;
       const thisColor = this.at(position);
       const otherColor = otherFrame.at(position);
       similarityZones.push({
         start,
         end: breakpoint,
-        same: thisColor === otherColor
+        same: thisColor === otherColor,
       });
       if (thisColor === otherColor) similarity += breakpoint - start;
     });

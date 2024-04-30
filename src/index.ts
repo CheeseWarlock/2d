@@ -1,4 +1,4 @@
-import Renderer from './Renderer.js';
+import Renderer from "./Renderer.js";
 
 const main = () => {
   const renderer = new Renderer();
@@ -9,9 +9,9 @@ const main = () => {
     window.requestAnimationFrame(() => {
       update();
     });
-  }
+  };
 
   update();
-}
+};
 
 main();

@@ -2,9 +2,9 @@ import GeometryObject from "./GeometryObject.js";
 import World from "./World.js";
 
 type Point = {
-  x: number,
-  y: number
-}
+  x: number;
+  y: number;
+};
 
 class GrayscaleObject extends GeometryObject {
   constructor(world: World, points: Point[]) {
@@ -12,9 +12,7 @@ class GrayscaleObject extends GeometryObject {
     this.points = points;
   }
 
-  tick() {
-
-  }
+  tick() {}
 }
 
 export default GrayscaleObject;

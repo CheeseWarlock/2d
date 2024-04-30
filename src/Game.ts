@@ -1,14 +1,19 @@
-import Player from './Player.js';
-import CameraFrame, { Segment } from './CameraFrame.js';
-import GeometryObject from './GeometryObject.js';
-import { intersects, lineSegmentsIntersect, distance, limitNearVerticalDirection } from './utils.js';
-import levelContent from './levels/Level1.js';
-import World from './World.js';
+import Player from "./Player.js";
+import CameraFrame, { Segment } from "./CameraFrame.js";
+import GeometryObject from "./GeometryObject.js";
+import {
+  intersects,
+  lineSegmentsIntersect,
+  distance,
+  limitNearVerticalDirection,
+} from "./utils.js";
+import levelContent from "./levels/Level1.js";
+import World from "./World.js";
 
 type Point = {
-  x: number,
-  y: number
-}
+  x: number;
+  y: number;
+};
 
 class Game {
   visibleObjects: GeometryObject[] = [];
@@ -31,16 +36,21 @@ class Game {
   }
 
   tick() {
-    this.player.moveLeft = this.keysDown.has('a');
-    this.player.moveRight = this.keysDown.has('d');
-    this.player.jump = this.keysDown.has('w');
-    
+    this.player.moveLeft = this.keysDown.has("a");
+    this.player.moveRight = this.keysDown.has("d");
+    this.player.jump = this.keysDown.has("w");
+
     this.world.update();
-    this.viewDirection = Math.atan2(this.focusPoint.y - this.player.y, this.focusPoint.x - this.player.x);
+    this.viewDirection = Math.atan2(
+      this.focusPoint.y - this.player.y,
+      this.focusPoint.x - this.player.x
+    );
     this.calculatePhotoContent();
     if (this.clicked) {
       this.clicked = false;
-      const similarity = this.cameraFrame.compare(this.goals[this.currentGoalIndex]);
+      const similarity = this.cameraFrame.compare(
+        this.goals[this.currentGoalIndex]
+      );
       if (similarity > 0.9) {
         this.currentGoalIndex += 1;
       }
@@ -48,8 +58,15 @@ class Game {
   }
 
   calculatePhotoContent() {
-    this.viewDirection = limitNearVerticalDirection(this.viewDirection, this.fov);
-    const cameraFrame = this.world.calculatePhotoContent({ x: this.player.x, y: this.player.y }, this.viewDirection, this.fov);
+    this.viewDirection = limitNearVerticalDirection(
+      this.viewDirection,
+      this.fov
+    );
+    const cameraFrame = this.world.calculatePhotoContent(
+      { x: this.player.x, y: this.player.y },
+      this.viewDirection,
+      this.fov
+    );
     cameraFrame.simplify();
     this.cameraFrame = cameraFrame;
     console.log();

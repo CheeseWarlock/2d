@@ -3,7 +3,7 @@ import CameraFrame from "./CameraFrame";
 const jestConsole = console;
 
 beforeEach(() => {
-  global.console = require('console');
+  global.console = require("console");
 });
 
 afterEach(() => {
@@ -23,7 +23,7 @@ describe("CameraFrame.flip", () => {
     frame.segments.push({
       start: 0.25,
       end: 0.75,
-      color: "red"
+      color: "red",
     });
 
     frame.flip();
@@ -38,7 +38,7 @@ describe("CameraFrame.simplify", () => {
     frame.segments.push({
       start: 0.25,
       end: 0.75,
-      color: "red"
+      color: "red",
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -50,12 +50,12 @@ describe("CameraFrame.simplify", () => {
     frame.segments.push({
       start: 0.25,
       end: 0.5,
-      color: "red"
+      color: "red",
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
-      color: "red"
+      color: "red",
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -67,12 +67,12 @@ describe("CameraFrame.simplify", () => {
     frame.segments.push({
       start: 0.25,
       end: 0.5,
-      color: "red"
+      color: "red",
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
-      color: "blue"
+      color: "blue",
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -84,19 +84,19 @@ describe("CameraFrame.simplify", () => {
     frame.segments.push({
       start: 0.25,
       end: 0.4,
-      color: "red"
+      color: "red",
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
-      color: "red"
+      color: "red",
     });
     frame.simplify();
     expect(frame.segments.length).toBe(2);
     expect(frame.segments[0].start).toBe(0.25);
     expect(frame.segments[0].end).toBe(0.4);
   });
-})
+});
 
 describe("CameraFrame.compare", () => {
   it("should return 100% similarity for comparing an empty frame", () => {
@@ -111,12 +111,12 @@ describe("CameraFrame.compare", () => {
     frameA.segments.push({
       start: 0.25,
       end: 0.75,
-      color: "red"
+      color: "red",
     });
     frameB.segments.push({
       start: 0.25,
       end: 0.75,
-      color: "blue"
+      color: "blue",
     });
     const comparison = frameA.compare(frameB);
     expect(comparison).toBe(0.5);
@@ -133,19 +133,19 @@ describe("CameraFrame.compare", () => {
     frameA.segments.push({
       start: 0,
       end: 0.5,
-      color: "red"
+      color: "red",
     });
     frameA.segments.push({
       start: 0.6,
       end: 1,
-      color: "blue"
+      color: "blue",
     });
     frameB.segments.push({
       start: 0.3,
       end: 0.8,
-      color: "blue"
+      color: "blue",
     });
     const comparison = frameA.compare(frameB);
     expect(comparison).toBeCloseTo(0.2);
   });
-})
+});

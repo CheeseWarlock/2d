@@ -1,4 +1,1 @@
-`npx tsc -w`
-`node newserer.js`
-`npm test`
-
+`npx parcel src/index.html`
