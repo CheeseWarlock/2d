@@ -24,9 +24,9 @@ export default class Player implements GameObject {
     if (this.jump) {
       // check collision at feet
       const collisionTest = this.world.collisionTest(
-        this.x - 8,
+        this.x - 10,
         this.y + 16,
-        this.x + 8,
+        this.x + 10,
         this.y + 24,
         0
       );
@@ -51,15 +51,17 @@ export default class Player implements GameObject {
       );
       if (collisionTest2.collisionFound) {
         // hit a wall
-        123;
+        const x = 123;
       } else {
         // console.log(collisionTest.maxSafe);
         this.x -= HSPEED;
-        this.y -= ANGLETHING;
-        this.y +=
-          collisionTest.maxSafe < ANGLETHING * 2
-            ? collisionTest.maxSafe
-            : ANGLETHING;
+        if (this.acc >= 0) {
+          this.y -= ANGLETHING;
+          this.y +=
+            collisionTest.maxSafe < ANGLETHING * 2
+              ? collisionTest.maxSafe
+              : ANGLETHING;
+        }
       }
     } else if (this.moveRight) {
       const collisionTest = this.world.collisionTest(
@@ -77,14 +79,16 @@ export default class Player implements GameObject {
         0
       );
       if (collisionTest2.collisionFound) {
-        123;
+        const x = 123;
       } else {
         this.x += HSPEED;
-        this.y -= ANGLETHING;
-        this.y +=
-          collisionTest.maxSafe < ANGLETHING * 2
-            ? collisionTest.maxSafe
-            : ANGLETHING;
+        if (this.acc >= 0) {
+          this.y -= ANGLETHING;
+          this.y +=
+            collisionTest.maxSafe < ANGLETHING * 2
+              ? collisionTest.maxSafe
+              : ANGLETHING;
+        }
       }
     }
     this.acc += 0.15;

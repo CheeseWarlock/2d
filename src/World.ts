@@ -260,7 +260,7 @@ export default class World {
             lineSegment.to.x,
             lineSegment.to.y
           );
-          if (collisionData.direct) {
+          if (collisionData.direct && collisionData.edgy) {
             collisionFound = true;
             collisionLines.push(lineSegment);
           }
@@ -340,7 +340,17 @@ export default class World {
     x2: number,
     y2: number,
     direction: number = Math.PI / 2
-  ) {}
+  ) {
+    // get all candidate line segments
+    const segments = this.quadtree.retrieve(
+      new Rectangle<void>({
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000,
+      })
+    );
+  }
 
   update() {
     this.objects.forEach((obj) => obj.tick());

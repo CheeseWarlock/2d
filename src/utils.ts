@@ -36,8 +36,10 @@ export function lineSegmentsIntersect(
   var s = (-a_dy * (x1 - x3) + a_dx * (y1 - y3)) / (-b_dx * a_dy + a_dx * b_dy);
   var t = (+b_dx * (y1 - y3) - b_dy * (x1 - x3)) / (-b_dx * a_dy + a_dx * b_dy);
   const doSegmentsIntersect = s >= 0 && s <= 1 && t >= 0 && t <= 1;
+  const edgy = s > 0 && s < 1 && t > 0 && t < 1;
   return {
     direct: doSegmentsIntersect,
+    edgy,
     point: [x1 + t * a_dx, y1 + t * a_dy],
   };
 }
