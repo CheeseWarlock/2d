@@ -14,18 +14,16 @@ class Line extends GeometryObject {
   color: string = "black";
 
   constructor(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
+    from: { x: number; y: number },
+    to: { x: number; y: number },
     color: string,
     world: World
   ) {
     super(world);
-    this.x1 = x1;
-    this.x2 = x2;
-    this.y1 = y1;
-    this.y2 = y2;
+    this.x1 = from.x;
+    this.x2 = to.x;
+    this.y1 = from.y;
+    this.y2 = to.y;
     this.color = color;
   }
 

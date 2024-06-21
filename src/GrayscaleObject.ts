@@ -7,7 +7,7 @@ type Point = {
 };
 
 class GrayscaleObject extends GeometryObject {
-  constructor(world: World, points: Point[]) {
+  constructor(points: Point[], world: World) {
     super(world);
     this.points = points;
   }

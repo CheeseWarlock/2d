@@ -1,13 +1,9 @@
 import Player from "./Player.js";
 import CameraFrame, { Segment } from "./CameraFrame.js";
 import GeometryObject from "./GeometryObject.js";
-import {
-  intersects,
-  lineSegmentsIntersect,
-  distance,
-  limitNearVerticalDirection,
-} from "./utils.js";
+import { limitNearVerticalDirection } from "./utils.js";
 import levelContent from "./levels/Level1.js";
+import levelContent2 from "./levels/Level2.js";
 import World from "./World.js";
 
 type Point = {
@@ -53,6 +49,14 @@ class Game {
       );
       if (similarity > 0.9) {
         this.currentGoalIndex += 1;
+        if (this.currentGoalIndex === this.goals.length) {
+          this.visibleObjects = [];
+          console.log("Win!");
+          this.goals = levelContent.goals;
+          this.world = levelContent.world;
+          this.player = levelContent.world.players[0];
+          this.visibleObjects.push(...levelContent.world.geometryObjects);
+        }
       }
     }
   }
