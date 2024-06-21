@@ -175,7 +175,7 @@ export default class Renderer {
   }
 
   drawViewCone() {
-    if (!this.game.viewDirection) return;
+    if (this.game.viewDirection == null) return;
     const context = this.renderingContexts.gameWorld;
     // draw view cone
     context.strokeStyle = "rgba(255, 255, 255, 0.6)";

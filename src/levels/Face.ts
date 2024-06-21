@@ -45,7 +45,7 @@ const worldObjects: GameObject[] = [
     ],
     world
   ),
-  new Player(700, 500, world),
+  new Player(700, 580, world),
 ];
 
 worldObjects.forEach((obj) => {

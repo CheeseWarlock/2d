@@ -91,7 +91,7 @@ class Game {
     if (!this.viewDirection) return;
     this.viewDirection = limitNearVerticalDirection(
       this.viewDirection,
-      this.fov
+      this.fov * 1.25
     );
     const cameraFrame = this.world.calculatePhotoContent(
       { x: this.player.x, y: this.player.y },

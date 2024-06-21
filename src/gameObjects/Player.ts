@@ -31,7 +31,7 @@ export default class Player implements GameObject {
         0
       );
       if (collisionTest.collisionFound) {
-        this.acc = -7.5;
+        this.acc = -8;
       }
     }
     if (this.moveLeft) {
@@ -91,7 +91,7 @@ export default class Player implements GameObject {
         }
       }
     }
-    this.acc += 0.15;
+    this.acc += 0.2;
     if (this.acc > 8) this.acc = 8;
     // collision test
     if (this.acc < 0) {
