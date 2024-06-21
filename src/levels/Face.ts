@@ -16,22 +16,22 @@ const content: LevelData = {
       {
         start: 0,
         end: 1,
-        color: "red",
+        color: "#ff3060",
       },
     ]),
     new CameraFrame([
       {
         start: 0,
         end: 1,
-        color: "green",
+        color: "#44e244",
       },
     ]),
   ],
 };
 
 const worldObjects: GameObject[] = [
-  new PolyBlock(0, 100, 300, 200, "green", content.world),
-  new PolyBlock(700, 100, 1000, 200, "red", content.world),
+  new PolyBlock(50, 100, 350, 200, "#44e244", content.world),
+  new PolyBlock(650, 100, 950, 200, "#ff3060", content.world),
   new GrayscaleObject(
     [
       { x: 50, y: 400 },
@@ -45,7 +45,7 @@ const worldObjects: GameObject[] = [
     ],
     world
   ),
-  new Player(500, 500, world),
+  new Player(700, 500, world),
 ];
 
 worldObjects.forEach((obj) => {

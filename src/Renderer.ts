@@ -25,7 +25,7 @@ export default class Renderer {
     playerFrame: CanvasRenderingContext2D;
     goalFrame: CanvasRenderingContext2D;
   };
-  mousePosition: { x: number; y: number } = { x: 0, y: 0 };
+  mousePosition?: { x: number; y: number };
   stars: StarDetail[] = [];
   backgroundGradient: any;
 
@@ -63,6 +63,9 @@ export default class Renderer {
         document.documentElement.scrollTop;
       const canvasY =
         canvas.getBoundingClientRect().top + document.documentElement.scrollTop;
+      if (!this.mousePosition) {
+        this.mousePosition = { x: 0, y: 0 };
+      }
       this.mousePosition.x = ev.clientX - canvasX;
       this.mousePosition.y = ev.clientY - canvasY;
     };
@@ -115,7 +118,10 @@ export default class Renderer {
    */
   draw() {
     const context = this.renderingContexts.gameWorld;
-    this.game.focusPoint = this.mousePosition;
+    if (this.mousePosition) {
+      this.game.focusPoint = this.mousePosition;
+    }
+
     this.game.tick();
 
     context.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
@@ -123,13 +129,13 @@ export default class Renderer {
 
     this.drawBackground();
     this.drawBackgroundStars();
-    this.drawPlayer();
 
     this.game.visibleObjects.forEach((obj) => {
       this.drawObject(obj);
     });
 
     this.drawViewCone();
+    this.drawPlayer();
     this.drawCameraFrame();
     this.drawGoalCameraFrame();
   }
@@ -158,7 +164,7 @@ export default class Renderer {
 
   drawPlayer() {
     const context = this.renderingContexts.gameWorld;
-    context.fillStyle = "red";
+    context.fillStyle = "#ddd";
     context.beginPath();
     context.moveTo(this.game.player.x - 10, this.game.player.y - 20);
     context.lineTo(this.game.player.x + 10, this.game.player.y - 20);
@@ -169,6 +175,7 @@ export default class Renderer {
   }
 
   drawViewCone() {
+    if (!this.game.viewDirection) return;
     const context = this.renderingContexts.gameWorld;
     // draw view cone
     context.strokeStyle = "rgba(255, 255, 255, 0.6)";

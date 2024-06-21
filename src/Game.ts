@@ -19,8 +19,8 @@ let levelIndex = 0;
 
 class Game {
   visibleObjects: GeometryObject[] = [];
-  focusPoint: Point = { x: 0, y: 0 };
-  viewDirection: number = 0;
+  focusPoint?: Point;
+  viewDirection?: number;
   player: Player;
   fov: number = 0.25;
   keysDown: Set<string> = new Set();
@@ -44,10 +44,13 @@ class Game {
     this.player.jump = this.keysDown.has("w");
 
     this.world.update();
-    this.viewDirection = Math.atan2(
-      this.focusPoint.y - this.player.y,
-      this.focusPoint.x - this.player.x
-    );
+    if (this.focusPoint) {
+      this.viewDirection = Math.atan2(
+        this.focusPoint.y - this.player.y,
+        this.focusPoint.x - this.player.x
+      );
+    }
+
     this.calculatePhotoContent();
     if (this.clicked) {
       this.clicked = false;
@@ -85,6 +88,7 @@ class Game {
   }
 
   calculatePhotoContent() {
+    if (!this.viewDirection) return;
     this.viewDirection = limitNearVerticalDirection(
       this.viewDirection,
       this.fov
