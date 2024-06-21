@@ -57,9 +57,14 @@ export default class Renderer {
 
     this.game = game;
 
-    canvas.onmousemove = (ev) => {
-      this.mousePosition.x = ev.offsetX;
-      this.mousePosition.y = ev.offsetY;
+    document.onmousemove = (ev) => {
+      const canvasX =
+        canvas.getBoundingClientRect().left +
+        document.documentElement.scrollTop;
+      const canvasY =
+        canvas.getBoundingClientRect().top + document.documentElement.scrollTop;
+      this.mousePosition.x = ev.clientX - canvasX;
+      this.mousePosition.y = ev.clientY - canvasY;
     };
 
     canvas.onclick = (ev) => {
