@@ -1,5 +1,5 @@
 import GeometryObject from "./GeometryObject.js";
-import World from "./World.js";
+import World from "../World.js";
 
 type Point = {
   x: number;

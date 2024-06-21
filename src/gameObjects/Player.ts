@@ -1,5 +1,5 @@
 import GameObject from "./IGameObject.js";
-import World from "./World.js";
+import World from "../World.js";
 
 export default class Player implements GameObject {
   x: number;

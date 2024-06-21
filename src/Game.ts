@@ -1,15 +1,21 @@
-import Player from "./Player.js";
+import Player from "./gameObjects/Player.js";
 import CameraFrame, { Segment } from "./CameraFrame.js";
-import GeometryObject from "./GeometryObject.js";
+import GeometryObject from "./gameObjects/GeometryObject.js";
 import { limitNearVerticalDirection } from "./utils.js";
-import levelContent from "./levels/Level1.js";
-import levelContent2 from "./levels/Level2.js";
+import canyonLevel from "./levels/Canyon.js";
+import faceLevel from "./levels/Face.js";
 import World from "./World.js";
 
 type Point = {
   x: number;
   y: number;
 };
+
+const GAME_LEVELS = [faceLevel, canyonLevel];
+
+const SIMILARITY_THRESHOLD = 0.9;
+
+let levelIndex = 0;
 
 class Game {
   visibleObjects: GeometryObject[] = [];
@@ -25,6 +31,7 @@ class Game {
   currentGoalIndex = 0;
 
   constructor() {
+    const levelContent = GAME_LEVELS[0];
     this.goals = levelContent.goals;
     this.world = levelContent.world;
     this.player = levelContent.world.players[0];
@@ -47,18 +54,34 @@ class Game {
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
-      if (similarity > 0.9) {
+      if (similarity >= SIMILARITY_THRESHOLD) {
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
-          this.visibleObjects = [];
-          console.log("Win!");
-          this.goals = levelContent.goals;
-          this.world = levelContent.world;
-          this.player = levelContent.world.players[0];
-          this.visibleObjects.push(...levelContent.world.geometryObjects);
+          this.goToNextLevel();
         }
       }
     }
+  }
+
+  restartCurrentLevel() {
+    const currentLevel = GAME_LEVELS[levelIndex];
+    this.goals = currentLevel.goals;
+    this.world = currentLevel.world;
+    this.player = currentLevel.world.players[0];
+    this.visibleObjects = [];
+    this.visibleObjects.push(...currentLevel.world.geometryObjects);
+    // this.currentGoalIndex = 0; maybe?
+  }
+
+  goToNextLevel() {
+    levelIndex += 1;
+    const nextLevel = GAME_LEVELS[levelIndex];
+    this.goals = nextLevel.goals;
+    this.world = nextLevel.world;
+    this.player = nextLevel.world.players[0];
+    this.visibleObjects = [];
+    this.visibleObjects.push(...nextLevel.world.geometryObjects);
+    this.currentGoalIndex = 0;
   }
 
   calculatePhotoContent() {

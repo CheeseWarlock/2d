@@ -1,10 +1,10 @@
 import World from "../World.js";
-import Line from "../Line.js";
-import PolyBlock from "../PolyBlock.js";
-import GrayscaleObject from "../GrayscaleObject.js";
-import GameObject from "../IGameObject.js";
-import Player from "../Player.js";
-import GeometryObject from "../GeometryObject.js";
+import Line from "../gameObjects/Line.js";
+import PolyBlock from "../gameObjects/PolyBlock.js";
+import GrayscaleObject from "../gameObjects/GrayscaleObject.js";
+import GameObject from "../gameObjects/IGameObject.js";
+import Player from "../gameObjects/Player.js";
+import GeometryObject from "../gameObjects/GeometryObject.js";
 import CameraFrame from "../CameraFrame.js";
 import { LevelData } from "../types.js";
 
@@ -13,8 +13,9 @@ const world = new World();
 const content: GameObject[] = [
   new PolyBlock(0, 100, 200, 200, "green", world),
   new PolyBlock(200, 200, 400, 400, "blue", world),
-  new Line({ x: 400, y: 600 }, { x: 600, y: 600 }, "orange", world),
-  new Line({ x: 490, y: 605 }, { x: 510, y: 605 }, "red", world),
+  new Line({ x: 400, y: 600 }, { x: 600, y: 600 }, "black", world),
+  new Line({ x: 400, y: 610 }, { x: 600, y: 610 }, "orange", world),
+  new Line({ x: 490, y: 615 }, { x: 510, y: 615 }, "red", world),
   new Line({ x: 750, y: 700 }, { x: 850, y: 700 }, "black", world),
   new GrayscaleObject(
     [

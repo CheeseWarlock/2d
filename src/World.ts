@@ -1,7 +1,7 @@
 import CameraFrame from "./CameraFrame.js";
-import GeometryObject from "./GeometryObject.js";
-import GameObject from "./IGameObject.js";
-import Player from "./Player.js";
+import GeometryObject from "./gameObjects/GeometryObject.js";
+import GameObject from "./gameObjects/IGameObject.js";
+import Player from "./gameObjects/Player.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import {
   Quadtree,

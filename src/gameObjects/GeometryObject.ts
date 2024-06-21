@@ -1,5 +1,5 @@
 import GameObject from "./IGameObject.js";
-import World from "./World.js";
+import World from "../World.js";
 
 type Point = {
   x: number;

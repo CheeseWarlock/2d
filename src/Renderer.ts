@@ -1,8 +1,8 @@
 import CameraFrame from "./CameraFrame.js";
 import Game from "./Game.js";
-import GrayscaleObject from "./GrayscaleObject.js";
-import Line from "./Line.js";
-import PolyBlock from "./PolyBlock.js";
+import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
+import Line from "./gameObjects/Line.js";
+import PolyBlock from "./gameObjects/PolyBlock.js";
 
 export default class Renderer {
   game: Game;
