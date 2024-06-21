@@ -56,7 +56,7 @@ const goals: CameraFrame[] = [
     {
       start: 0,
       end: 0.5,
-      color: "white",
+      color: "empty",
     },
     {
       start: 0.5,

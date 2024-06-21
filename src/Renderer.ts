@@ -4,7 +4,7 @@ import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
 import Line from "./gameObjects/Line.js";
 import PolyBlock from "./gameObjects/PolyBlock.js";
 
-const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#222";
+const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 
 type StarDetail = {
   x: number;
@@ -21,6 +21,7 @@ export default class Renderer {
   };
   mousePosition: { x: number; y: number } = { x: 0, y: 0 };
   stars: StarDetail[] = [];
+  backgroundGradient: any;
 
   constructor() {
     const game = new Game();
@@ -63,6 +64,17 @@ export default class Renderer {
     document.body.onkeyup = (ev) => {
       this.game.keysDown.delete(ev.key);
     };
+
+    const gradient = this.renderingContexts.gameWorld.createLinearGradient(
+      0,
+      0,
+      0,
+      1000
+    );
+    gradient.addColorStop(0, "#222");
+    gradient.addColorStop(0.7, "#444");
+    gradient.addColorStop(1, "#666");
+    this.backgroundGradient = gradient;
 
     this.createStars();
   }
@@ -110,12 +122,9 @@ export default class Renderer {
 
   drawBackground() {
     const context = this.renderingContexts.gameWorld;
-    const gradient = context.createLinearGradient(0, 0, 0, 1000);
-    gradient.addColorStop(0, "#222");
-    gradient.addColorStop(0.7, "#444");
-    gradient.addColorStop(1, "#666");
+
     context.closePath();
-    context.fillStyle = gradient;
+    context.fillStyle = this.backgroundGradient;
     context.fillRect(0, 0, 1000, 1000);
   }
 
@@ -149,7 +158,7 @@ export default class Renderer {
     const context = this.renderingContexts.gameWorld;
     // draw view cone
     context.strokeStyle = "rgba(255, 255, 255, 0.6)";
-    context.lineWidth = 3;
+    context.lineWidth = 3.9;
     context.beginPath();
     context.moveTo(this.game.player.x, this.game.player.y);
     context.lineTo(
@@ -172,7 +181,6 @@ export default class Renderer {
     context.stroke();
 
     // Draw viewcone gradient
-    // uhh directions
     const gradient = context.createLinearGradient(
       this.game.player.x,
       this.game.player.y,
@@ -227,6 +235,7 @@ export default class Renderer {
 
     if (obj instanceof Line) {
       context.strokeStyle = obj.color;
+      context.lineWidth = 2;
       context.beginPath();
       context.moveTo(obj.lineSegments[0].from.x, obj.lineSegments[0].from.y);
       context.lineTo(obj.lineSegments[0].to.x, obj.lineSegments[0].to.y);
@@ -251,6 +260,7 @@ export default class Renderer {
     target.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
     target.fillRect(0, 0, 50, 1000);
     frame.segments.forEach((segment) => {
+      if (segment.color === "empty") return;
       target.fillStyle = segment.color;
       target.fillRect(
         0,
@@ -259,7 +269,8 @@ export default class Renderer {
         (segment.end - segment.start) * 1000
       );
     });
-    target.strokeStyle = "black";
+    target.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    target.lineWidth = 4;
     target.beginPath();
     target.moveTo(0, 500);
     target.lineTo(50, 500);

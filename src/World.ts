@@ -186,7 +186,7 @@ export default class World {
       const from = idx === 0 ? viewConeLow : breakpoints[idx - 1];
       const midpoint = (to + from) / 2;
       let closest = Infinity;
-      let color = "white";
+      let color = "empty";
       segmentsToConsider.forEach((seg) => {
         const intersection = lineSegmentsIntersect(
           origin.x,
