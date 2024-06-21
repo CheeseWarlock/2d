@@ -5,14 +5,47 @@
     <style type="text/css">
       body {
         background-color: #aaa;
+        margin: 50px;
       }
 
       canvas {
-        margin: 30px;
+        margin: 0 30px;
+        border-radius: 12px;
+      }
+
+      #container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .header-text {
+        position: relative;
+        top: -38px;
+        font-size: 30px;
+        font-family: "Consolas", sans-serif;
+        height: 0;
+      }
+
+      .camera-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
     </style>
   </head>
   <body>
+    <div id="container">
+      <div id="game-world-container"></div>
+      <div id="view-camera-container" class="camera-container">
+        <span class="header-text">View</span>
+      </div>
+      <div id="goal-camera-container" class="camera-container">
+        <span class="header-text">Goal</span>
+      </div>
+    </div>
     <script type="module" src="./index.ts"></script>
   </body>
   </html>

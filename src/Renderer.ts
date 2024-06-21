@@ -6,6 +6,12 @@ import PolyBlock from "./gameObjects/PolyBlock.js";
 
 const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 1000;
+
+const CAMERA_FRAME_WIDTH = 60;
+const CAMERA_FRAME_HEIGHT = 900;
+
 type StarDetail = {
   x: number;
   y: number;
@@ -24,21 +30,24 @@ export default class Renderer {
   backgroundGradient: any;
 
   constructor() {
+    const container = document.getElementById("game-world-container")!;
     const game = new Game();
     const canvas = document.createElement("canvas");
-    canvas.width = 1000;
-    canvas.height = 1000;
-    document.body.appendChild(canvas);
+    canvas.width = GAME_WIDTH;
+    canvas.height = GAME_HEIGHT;
+    container.appendChild(canvas);
 
+    const viewContainer = document.getElementById("view-camera-container")!;
     const photoCanvas = document.createElement("canvas");
-    photoCanvas.width = 50;
-    photoCanvas.height = 1000;
-    document.body.appendChild(photoCanvas);
+    photoCanvas.width = CAMERA_FRAME_WIDTH;
+    photoCanvas.height = CAMERA_FRAME_HEIGHT;
+    viewContainer.appendChild(photoCanvas);
 
+    const goalContainer = document.getElementById("goal-camera-container")!;
     const goalCanvas = document.createElement("canvas");
-    goalCanvas.width = 50;
-    goalCanvas.height = 1000;
-    document.body.appendChild(goalCanvas);
+    goalCanvas.width = CAMERA_FRAME_WIDTH;
+    goalCanvas.height = CAMERA_FRAME_HEIGHT;
+    goalContainer.appendChild(goalCanvas);
 
     this.renderingContexts = {
       gameWorld: canvas.getContext("2d")!,
@@ -69,7 +78,7 @@ export default class Renderer {
       0,
       0,
       0,
-      1000
+      GAME_HEIGHT
     );
     gradient.addColorStop(0, "#222");
     gradient.addColorStop(0.7, "#444");
@@ -84,8 +93,8 @@ export default class Renderer {
     let starsRemaining = NUM_STARS;
     while (starsRemaining > 0) {
       starsRemaining -= 1;
-      const starX = Math.round(Math.random() * 1000);
-      const starY = Math.round(Math.random() ** 2 * 1000);
+      const starX = Math.round(Math.random() * GAME_WIDTH);
+      const starY = Math.round(Math.random() ** 2 * GAME_HEIGHT);
       const starSize = Math.random() * 3 + 3;
 
       this.stars.push({
@@ -105,7 +114,7 @@ export default class Renderer {
     this.game.tick();
 
     context.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
-    context.clearRect(0, 0, 1000, 1000);
+    context.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     this.drawBackground();
     this.drawBackgroundStars();
@@ -125,7 +134,7 @@ export default class Renderer {
 
     context.closePath();
     context.fillStyle = this.backgroundGradient;
-    context.fillRect(0, 0, 1000, 1000);
+    context.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   }
 
   drawBackgroundStars() {
@@ -256,24 +265,23 @@ export default class Renderer {
   }
 
   drawCamera(frame: CameraFrame, target: CanvasRenderingContext2D) {
-    target.clearRect(0, 0, 50, 1000);
     target.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
-    target.fillRect(0, 0, 50, 1000);
+    target.fillRect(0, 0, CAMERA_FRAME_WIDTH, CAMERA_FRAME_HEIGHT);
     frame.segments.forEach((segment) => {
       if (segment.color === "empty") return;
       target.fillStyle = segment.color;
       target.fillRect(
         0,
-        segment.start * 1000,
-        50,
-        (segment.end - segment.start) * 1000
+        segment.start * CAMERA_FRAME_HEIGHT,
+        CAMERA_FRAME_WIDTH,
+        (segment.end - segment.start) * CAMERA_FRAME_HEIGHT
       );
     });
     target.strokeStyle = "rgba(255, 255, 255, 0.6)";
     target.lineWidth = 4;
     target.beginPath();
-    target.moveTo(0, 500);
-    target.lineTo(50, 500);
+    target.moveTo(0, CAMERA_FRAME_HEIGHT / 2);
+    target.lineTo(CAMERA_FRAME_WIDTH, CAMERA_FRAME_HEIGHT / 2);
     target.closePath();
     target.stroke();
   }
