@@ -4,6 +4,14 @@ import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
 import Line from "./gameObjects/Line.js";
 import PolyBlock from "./gameObjects/PolyBlock.js";
 
+const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#222";
+
+type StarDetail = {
+  x: number;
+  y: number;
+  size: number;
+};
+
 export default class Renderer {
   game: Game;
   renderingContexts: {
@@ -12,6 +20,7 @@ export default class Renderer {
     goalFrame: CanvasRenderingContext2D;
   };
   mousePosition: { x: number; y: number } = { x: 0, y: 0 };
+  stars: StarDetail[] = [];
 
   constructor() {
     const game = new Game();
@@ -54,6 +63,25 @@ export default class Renderer {
     document.body.onkeyup = (ev) => {
       this.game.keysDown.delete(ev.key);
     };
+
+    this.createStars();
+  }
+
+  createStars() {
+    const NUM_STARS = 20;
+    let starsRemaining = NUM_STARS;
+    while (starsRemaining > 0) {
+      starsRemaining -= 1;
+      const starX = Math.round(Math.random() * 1000);
+      const starY = Math.round(Math.random() ** 2 * 1000);
+      const starSize = Math.random() * 3 + 3;
+
+      this.stars.push({
+        x: starX,
+        y: starY,
+        size: starSize,
+      });
+    }
   }
 
   /**
@@ -64,9 +92,11 @@ export default class Renderer {
     this.game.focusPoint = this.mousePosition;
     this.game.tick();
 
-    context.fillStyle = "white";
+    context.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
     context.clearRect(0, 0, 1000, 1000);
 
+    this.drawBackground();
+    this.drawBackgroundStars();
     this.drawPlayer();
 
     this.game.visibleObjects.forEach((obj) => {
@@ -78,9 +108,33 @@ export default class Renderer {
     this.drawGoalCameraFrame();
   }
 
+  drawBackground() {
+    const context = this.renderingContexts.gameWorld;
+    const gradient = context.createLinearGradient(0, 0, 0, 1000);
+    gradient.addColorStop(0, "#222");
+    gradient.addColorStop(0.7, "#444");
+    gradient.addColorStop(1, "#666");
+    context.closePath();
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, 1000, 1000);
+  }
+
+  drawBackgroundStars() {
+    const context = this.renderingContexts.gameWorld;
+
+    context.fillStyle = "white";
+    this.stars.forEach((star) => {
+      context.fillRect(
+        star.x - star.size / 2,
+        star.y - star.size / 2,
+        star.size,
+        star.size
+      );
+    });
+  }
+
   drawPlayer() {
     const context = this.renderingContexts.gameWorld;
-    context.fillRect(0, 0, 1000, 1000);
     context.fillStyle = "red";
     context.beginPath();
     context.moveTo(this.game.player.x - 10, this.game.player.y - 20);
@@ -94,7 +148,40 @@ export default class Renderer {
   drawViewCone() {
     const context = this.renderingContexts.gameWorld;
     // draw view cone
-    context.strokeStyle = "#cccccc";
+    context.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(this.game.player.x, this.game.player.y);
+    context.lineTo(
+      this.game.player.x +
+        Math.cos(this.game.viewDirection - this.game.fov) * 1e6,
+      this.game.player.y +
+        Math.sin(this.game.viewDirection - this.game.fov) * 1e6
+    );
+    context.closePath();
+    context.stroke();
+    context.beginPath();
+    context.lineTo(
+      this.game.player.x +
+        Math.cos(this.game.viewDirection + this.game.fov) * 1e6,
+      this.game.player.y +
+        Math.sin(this.game.viewDirection + this.game.fov) * 1e6
+    );
+    context.lineTo(this.game.player.x, this.game.player.y);
+    context.closePath();
+    context.stroke();
+
+    // Draw viewcone gradient
+    // uhh directions
+    const gradient = context.createLinearGradient(
+      this.game.player.x,
+      this.game.player.y,
+      this.game.player.x + Math.cos(this.game.viewDirection) * 200,
+      this.game.player.y + Math.sin(this.game.viewDirection) * 200
+    );
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0.4)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0.1)");
+    context.fillStyle = gradient;
     context.beginPath();
     context.moveTo(this.game.player.x, this.game.player.y);
     context.lineTo(
@@ -111,10 +198,9 @@ export default class Renderer {
     );
     context.lineTo(this.game.player.x, this.game.player.y);
     context.closePath();
-    context.stroke();
+    context.fill();
 
     // draw view centerline
-    context.strokeStyle = "black";
     context.beginPath();
     context.moveTo(this.game.player.x, this.game.player.y);
     context.lineTo(
@@ -162,6 +248,8 @@ export default class Renderer {
 
   drawCamera(frame: CameraFrame, target: CanvasRenderingContext2D) {
     target.clearRect(0, 0, 50, 1000);
+    target.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
+    target.fillRect(0, 0, 50, 1000);
     frame.segments.forEach((segment) => {
       target.fillStyle = segment.color;
       target.fillRect(
