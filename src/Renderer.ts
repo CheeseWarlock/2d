@@ -1,8 +1,8 @@
 import CameraFrame from "./CameraFrame.js";
 import Game from "./Game.js";
-import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
-import Line from "./gameObjects/Line.js";
-import PolyBlock from "./gameObjects/PolyBlock.js";
+import GroundGeometry from "./gameObjects/GroundGeometry.js";
+import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
+import ColorGeometry from "./gameObjects/ColorGeometry.js";
 
 const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 
@@ -240,10 +240,10 @@ export default class Renderer {
     context.stroke();
   }
 
-  drawObject(obj: PolyBlock | GrayscaleObject | Line) {
+  drawObject(obj: ColorGeometry | GroundGeometry | ColorLineGeometry) {
     const context = this.renderingContexts.gameWorld;
 
-    if (obj instanceof PolyBlock || obj instanceof GrayscaleObject) {
+    if (obj instanceof ColorGeometry || obj instanceof GroundGeometry) {
       context.fillStyle = obj.color;
       context.moveTo(obj.points[0].x, obj.points[0].y);
       context.beginPath();
@@ -254,7 +254,7 @@ export default class Renderer {
       context.fill();
     }
 
-    if (obj instanceof Line) {
+    if (obj instanceof ColorLineGeometry) {
       context.strokeStyle = obj.color;
       context.lineWidth = 2;
       context.beginPath();

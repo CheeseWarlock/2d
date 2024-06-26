@@ -1,38 +1,70 @@
-import Line from "../gameObjects/Line.js";
-import PolyBlock from "../gameObjects/PolyBlock.js";
-import GrayscaleObject from "../gameObjects/GrayscaleObject.js";
+import ColorLineGeometry from "../gameObjects/ColorLineGeometry.js";
+import ColorGeometry from "../gameObjects/ColorGeometry.js";
+import GroundGeometry from "../gameObjects/GroundGeometry.js";
 import CameraFrame from "../CameraFrame.js";
 import ILevelFormat from "./ILevelFormat.js";
-import GeometryObject from "../gameObjects/GeometryObject.js";
+import GeometryObject from "../gameObjects/BaseGeometry.js";
+import {
+  ColorGeometryProps,
+  GeometryProps,
+  LineGeometryProps,
+} from "../types.js";
 
-const geometries: GeometryObject[] = [
-  new PolyBlock(0, 100, 200, 200, "green"),
-  new PolyBlock(200, 200, 400, 400, "blue"),
-  new Line({ x: 400, y: 600 }, { x: 600, y: 600 }, "black"),
-  new Line({ x: 400, y: 610 }, { x: 600, y: 610 }, "orange"),
-  new Line({ x: 490, y: 615 }, { x: 510, y: 615 }, "red"),
-  new Line({ x: 750, y: 700 }, { x: 850, y: 700 }, "black"),
-  new GrayscaleObject([
-    { x: 600, y: 800 },
-    { x: 700, y: 850 },
-    { x: 800, y: 800 },
-    { x: 900, y: 850 },
-    { x: 950, y: 825 },
-    { x: 950, y: 400 },
-    { x: 1000, y: 400 }, // next is missing
-    { x: 1000, y: 1000 }, // nim
-    { x: 900, y: 1000 }, // nim
-    { x: 0, y: 1000 }, // nim
-    { x: 0, y: 400 },
-    { x: 50, y: 400 },
-    { x: 50, y: 700 },
-    { x: 150, y: 700 },
-    { x: 150, y: 850 },
-    { x: 300, y: 850 },
-    { x: 500, y: 850 }, // nim
-    { x: 500, y: 700 },
-    { x: 600, y: 700 },
-  ]),
+const groundGeometries: GeometryProps[] = [
+  {
+    points: [
+      { x: 600, y: 800 },
+      { x: 700, y: 850 },
+      { x: 800, y: 800 },
+      { x: 900, y: 850 },
+      { x: 950, y: 825 },
+      { x: 950, y: 400 },
+      { x: 1000, y: 400 }, // next is missing
+      { x: 1000, y: 1000 }, // nim
+      { x: 900, y: 1000 }, // nim
+      { x: 0, y: 1000 }, // nim
+      { x: 0, y: 400 },
+      { x: 50, y: 400 },
+      { x: 50, y: 700 },
+      { x: 150, y: 700 },
+      { x: 150, y: 850 },
+      { x: 300, y: 850 },
+      { x: 500, y: 850 }, // nim
+      { x: 500, y: 700 },
+      { x: 600, y: 700 },
+    ],
+  },
+  {
+    points: [
+      { x: 400, y: 600 },
+      { x: 600, y: 600 },
+      { x: 600, y: 610 },
+      { x: 400, y: 610 },
+    ],
+  },
+];
+
+const colorLines: LineGeometryProps[] = [];
+
+const colorGeometries: ColorGeometryProps[] = [
+  {
+    points: [
+      { x: 0, y: 100 },
+      { x: 200, y: 100 },
+      { x: 200, y: 200 },
+      { x: 0, y: 200 },
+    ],
+    color: "green",
+  },
+  {
+    points: [
+      { x: 200, y: 200 },
+      { x: 400, y: 200 },
+      { x: 400, y: 400 },
+      { x: 200, y: 400 },
+    ],
+    color: "blue",
+  },
 ];
 
 const goals: CameraFrame[] = [
@@ -126,7 +158,9 @@ const goals: CameraFrame[] = [
 ];
 
 export default {
-  geometries,
+  lines: colorLines,
+  colors: colorGeometries,
+  ground: groundGeometries,
   goals,
   playerPosition: { x: 500, y: 500 },
 } as ILevelFormat;

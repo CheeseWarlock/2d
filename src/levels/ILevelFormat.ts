@@ -1,8 +1,10 @@
 import CameraFrame from "../CameraFrame";
-import GeometryObject from "../gameObjects/GeometryObject";
+import { ColorGeometryProps, GeometryProps, LineGeometryProps } from "../types";
 
 export default interface ILevelFormat {
-  geometries: GeometryObject[];
+  ground: GeometryProps[];
+  colors: ColorGeometryProps[];
+  lines: LineGeometryProps[];
   playerPosition: { x: number; y: number };
   goals: CameraFrame[];
 }

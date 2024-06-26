@@ -1,22 +1,17 @@
-import GeometryObject from "./GeometryObject.js";
+import GeometryObject from "./BaseGeometry.js";
 
 type Point = {
   x: number;
   y: number;
 };
 
-class PolyBlock extends GeometryObject {
+class ColorGeometry extends GeometryObject {
   points: Point[] = [];
   color: string = "black";
 
-  constructor(x1: number, y1: number, x2: number, y2: number, color: string) {
+  constructor(points: Point[], color: string) {
     super();
-    this.points.push(
-      { x: x1, y: y1 },
-      { x: x2, y: y1 },
-      { x: x2, y: y2 },
-      { x: x1, y: y2 }
-    );
+    this.points = points;
     this.color = color;
   }
 
@@ -39,4 +34,4 @@ class PolyBlock extends GeometryObject {
   }
 }
 
-export default PolyBlock;
+export default ColorGeometry;

@@ -1,4 +1,4 @@
-import GeometryObject from "./GeometryObject.js";
+import GeometryObject from "./BaseGeometry.js";
 import World from "../World.js";
 
 type Point = {
@@ -6,7 +6,7 @@ type Point = {
   y: number;
 };
 
-class GrayscaleObject extends GeometryObject {
+class GroundGeometry extends GeometryObject {
   constructor(points: Point[]) {
     super();
     this.points = points;
@@ -15,4 +15,4 @@ class GrayscaleObject extends GeometryObject {
   tick() {}
 }
 
-export default GrayscaleObject;
+export default GroundGeometry;

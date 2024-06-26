@@ -25,9 +25,10 @@ export default class Player implements GameObject {
       this.y - 20,
       this.x + 10,
       this.y + 20,
-      0
+      0,
+      "color"
     );
-    this.isDead = currentPositionCollisionTest.collisionType === "color";
+    this.isDead = currentPositionCollisionTest.collisionFound;
 
     const ANGLETHING = 4;
     const HSPEED = 4;
@@ -38,7 +39,8 @@ export default class Player implements GameObject {
         this.y + 16,
         this.x + 10,
         this.y + 24,
-        0
+        0,
+        "ground"
       );
       if (collisionTest.collisionFound) {
         this.acc = -8;
@@ -50,20 +52,21 @@ export default class Player implements GameObject {
         this.y - 24,
         this.x + 6,
         this.y + 16,
-        ANGLETHING * 2
+        ANGLETHING * 2,
+        "ground"
       );
       const collisionTest2 = this.world.collisionTest(
         this.x - 14,
         this.y - 24,
         this.x + 6,
         this.y + 16,
-        0
+        0,
+        "ground"
       );
       if (collisionTest2.collisionFound) {
         // hit a wall
         const x = 123;
       } else {
-        // console.log(collisionTest.maxSafe);
         this.x -= HSPEED;
         if (this.acc >= 0) {
           this.y -= ANGLETHING;
@@ -79,14 +82,16 @@ export default class Player implements GameObject {
         this.y - 24,
         this.x + 14,
         this.y + 16,
-        ANGLETHING * 2
+        ANGLETHING * 2,
+        "ground"
       );
       const collisionTest2 = this.world.collisionTest(
         this.x - 6,
         this.y - 24,
         this.x + 14,
         this.y + 16,
-        0
+        0,
+        "ground"
       );
       if (collisionTest2.collisionFound) {
         const x = 123;
@@ -111,7 +116,8 @@ export default class Player implements GameObject {
         this.y - 20 + this.acc,
         this.x + 10,
         this.y + 20 + this.acc,
-        0
+        0,
+        "ground"
       );
       if (collisionTest.collisionFound) {
         this.acc = 0;
@@ -122,7 +128,8 @@ export default class Player implements GameObject {
         this.y - 20,
         this.x + 10,
         this.y + 20,
-        this.acc
+        this.acc,
+        "ground"
       );
 
       if (collisionTest.collisionFound) {

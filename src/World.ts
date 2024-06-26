@@ -1,6 +1,8 @@
 import CameraFrame from "./CameraFrame.js";
-import GeometryObject from "./gameObjects/GeometryObject.js";
-import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
+import GeometryObject from "./gameObjects/BaseGeometry.js";
+import ColorGeometry from "./gameObjects/ColorGeometry.js";
+import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
+import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import {
@@ -229,13 +231,12 @@ export default class World {
     y1: number,
     x2: number,
     y2: number,
-    distance: number = 0
+    distance: number = 0,
+    type: "ground" | "color" | "any" = "any"
   ): {
-    collisionType: "" | "color" | "ground";
     collisionFound: boolean;
     maxSafe: number;
   } {
-    let collisionType: "" | "color" | "ground" = "";
     const lines = [
       [x1, y1, x1, y2 + distance],
       [x1, y2 + distance, x2, y2 + distance],
@@ -275,20 +276,19 @@ export default class World {
           seg.seg.to.y
         );
         if (collisionData.direct && collisionData.edgy) {
-          collisionFound = true;
           // set collision type to the "worst"
-          if (seg.obj instanceof GrayscaleObject) {
-            // it's ground
-            if (collisionType !== "color") {
-              collisionType = "ground";
-            }
-          } else {
-            collisionType = "color";
+          if (
+            (seg.obj instanceof GroundGeometry && type !== "color") ||
+            ((seg.obj instanceof ColorGeometry ||
+              seg.obj instanceof ColorLineGeometry) &&
+              type !== "ground")
+          ) {
+            collisionFound = true;
+            collisionLines.push({
+              from: { x: seg.seg.from.x, y: seg.seg.from.y },
+              to: { x: seg.seg.to.x, y: seg.seg.to.y },
+            });
           }
-          collisionLines.push({
-            from: { x: seg.seg.from.x, y: seg.seg.from.y },
-            to: { x: seg.seg.to.x, y: seg.seg.to.y },
-          });
         }
       });
     });
@@ -351,7 +351,6 @@ export default class World {
       }
     });
     return {
-      collisionType,
       collisionFound,
       maxSafe,
     };
