@@ -19,6 +19,14 @@ export default class Player implements GameObject {
   }
 
   tick() {
+    const currentPositionCollisionTest = this.world.collisionTest(
+      this.x - 10,
+      this.y - 20,
+      this.x + 10,
+      this.y + 20,
+      0
+    );
+
     const ANGLETHING = 4;
     const HSPEED = 4;
     if (this.jump) {

@@ -2,6 +2,7 @@ import CameraFrame from "./CameraFrame.js";
 import GeometryObject from "./gameObjects/GeometryObject.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import Player from "./gameObjects/Player.js";
+import PolyBlock from "./gameObjects/PolyBlock.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import {
   Quadtree,
@@ -17,18 +18,21 @@ const rangesOverlap = (
 export default class World {
   size = { width: 1000, height: 1000 };
   objects: GameObject[] = [];
-  quadtree = new Quadtree<Line<GeometryObject>>({ width: 1000, height: 1000 });
+  quadtree = new Quadtree<Rectangle<GeometryObject>>({
+    width: 1000,
+    height: 1000,
+  });
 
   addGeometry(geometry: GeometryObject) {
     this.objects.push(geometry);
     geometry.lineSegments.forEach((seg) =>
       this.quadtree.insert(
-        new Line({
-          x1: seg.from.x,
-          y1: seg.from.y,
-          x2: seg.to.x,
-          y2: seg.to.y,
+        new Rectangle({
           data: geometry,
+          x: seg.from.x,
+          y: seg.from.y,
+          width: seg.to.x - seg.from.x,
+          height: seg.to.y - seg.to.y,
         })
       )
     );
@@ -98,88 +102,86 @@ export default class World {
       (ul && ur) || (ll && lr) ? 1000 : ul || ll ? origin.x : 1000 - origin.x;
     const h =
       (ul && ll) || (ur && lr) ? 1000 : ul || ur ? origin.y : 1000 - origin.y;
-    const lineSegments = this.quadtree.retrieve(
+    const rectangles = this.quadtree.retrieve(
       new Rectangle({ x: x1, y: y1, width: w, height: h })
     );
 
-    lineSegments.forEach(
-      (seg: {
-        y1: any;
-        x1: any;
-        y2: any;
-        x2: any;
-        data?: any;
-        color?: string;
-      }) => {
-        // is the line within fov?
-        // it is iff:
-        // one end or the other is in fov
-        // OR
-        // the line passes through fov
-        let directionToLineStart = Math.atan2(
-          seg.y1 - origin.y,
-          seg.x1 - origin.x
-        );
-        let directionToLineEnd = Math.atan2(
-          seg.y2 - origin.y,
-          seg.x2 - origin.x
-        );
+    const lineSegments = rectangles
+      .map((rect) =>
+        rect.data!.lineSegments.map((seg) => ({
+          seg: seg,
+          color: rect.data!.color,
+        }))
+      )
+      .flat();
 
-        while (directionToLineStart > viewDirection + Math.PI) {
-          directionToLineStart -= Math.PI * 2;
-        }
-        while (directionToLineStart < viewDirection - Math.PI) {
-          directionToLineStart += Math.PI * 2;
-        }
-        while (directionToLineEnd > viewDirection + Math.PI) {
-          directionToLineEnd -= Math.PI * 2;
-        }
-        while (directionToLineEnd < viewDirection - Math.PI) {
-          directionToLineEnd += Math.PI * 2;
-        }
+    lineSegments.forEach((seg) => {
+      const x1 = seg.seg.from.x;
+      const x2 = seg.seg.to.x;
+      const y1 = seg.seg.from.y;
+      const y2 = seg.seg.to.y;
+      // is the line within fov?
+      // it is iff:
+      // one end or the other is in fov
+      // OR
+      // the line passes through fov
+      let directionToLineStart = Math.atan2(y1 - origin.y, x1 - origin.x);
+      let directionToLineEnd = Math.atan2(y2 - origin.y, x2 - origin.x);
 
-        let shouldConsiderSegment = false;
-
-        if (
-          directionToLineStart > viewConeLow &&
-          directionToLineStart < viewConeHigh &&
-          directionToLineEnd > viewConeLow &&
-          directionToLineEnd < viewConeHigh
-        ) {
-          shouldConsiderSegment = true;
-          breakpoints.push(directionToLineStart);
-          breakpoints.push(directionToLineEnd);
-        } else if (
-          directionToLineStart > viewConeLow &&
-          directionToLineStart < viewConeHigh
-        ) {
-          shouldConsiderSegment = true;
-          breakpoints.push(directionToLineStart);
-        } else if (
-          directionToLineEnd > viewConeLow &&
-          directionToLineEnd < viewConeHigh
-        ) {
-          shouldConsiderSegment = true;
-          breakpoints.push(directionToLineEnd);
-        } else if (
-          intersects(
-            seg.x1,
-            seg.y1,
-            seg.x2,
-            seg.y2,
-            origin.x,
-            origin.y,
-            origin.x + Math.cos(viewDirection) * 1e6,
-            origin.y + Math.sin(viewDirection) * 1e6
-          )
-        ) {
-          shouldConsiderSegment = true;
-        }
-        if (shouldConsiderSegment) {
-          segmentsToConsider.push({ ...seg, color: seg.data!.color });
-        }
+      while (directionToLineStart > viewDirection + Math.PI) {
+        directionToLineStart -= Math.PI * 2;
       }
-    );
+      while (directionToLineStart < viewDirection - Math.PI) {
+        directionToLineStart += Math.PI * 2;
+      }
+      while (directionToLineEnd > viewDirection + Math.PI) {
+        directionToLineEnd -= Math.PI * 2;
+      }
+      while (directionToLineEnd < viewDirection - Math.PI) {
+        directionToLineEnd += Math.PI * 2;
+      }
+
+      let shouldConsiderSegment = false;
+
+      if (
+        directionToLineStart > viewConeLow &&
+        directionToLineStart < viewConeHigh &&
+        directionToLineEnd > viewConeLow &&
+        directionToLineEnd < viewConeHigh
+      ) {
+        shouldConsiderSegment = true;
+        breakpoints.push(directionToLineStart);
+        breakpoints.push(directionToLineEnd);
+      } else if (
+        directionToLineStart > viewConeLow &&
+        directionToLineStart < viewConeHigh
+      ) {
+        shouldConsiderSegment = true;
+        breakpoints.push(directionToLineStart);
+      } else if (
+        directionToLineEnd > viewConeLow &&
+        directionToLineEnd < viewConeHigh
+      ) {
+        shouldConsiderSegment = true;
+        breakpoints.push(directionToLineEnd);
+      } else if (
+        intersects(
+          x1,
+          y1,
+          x2,
+          y2,
+          origin.x,
+          origin.y,
+          origin.x + Math.cos(viewDirection) * 1e6,
+          origin.y + Math.sin(viewDirection) * 1e6
+        )
+      ) {
+        shouldConsiderSegment = true;
+      }
+      if (shouldConsiderSegment) {
+        segmentsToConsider.push({ x1, y1, x2, y2, color: seg.color });
+      }
+    });
     breakpoints.push(viewConeHigh);
     breakpoints.sort((a, b) => a - b);
     breakpoints.forEach((to, idx) => {
@@ -247,24 +249,38 @@ export default class World {
       to: { x: number; y: number };
     }[] = [];
 
+    const rectangles = this.quadtree.retrieve(
+      new Rectangle({ x: -1, y: -1, width: 1002, height: 1002 })
+    );
+
+    const lineSegments = rectangles
+      .map((rect) =>
+        rect.data!.lineSegments.map((seg) => ({
+          seg: seg,
+          color: rect.data!.color,
+        }))
+      )
+      .flat();
+
     lines.forEach((line) => {
-      this.geometryObjects.forEach((obj) => {
-        obj.lineSegments.forEach((lineSegment) => {
-          const collisionData = lineSegmentsIntersect(
-            line[0],
-            line[1],
-            line[2],
-            line[3],
-            lineSegment.from.x,
-            lineSegment.from.y,
-            lineSegment.to.x,
-            lineSegment.to.y
-          );
-          if (collisionData.direct && collisionData.edgy) {
-            collisionFound = true;
-            collisionLines.push(lineSegment);
-          }
-        });
+      lineSegments.forEach((seg) => {
+        const collisionData = lineSegmentsIntersect(
+          line[0],
+          line[1],
+          line[2],
+          line[3],
+          seg.seg.from.x,
+          seg.seg.from.y,
+          seg.seg.to.x,
+          seg.seg.to.y
+        );
+        if (collisionData.direct && collisionData.edgy) {
+          collisionFound = true;
+          collisionLines.push({
+            from: { x: seg.seg.from.x, y: seg.seg.from.y },
+            to: { x: seg.seg.to.x, y: seg.seg.to.y },
+          });
+        }
       });
     });
     let maxSafe = distance;

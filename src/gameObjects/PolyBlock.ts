@@ -28,6 +28,12 @@ class PolyBlock extends GeometryObject {
     this.color = color;
   }
 
+  tick() {
+    this.points.forEach((p) => {
+      p.y += 1;
+    });
+  }
+
   get lineSegments() {
     const segments: { from: Point; to: Point }[] = [];
     for (let i = 0; i != this.points.length; i++) {
