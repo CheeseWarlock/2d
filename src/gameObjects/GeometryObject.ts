@@ -7,12 +7,9 @@ type Point = {
 };
 
 class GeometryObject implements GameObject {
-  world: World;
   points: Point[] = [];
 
-  constructor(world: World) {
-    this.world = world;
-  }
+  constructor() {}
 
   color: string = "black";
 

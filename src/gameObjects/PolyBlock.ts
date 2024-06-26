@@ -1,5 +1,4 @@
 import GeometryObject from "./GeometryObject.js";
-import World from "../World.js";
 
 type Point = {
   x: number;
@@ -10,15 +9,8 @@ class PolyBlock extends GeometryObject {
   points: Point[] = [];
   color: string = "black";
 
-  constructor(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    color: string,
-    world: World
-  ) {
-    super(world);
+  constructor(x1: number, y1: number, x2: number, y2: number, color: string) {
+    super();
     this.points.push(
       { x: x1, y: y1 },
       { x: x2, y: y1 },

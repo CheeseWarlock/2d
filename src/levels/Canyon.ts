@@ -1,47 +1,38 @@
-import World from "../World.js";
 import Line from "../gameObjects/Line.js";
 import PolyBlock from "../gameObjects/PolyBlock.js";
 import GrayscaleObject from "../gameObjects/GrayscaleObject.js";
-import GameObject from "../gameObjects/IGameObject.js";
-import Player from "../gameObjects/Player.js";
-import GeometryObject from "../gameObjects/GeometryObject.js";
 import CameraFrame from "../CameraFrame.js";
-import { LevelData } from "../types.js";
+import ILevelFormat from "./ILevelFormat.js";
+import GeometryObject from "../gameObjects/GeometryObject.js";
 
-const world = new World();
-
-const content: GameObject[] = [
-  new PolyBlock(0, 100, 200, 200, "green", world),
-  new PolyBlock(200, 200, 400, 400, "blue", world),
-  new Line({ x: 400, y: 600 }, { x: 600, y: 600 }, "black", world),
-  new Line({ x: 400, y: 610 }, { x: 600, y: 610 }, "orange", world),
-  new Line({ x: 490, y: 615 }, { x: 510, y: 615 }, "red", world),
-  new Line({ x: 750, y: 700 }, { x: 850, y: 700 }, "black", world),
-  new GrayscaleObject(
-    [
-      { x: 600, y: 800 },
-      { x: 700, y: 850 },
-      { x: 800, y: 800 },
-      { x: 900, y: 850 },
-      { x: 950, y: 825 },
-      { x: 950, y: 400 },
-      { x: 1000, y: 400 },
-      { x: 1000, y: 1000 },
-      { x: 900, y: 1000 },
-      { x: 0, y: 1000 },
-      { x: 0, y: 400 },
-      { x: 50, y: 400 },
-      { x: 50, y: 700 },
-      { x: 150, y: 700 },
-      { x: 150, y: 850 },
-      { x: 300, y: 850 },
-      { x: 500, y: 850 },
-      { x: 500, y: 700 },
-      { x: 600, y: 700 },
-    ],
-    world
-  ),
-  new Player(500, 500, world),
+const geometries: GeometryObject[] = [
+  new PolyBlock(0, 100, 200, 200, "green"),
+  new PolyBlock(200, 200, 400, 400, "blue"),
+  new Line({ x: 400, y: 600 }, { x: 600, y: 600 }, "black"),
+  new Line({ x: 400, y: 610 }, { x: 600, y: 610 }, "orange"),
+  new Line({ x: 490, y: 615 }, { x: 510, y: 615 }, "red"),
+  new Line({ x: 750, y: 700 }, { x: 850, y: 700 }, "black"),
+  new GrayscaleObject([
+    { x: 600, y: 800 },
+    { x: 700, y: 850 },
+    { x: 800, y: 800 },
+    { x: 900, y: 850 },
+    { x: 950, y: 825 },
+    { x: 950, y: 400 },
+    { x: 1000, y: 400 }, // next is missing
+    { x: 1000, y: 1000 }, // nim
+    { x: 900, y: 1000 }, // nim
+    { x: 0, y: 1000 }, // nim
+    { x: 0, y: 400 },
+    { x: 50, y: 400 },
+    { x: 50, y: 700 },
+    { x: 150, y: 700 },
+    { x: 150, y: 850 },
+    { x: 300, y: 850 },
+    { x: 500, y: 850 }, // nim
+    { x: 500, y: 700 },
+    { x: 600, y: 700 },
+  ]),
 ];
 
 const goals: CameraFrame[] = [
@@ -134,15 +125,8 @@ const goals: CameraFrame[] = [
   ]),
 ];
 
-content.forEach((obj) => {
-  if (obj instanceof GeometryObject) {
-    world.addGeometry(obj);
-  }
-});
-
-world.objects = content;
-
 export default {
-  world,
+  geometries,
   goals,
-} as LevelData;
+  playerPosition: { x: 500, y: 500 },
+} as ILevelFormat;

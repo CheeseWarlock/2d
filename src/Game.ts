@@ -21,21 +21,32 @@ class Game {
   visibleObjects: GeometryObject[] = [];
   focusPoint?: Point;
   viewDirection?: number;
-  player: Player;
+  world: World = new World();
+  player: Player = new Player(0, 0, this.world);
   fov: number = 0.25;
   keysDown: Set<string> = new Set();
   clicked = false;
   cameraFrame: CameraFrame = new CameraFrame();
-  world: World;
-  goals: CameraFrame[];
+  goals: CameraFrame[] = [];
   currentGoalIndex = 0;
 
   constructor() {
-    const levelContent = GAME_LEVELS[0];
-    this.goals = levelContent.goals;
-    this.world = levelContent.world;
-    this.player = levelContent.world.players[0];
-    this.visibleObjects.push(...levelContent.world.geometryObjects);
+    this.loadLevel(0);
+  }
+
+  loadLevel(index: number) {
+    const level = GAME_LEVELS[index];
+    this.goals = level.goals;
+    this.world = new World();
+    level.geometries.forEach((geometry) => this.world.addGeometry(geometry));
+
+    this.player = new Player(
+      level.playerPosition.x,
+      level.playerPosition.y,
+      this.world
+    );
+    this.visibleObjects = [...this.world.geometryObjects];
+    this.world.objects.push(this.player);
   }
 
   tick() {
@@ -67,23 +78,12 @@ class Game {
   }
 
   restartCurrentLevel() {
-    const currentLevel = GAME_LEVELS[levelIndex];
-    this.goals = currentLevel.goals;
-    this.world = currentLevel.world;
-    this.player = currentLevel.world.players[0];
-    this.visibleObjects = [];
-    this.visibleObjects.push(...currentLevel.world.geometryObjects);
-    // this.currentGoalIndex = 0; maybe?
+    this.loadLevel(0);
   }
 
   goToNextLevel() {
     levelIndex += 1;
-    const nextLevel = GAME_LEVELS[levelIndex];
-    this.goals = nextLevel.goals;
-    this.world = nextLevel.world;
-    this.player = nextLevel.world.players[0];
-    this.visibleObjects = [];
-    this.visibleObjects.push(...nextLevel.world.geometryObjects);
+    this.loadLevel(levelIndex);
     this.currentGoalIndex = 0;
   }
 

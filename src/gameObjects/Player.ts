@@ -10,6 +10,7 @@ export default class Player implements GameObject {
   moveRight: boolean = false;
   jump: boolean = false;
   isOnGround: boolean = false;
+  isDead: boolean = false;
 
   constructor(x: number, y: number, world: World) {
     this.world = world;
@@ -26,6 +27,7 @@ export default class Player implements GameObject {
       this.y + 20,
       0
     );
+    this.isDead = currentPositionCollisionTest.collisionType === "color";
 
     const ANGLETHING = 4;
     const HSPEED = 4;

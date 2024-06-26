@@ -1,8 +1,7 @@
 import CameraFrame from "./CameraFrame.js";
 import GeometryObject from "./gameObjects/GeometryObject.js";
+import GrayscaleObject from "./gameObjects/GrayscaleObject.js";
 import GameObject from "./gameObjects/IGameObject.js";
-import Player from "./gameObjects/Player.js";
-import PolyBlock from "./gameObjects/PolyBlock.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import {
   Quadtree,
@@ -42,10 +41,6 @@ export default class World {
     return this.objects.filter(
       (obj) => obj instanceof GeometryObject
     ) as GeometryObject[];
-  }
-
-  get players(): Player[] {
-    return this.objects.filter((obj) => obj instanceof Player) as Player[];
   }
 
   calculatePhotoContent(
@@ -235,7 +230,12 @@ export default class World {
     x2: number,
     y2: number,
     distance: number = 0
-  ) {
+  ): {
+    collisionType: "" | "color" | "ground";
+    collisionFound: boolean;
+    maxSafe: number;
+  } {
+    let collisionType: "" | "color" | "ground" = "";
     const lines = [
       [x1, y1, x1, y2 + distance],
       [x1, y2 + distance, x2, y2 + distance],
@@ -257,7 +257,7 @@ export default class World {
       .map((rect) =>
         rect.data!.lineSegments.map((seg) => ({
           seg: seg,
-          color: rect.data!.color,
+          obj: rect.data!,
         }))
       )
       .flat();
@@ -276,6 +276,15 @@ export default class World {
         );
         if (collisionData.direct && collisionData.edgy) {
           collisionFound = true;
+          // set collision type to the "worst"
+          if (seg.obj instanceof GrayscaleObject) {
+            // it's ground
+            if (collisionType !== "color") {
+              collisionType = "ground";
+            }
+          } else {
+            collisionType = "color";
+          }
           collisionLines.push({
             from: { x: seg.seg.from.x, y: seg.seg.from.y },
             to: { x: seg.seg.to.x, y: seg.seg.to.y },
@@ -342,6 +351,7 @@ export default class World {
       }
     });
     return {
+      collisionType,
       collisionFound,
       maxSafe,
     };
@@ -370,5 +380,21 @@ export default class World {
 
   update() {
     this.objects.forEach((obj) => obj.tick());
+    this.quadtree.clear();
+    this.objects.forEach((obj) => {
+      if (obj instanceof GeometryObject) {
+        obj.lineSegments.forEach((seg) =>
+          this.quadtree.insert(
+            new Rectangle({
+              data: obj,
+              x: seg.from.x,
+              y: seg.from.y,
+              width: seg.to.x - seg.from.x,
+              height: seg.to.y - seg.to.y,
+            })
+          )
+        );
+      }
+    });
   }
 }

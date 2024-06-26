@@ -1,5 +1,4 @@
 import GeometryObject from "./GeometryObject.js";
-import World from "../World.js";
 
 type Point = {
   x: number;
@@ -16,10 +15,9 @@ class Line extends GeometryObject {
   constructor(
     from: { x: number; y: number },
     to: { x: number; y: number },
-    color: string,
-    world: World
+    color: string
   ) {
-    super(world);
+    super();
     this.x1 = from.x;
     this.x2 = to.x;
     this.y1 = from.y;
