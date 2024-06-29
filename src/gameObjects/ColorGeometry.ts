@@ -8,6 +8,11 @@ type Point = {
 class ColorGeometry extends GeometryObject {
   points: Point[] = [];
   color: string = "black";
+  transform: Point = {
+    x: 0,
+    y: 0,
+  };
+  _time: number = 0;
 
   constructor(points: Point[], color: string) {
     super();
@@ -16,21 +21,31 @@ class ColorGeometry extends GeometryObject {
   }
 
   tick() {
-    this.points.forEach((p) => {
-      p.y += 1;
-    });
+    this._time += 0.035;
+    this.transform.y = Math.sin(this._time) * 12;
   }
 
   get lineSegments() {
     const segments: { from: Point; to: Point }[] = [];
-    for (let i = 0; i != this.points.length; i++) {
+    for (let i = 0; i != this.transformedPoints.length; i++) {
       segments.push({
-        from: this.points[i],
-        to: this.points[(i + 1) % this.points.length],
+        from: this.transformedPoints[i],
+        to: this.transformedPoints[(i + 1) % this.transformedPoints.length],
       });
     }
 
     return segments;
+  }
+
+  get transformedPoints() {
+    const points: Point[] = [];
+    for (let i = 0; i != this.points.length; i++) {
+      points.push({
+        x: this.points[i].x + this.transform.x,
+        y: this.points[i].y + this.transform.y,
+      });
+    }
+    return points;
   }
 }
 

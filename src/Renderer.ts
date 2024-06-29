@@ -243,7 +243,18 @@ export default class Renderer {
   drawObject(obj: ColorGeometry | GroundGeometry | ColorLineGeometry) {
     const context = this.renderingContexts.gameWorld;
 
-    if (obj instanceof ColorGeometry || obj instanceof GroundGeometry) {
+    if (obj instanceof ColorGeometry) {
+      context.fillStyle = obj.color;
+      context.moveTo(obj.transformedPoints[0].x, obj.transformedPoints[0].y);
+      context.beginPath();
+      for (let i = 0; i != obj.transformedPoints.length; i++) {
+        context.lineTo(obj.transformedPoints[i].x, obj.transformedPoints[i].y);
+      }
+      context.closePath();
+      context.fill();
+    }
+
+    if (obj instanceof GroundGeometry) {
       context.fillStyle = obj.color;
       context.moveTo(obj.points[0].x, obj.points[0].y);
       context.beginPath();

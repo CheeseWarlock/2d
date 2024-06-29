@@ -1,3 +1,5 @@
+import { Tween } from "@tweenjs/tween.js";
+
 export type Point = {
   x: number;
   y: number;
