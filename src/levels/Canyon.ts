@@ -3,7 +3,7 @@ import ColorGeometry from "../gameObjects/ColorGeometry.js";
 import GroundGeometry from "../gameObjects/GroundGeometry.js";
 import CameraFrame from "../CameraFrame.js";
 import ILevelFormat from "./ILevelFormat.js";
-import GeometryObject from "../gameObjects/BaseGeometry.js";
+import BaseGeometry from "../gameObjects/BaseGeometry.js";
 import {
   ColorGeometryProps,
   GeometryProps,

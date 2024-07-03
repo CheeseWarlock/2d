@@ -6,7 +6,7 @@ type Point = {
   y: number;
 };
 
-class GeometryObject implements GameObject {
+class BaseGeometry implements GameObject {
   points: Point[] = [];
 
   constructor() {}
@@ -37,4 +37,4 @@ class GeometryObject implements GameObject {
   }
 }
 
-export default GeometryObject;
+export default BaseGeometry;

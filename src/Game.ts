@@ -1,6 +1,6 @@
 import Player from "./gameObjects/Player.js";
 import CameraFrame, { Segment } from "./CameraFrame.js";
-import GeometryObject from "./gameObjects/BaseGeometry.js";
+import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import { limitNearVerticalDirection } from "./utils.js";
 import canyonLevel from "./levels/Canyon.js";
 import faceLevel from "./levels/Face.js";
@@ -21,7 +21,7 @@ const SIMILARITY_THRESHOLD = 0.9;
 let levelIndex = 0;
 
 class Game {
-  visibleObjects: GeometryObject[] = [];
+  visibleObjects: BaseGeometry[] = [];
   focusPoint?: Point;
   viewDirection?: number;
   world: World = new World();

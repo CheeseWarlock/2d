@@ -1,11 +1,11 @@
-import GeometryObject from "./BaseGeometry.js";
+import BaseGeometry from "./BaseGeometry.js";
 
 type Point = {
   x: number;
   y: number;
 };
 
-class ColorLineGeometry extends GeometryObject {
+class ColorLineGeometry extends BaseGeometry {
   x1: number;
   x2: number;
   y1: number;

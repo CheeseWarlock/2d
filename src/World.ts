@@ -1,5 +1,5 @@
 import CameraFrame from "./CameraFrame.js";
-import GeometryObject from "./gameObjects/BaseGeometry.js";
+import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
@@ -19,12 +19,12 @@ const rangesOverlap = (
 export default class World {
   size = { width: 1000, height: 1000 };
   objects: GameObject[] = [];
-  quadtree = new Quadtree<Rectangle<GeometryObject>>({
+  quadtree = new Quadtree<Rectangle<BaseGeometry>>({
     width: 1000,
     height: 1000,
   });
 
-  addGeometry(geometry: GeometryObject) {
+  addGeometry(geometry: BaseGeometry) {
     this.objects.push(geometry);
     geometry.lineSegments.forEach((seg) =>
       this.quadtree.insert(
@@ -39,10 +39,10 @@ export default class World {
     );
   }
 
-  get geometryObjects(): GeometryObject[] {
+  get geometryObjects(): BaseGeometry[] {
     return this.objects.filter(
-      (obj) => obj instanceof GeometryObject
-    ) as GeometryObject[];
+      (obj) => obj instanceof BaseGeometry
+    ) as BaseGeometry[];
   }
 
   calculatePhotoContent(
@@ -381,7 +381,7 @@ export default class World {
     this.objects.forEach((obj) => obj.tick());
     this.quadtree.clear();
     this.objects.forEach((obj) => {
-      if (obj instanceof GeometryObject) {
+      if (obj instanceof BaseGeometry) {
         obj.lineSegments.forEach((seg) =>
           this.quadtree.insert(
             new Rectangle({

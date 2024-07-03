@@ -1,4 +1,4 @@
-import GeometryObject from "./BaseGeometry.js";
+import BaseGeometry from "./BaseGeometry.js";
 import World from "../World.js";
 
 type Point = {
@@ -6,7 +6,7 @@ type Point = {
   y: number;
 };
 
-class GroundGeometry extends GeometryObject {
+class GroundGeometry extends BaseGeometry {
   constructor(points: Point[]) {
     super();
     this.points = points;

@@ -1,5 +1,5 @@
 import CameraFrame from "../CameraFrame";
-import GeometryObject from "../gameObjects/BaseGeometry";
+import BaseGeometry from "../gameObjects/BaseGeometry";
 import ColorGeometry from "../gameObjects/ColorGeometry";
 import World from "../World";
 import GroundGeometry from "../gameObjects/GroundGeometry";
