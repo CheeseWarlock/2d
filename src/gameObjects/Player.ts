@@ -1,6 +1,9 @@
 import GameObject from "./IGameObject.js";
 import World from "../World.js";
 
+const ANGLETHING = 4;
+const HSPEED = 4;
+
 export default class Player implements GameObject {
   x: number;
   y: number;
@@ -19,7 +22,7 @@ export default class Player implements GameObject {
     this.acc = 0;
   }
 
-  tick() {
+  checkDeath() {
     const currentPositionCollisionTest = this.world.collisionTest(
       this.x - 10,
       this.y - 20,
@@ -29,46 +32,61 @@ export default class Player implements GameObject {
       "color"
     );
     this.isDead = currentPositionCollisionTest.collisionFound;
+  }
 
-    const ANGLETHING = 4;
-    const HSPEED = 4;
+  checkJump() {
     if (this.jump) {
+      this.jump = false;
       // check collision at feet
       const collisionTest = this.world.collisionTest(
-        this.x - 10,
+        this.x - 4,
         this.y + 16,
-        this.x + 10,
+        this.x + 4,
         this.y + 24,
         0,
         "ground"
       );
+      console.log(collisionTest);
       if (collisionTest.collisionFound) {
         this.acc = -8;
       }
     }
+  }
+
+  checkMoveLateral() {
     if (this.moveLeft) {
-      const collisionTest = this.world.collisionTest(
-        this.x - 14,
-        this.y - 24,
-        this.x + 6,
-        this.y + 16,
-        ANGLETHING * 2,
-        "ground"
-      );
-      const collisionTest2 = this.world.collisionTest(
-        this.x - 14,
-        this.y - 24,
-        this.x + 6,
-        this.y + 16,
-        0,
-        "ground"
-      );
-      if (collisionTest2.collisionFound) {
-        // hit a wall
-        const x = 123;
+      if (this.acc > 0) {
+        // in-air stuff
+        const collisionTestLeft = this.world.collisionTest(
+          this.x - 14,
+          this.y - 20,
+          this.x + 6,
+          this.y + 20,
+          0,
+          "ground"
+        );
+        if (!collisionTestLeft.collisionFound) {
+          this.x -= HSPEED;
+        }
       } else {
-        this.x -= HSPEED;
-        if (this.acc >= 0) {
+        const collisionTest = this.world.collisionTest(
+          this.x - 14,
+          this.y - 24,
+          this.x + 6,
+          this.y + 16,
+          ANGLETHING * 2,
+          "ground"
+        );
+        const collisionTest2 = this.world.collisionTest(
+          this.x - 14,
+          this.y - 24,
+          this.x + 6,
+          this.y + 16,
+          0,
+          "ground"
+        );
+        if (!collisionTest2.collisionFound) {
+          this.x -= HSPEED;
           this.y -= ANGLETHING;
           this.y +=
             collisionTest.maxSafe < ANGLETHING * 2
@@ -77,27 +95,37 @@ export default class Player implements GameObject {
         }
       }
     } else if (this.moveRight) {
-      const collisionTest = this.world.collisionTest(
-        this.x - 6,
-        this.y - 24,
-        this.x + 14,
-        this.y + 16,
-        ANGLETHING * 2,
-        "ground"
-      );
-      const collisionTest2 = this.world.collisionTest(
-        this.x - 6,
-        this.y - 24,
-        this.x + 14,
-        this.y + 16,
-        0,
-        "ground"
-      );
-      if (collisionTest2.collisionFound) {
-        const x = 123;
+      if (this.acc > 0) {
+        const collisionTestRight = this.world.collisionTest(
+          this.x - 6,
+          this.y - 20,
+          this.x + 14,
+          this.y + 20,
+          0,
+          "ground"
+        );
+        if (!collisionTestRight.collisionFound) {
+          this.x += HSPEED;
+        }
       } else {
-        this.x += HSPEED;
-        if (this.acc >= 0) {
+        const collisionTest = this.world.collisionTest(
+          this.x - 6,
+          this.y - 24,
+          this.x + 14,
+          this.y + 16,
+          ANGLETHING * 2,
+          "ground"
+        );
+        const collisionTest2 = this.world.collisionTest(
+          this.x - 6,
+          this.y - 24,
+          this.x + 14,
+          this.y + 16,
+          0,
+          "ground"
+        );
+        if (!collisionTest2.collisionFound) {
+          this.x += HSPEED;
           this.y -= ANGLETHING;
           this.y +=
             collisionTest.maxSafe < ANGLETHING * 2
@@ -106,7 +134,15 @@ export default class Player implements GameObject {
         }
       }
     }
+  }
+
+  tick() {
+    this.checkDeath();
+    this.checkMoveLateral();
+    this.checkJump();
+
     this.acc += 0.2;
+
     if (this.acc > 8) this.acc = 8;
     // collision test
     if (this.acc < 0) {
@@ -135,6 +171,8 @@ export default class Player implements GameObject {
       if (collisionTest.collisionFound) {
         this.acc = 0;
         this.y += collisionTest.maxSafe;
+      } else {
+        console.log("  no ground found");
       }
     }
 

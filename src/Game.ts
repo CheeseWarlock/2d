@@ -4,6 +4,7 @@ import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import { limitNearVerticalDirection } from "./utils.js";
 import canyonLevel from "./levels/Canyon.js";
 import faceLevel from "./levels/Face.js";
+import physicsLevel from "./levels/Physics.js";
 import World from "./World.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
@@ -14,7 +15,7 @@ type Point = {
   y: number;
 };
 
-const GAME_LEVELS = [faceLevel, canyonLevel];
+const GAME_LEVELS = [physicsLevel, faceLevel, canyonLevel];
 
 const SIMILARITY_THRESHOLD = 0.9;
 
@@ -71,7 +72,10 @@ class Game {
   tick() {
     this.player.moveLeft = this.keysDown.has("a");
     this.player.moveRight = this.keysDown.has("d");
-    this.player.jump = this.keysDown.has("w");
+    if (this.keysDown.has("w")) {
+      this.player.jump = true;
+      this.keysDown.delete("w");
+    }
 
     this.world.update();
     if (this.focusPoint) {

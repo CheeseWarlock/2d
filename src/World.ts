@@ -347,7 +347,7 @@ export default class World {
         handledThis = true;
       }
       if (!handledThis) {
-        // maxSafe = 0;
+        maxSafe = 0;
       }
     });
     return {
