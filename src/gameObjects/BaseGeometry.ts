@@ -1,10 +1,5 @@
+import { Point } from "../types.js";
 import GameObject from "./IGameObject.js";
-import World from "../World.js";
-
-type Point = {
-  x: number;
-  y: number;
-};
 
 class BaseGeometry implements GameObject {
   points: Point[] = [];

@@ -1,8 +1,15 @@
-import { Tween } from "@tweenjs/tween.js";
-
 export type Point = {
   x: number;
   y: number;
+};
+
+export type Motion = {
+  offset: {
+    x: number;
+    y: number;
+  };
+  duration: number;
+  delay: number;
 };
 
 export type GeometryProps = {
@@ -18,4 +25,5 @@ export type LineGeometryProps = {
 export type ColorGeometryProps = {
   points: Point[];
   color: string;
+  motion?: Motion;
 };

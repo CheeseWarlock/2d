@@ -36,6 +36,14 @@ const colorGeometries: ColorGeometryProps[] = [
       { x: 50, y: 200 },
     ],
     color: "#44e244",
+    motion: {
+      offset: {
+        x: 0,
+        y: 20,
+      },
+      duration: 1000,
+      delay: 500,
+    },
   },
   {
     points: [
@@ -45,6 +53,14 @@ const colorGeometries: ColorGeometryProps[] = [
       { x: 650, y: 200 },
     ],
     color: "#ff3060",
+    motion: {
+      offset: {
+        x: 0,
+        y: 20,
+      },
+      duration: 1000,
+      delay: 0,
+    },
   },
 ];
 

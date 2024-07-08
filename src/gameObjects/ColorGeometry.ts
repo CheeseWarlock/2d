@@ -1,9 +1,5 @@
+import { Motion, Point } from "../types.js";
 import BaseGeometry from "./BaseGeometry.js";
-
-type Point = {
-  x: number;
-  y: number;
-};
 
 class ColorGeometry extends BaseGeometry {
   points: Point[] = [];
@@ -12,17 +8,30 @@ class ColorGeometry extends BaseGeometry {
     x: 0,
     y: 0,
   };
-  _time: number = 0;
+  motion: Motion = {
+    offset: {
+      x: 0,
+      y: 10,
+    },
+    duration: 3000,
+    delay: 0,
+  };
+  _time: number;
 
-  constructor(points: Point[], color: string) {
+  constructor(points: Point[], color: string, motion?: Motion) {
     super();
     this.points = points;
     this.color = color;
+    if (motion) this.motion = motion;
+    this._time = -this.motion.delay / 1000;
   }
 
   tick() {
-    this._time += 0.035;
-    this.transform.y = Math.sin(this._time) * 12;
+    this._time += 1 / 60; // number of seconds
+    const t = (this._time / this.motion.duration) * 1000 * Math.PI * 2;
+    const d = (-Math.cos(t) + 1) / 2;
+    this.transform.x = d * this.motion.offset.x;
+    this.transform.y = d * this.motion.offset.y;
   }
 
   get lineSegments() {

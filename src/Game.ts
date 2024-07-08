@@ -9,13 +9,9 @@ import World from "./World.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
+import { Point } from "./types.js";
 
-type Point = {
-  x: number;
-  y: number;
-};
-
-const GAME_LEVELS = [physicsLevel, faceLevel, canyonLevel];
+const GAME_LEVELS = [faceLevel, canyonLevel];
 
 const SIMILARITY_THRESHOLD = 0.9;
 
@@ -55,7 +51,8 @@ class Game {
     level.colors.forEach((c) => {
       const geo = new ColorGeometry(
         [...c.points.map((m) => ({ x: m.x, y: m.y }))],
-        c.color
+        c.color,
+        c.motion
       );
       this.world.addGeometry(geo);
     });
