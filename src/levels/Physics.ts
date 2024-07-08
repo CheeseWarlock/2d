@@ -1,25 +1,22 @@
 import CameraFrame from "../CameraFrame";
-import World from "../World";
 import ILevelFormat from "./ILevelFormat";
 import { ColorGeometryProps, GeometryProps, LineGeometryProps } from "../types";
 
-const world = new World();
-
 const goals = [
-  new CameraFrame([
+  [
     {
       start: 0,
       end: 1,
       color: "#ff3060",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 1,
       color: "#44e244",
     },
-  ]),
+  ],
 ];
 
 const lineGeometries: LineGeometryProps[] = [];

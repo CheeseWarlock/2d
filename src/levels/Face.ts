@@ -1,28 +1,21 @@
-import CameraFrame from "../CameraFrame";
-import BaseGeometry from "../gameObjects/BaseGeometry";
-import ColorGeometry from "../gameObjects/ColorGeometry";
-import World from "../World";
-import GroundGeometry from "../gameObjects/GroundGeometry";
 import ILevelFormat from "./ILevelFormat";
 import { ColorGeometryProps, GeometryProps, LineGeometryProps } from "../types";
 
-const world = new World();
-
 const goals = [
-  new CameraFrame([
+  [
     {
       start: 0,
       end: 1,
       color: "#ff3060",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 1,
       color: "#44e244",
     },
-  ]),
+  ],
 ];
 
 const lineGeometries: LineGeometryProps[] = [];
@@ -41,8 +34,8 @@ const colorGeometries: ColorGeometryProps[] = [
         x: 0,
         y: 20,
       },
-      duration: 1000,
-      delay: 500,
+      duration: 2500,
+      delay: 250,
     },
   },
   {
@@ -58,7 +51,7 @@ const colorGeometries: ColorGeometryProps[] = [
         x: 0,
         y: 20,
       },
-      duration: 1000,
+      duration: 2500,
       delay: 0,
     },
   },

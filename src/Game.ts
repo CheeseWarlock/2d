@@ -4,14 +4,14 @@ import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import { limitNearVerticalDirection } from "./utils.js";
 import canyonLevel from "./levels/Canyon.js";
 import faceLevel from "./levels/Face.js";
-import physicsLevel from "./levels/Physics.js";
+import jumpLevel from "./levels/Jump.js";
 import World from "./World.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point } from "./types.js";
 
-const GAME_LEVELS = [faceLevel, canyonLevel];
+const GAME_LEVELS = [jumpLevel, faceLevel, canyonLevel];
 
 const SIMILARITY_THRESHOLD = 0.9;
 
@@ -36,7 +36,7 @@ class Game {
 
   loadLevel(index: number) {
     const level = GAME_LEVELS[index];
-    this.goals = level.goals;
+    this.goals = level.goals.map((goal) => new CameraFrame(goal));
     this.world = new World();
     level.ground.forEach((g) => {
       const geo = new GroundGeometry([
@@ -121,7 +121,6 @@ class Game {
     );
     cameraFrame.simplify();
     this.cameraFrame = cameraFrame;
-    console.log();
   }
 }
 

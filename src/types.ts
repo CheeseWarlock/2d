@@ -27,3 +27,11 @@ export type ColorGeometryProps = {
   color: string;
   motion?: Motion;
 };
+
+export type CameraFrameProps = CameraFrameElementProps[];
+
+export type CameraFrameElementProps = {
+  start: number;
+  end: number;
+  color: string;
+};

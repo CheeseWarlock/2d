@@ -1,10 +1,6 @@
-import ColorLineGeometry from "../gameObjects/ColorLineGeometry.js";
-import ColorGeometry from "../gameObjects/ColorGeometry.js";
-import GroundGeometry from "../gameObjects/GroundGeometry.js";
-import CameraFrame from "../CameraFrame.js";
 import ILevelFormat from "./ILevelFormat.js";
-import BaseGeometry from "../gameObjects/BaseGeometry.js";
 import {
+  CameraFrameProps,
   ColorGeometryProps,
   GeometryProps,
   LineGeometryProps,
@@ -67,15 +63,15 @@ const colorGeometries: ColorGeometryProps[] = [
   },
 ];
 
-const goals: CameraFrame[] = [
-  new CameraFrame([
+const goals: CameraFrameProps[] = [
+  [
     {
       start: 0,
       end: 1,
       color: "blue",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 0.5,
@@ -86,8 +82,8 @@ const goals: CameraFrame[] = [
       end: 1,
       color: "black",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 0.5,
@@ -98,8 +94,8 @@ const goals: CameraFrame[] = [
       end: 1,
       color: "black",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 0.5,
@@ -110,8 +106,8 @@ const goals: CameraFrame[] = [
       end: 1,
       color: "blue",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 0.43376372719473855,
@@ -127,8 +123,8 @@ const goals: CameraFrame[] = [
       end: 1,
       color: "orange",
     },
-  ]),
-  new CameraFrame([
+  ],
+  [
     {
       start: 0,
       end: 0.1740706460704038,
@@ -154,7 +150,7 @@ const goals: CameraFrame[] = [
       end: 1,
       color: "black",
     },
-  ]),
+  ],
 ];
 
 export default {
