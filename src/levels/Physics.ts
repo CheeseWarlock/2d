@@ -30,8 +30,8 @@ const groundGeometries: GeometryProps[] = [
   {
     points: [
       { x: 0, y: 500 },
-      { x: 50, y: 500 },
-      { x: 50, y: 600 },
+      { x: 60, y: 500 },
+      { x: 50, y: 650 },
       { x: 125, y: 700 },
       { x: 200, y: 750 },
       { x: 300, y: 780 },

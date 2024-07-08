@@ -72,10 +72,7 @@ class Game {
   tick() {
     this.player.moveLeft = this.keysDown.has("a");
     this.player.moveRight = this.keysDown.has("d");
-    if (this.keysDown.has("w")) {
-      this.player.jump = true;
-      this.keysDown.delete("w");
-    }
+    this.player.jump = this.keysDown.has("w");
 
     this.world.update();
     if (this.focusPoint) {

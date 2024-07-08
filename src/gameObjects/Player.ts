@@ -22,7 +22,11 @@ export default class Player implements GameObject {
     this.acc = 0;
   }
 
-  checkDeath() {
+  handleDeathChecks() {
+    if (this.x > 1020 || this.x < -20 || this.y > 1000) {
+      this.isDead = true;
+      return;
+    }
     const currentPositionCollisionTest = this.world.collisionTest(
       this.x - 10,
       this.y - 20,
@@ -34,26 +38,24 @@ export default class Player implements GameObject {
     this.isDead = currentPositionCollisionTest.collisionFound;
   }
 
-  checkJump() {
+  handleJumpCheck() {
     if (this.jump) {
-      this.jump = false;
       // check collision at feet
       const collisionTest = this.world.collisionTest(
-        this.x - 4,
+        this.x - 9,
         this.y + 16,
-        this.x + 4,
+        this.x + 9,
         this.y + 24,
         0,
         "ground"
       );
-      console.log(collisionTest);
       if (collisionTest.collisionFound) {
         this.acc = -8;
       }
     }
   }
 
-  checkMoveLateral() {
+  handleLateralMovementChecks() {
     if (this.moveLeft) {
       if (this.acc > 0) {
         // in-air stuff
@@ -136,17 +138,11 @@ export default class Player implements GameObject {
     }
   }
 
-  tick() {
-    this.checkDeath();
-    this.checkMoveLateral();
-    this.checkJump();
-
+  applyGravity() {
     this.acc += 0.2;
-
     if (this.acc > 8) this.acc = 8;
-    // collision test
+
     if (this.acc < 0) {
-      // up
       const collisionTest = this.world.collisionTest(
         this.x - 10,
         this.y - 20 + this.acc,
@@ -171,11 +167,16 @@ export default class Player implements GameObject {
       if (collisionTest.collisionFound) {
         this.acc = 0;
         this.y += collisionTest.maxSafe;
-      } else {
-        console.log("  no ground found");
       }
     }
 
     this.y += this.acc;
+  }
+
+  tick() {
+    this.handleDeathChecks();
+    this.handleLateralMovementChecks();
+    this.handleJumpCheck();
+    this.applyGravity();
   }
 }
