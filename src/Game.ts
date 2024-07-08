@@ -13,7 +13,9 @@ import { Point } from "./types.js";
 
 const GAME_LEVELS = [jumpLevel, faceLevel, canyonLevel];
 
-const SIMILARITY_THRESHOLD = 0.9;
+const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
+
+const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
 let levelIndex = 0;
 
@@ -88,7 +90,13 @@ class Game {
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
-      if (similarity >= SIMILARITY_THRESHOLD) {
+      const areZonesEqual = this.cameraFrame.areZonesEqual(
+        this.goals[this.currentGoalIndex]
+      );
+      if (
+        (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
+        similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
+      ) {
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
           this.goToNextLevel();

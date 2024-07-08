@@ -23,7 +23,7 @@ export default class Player implements GameObject {
   }
 
   handleDeathChecks() {
-    if (this.x > 1020 || this.x < -20 || this.y > 1000) {
+    if (this.x >= 1020 || this.x <= -20 || this.y >= 1000) {
       this.isDead = true;
       return;
     }

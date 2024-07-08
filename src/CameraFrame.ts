@@ -101,4 +101,12 @@ export default class CameraFrame {
     });
     return similarity;
   }
+
+  areZonesEqual(otherFrame: CameraFrame) {
+    if (this.segments.length !== otherFrame.segments.length) return false;
+    for (let i = 0; i != this.segments.length; i++) {
+      if (this.segments[i].color !== otherFrame.segments[i].color) return false;
+    }
+    return true;
+  }
 }
