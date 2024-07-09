@@ -3,6 +3,7 @@ import Game from "./Game.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
+import CameraFrameRenderer from "./CameraFrameRenderer.js";
 
 const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 
@@ -20,14 +21,12 @@ type StarDetail = {
 
 export default class Renderer {
   game: Game;
-  renderingContexts: {
-    gameWorld: CanvasRenderingContext2D;
-    playerFrame: CanvasRenderingContext2D;
-    goalFrame: CanvasRenderingContext2D;
-  };
+  renderingContext: CanvasRenderingContext2D;
   mousePosition?: { x: number; y: number };
   stars: StarDetail[] = [];
   backgroundGradient: any;
+  viewRenderer: CameraFrameRenderer;
+  goalRenderer: CameraFrameRenderer;
 
   constructor() {
     const container = document.getElementById("game-world-container")!;
@@ -38,22 +37,12 @@ export default class Renderer {
     container.appendChild(canvas);
 
     const viewContainer = document.getElementById("view-camera-container")!;
-    const photoCanvas = document.createElement("canvas");
-    photoCanvas.width = CAMERA_FRAME_WIDTH;
-    photoCanvas.height = CAMERA_FRAME_HEIGHT;
-    viewContainer.appendChild(photoCanvas);
-
     const goalContainer = document.getElementById("goal-camera-container")!;
-    const goalCanvas = document.createElement("canvas");
-    goalCanvas.width = CAMERA_FRAME_WIDTH;
-    goalCanvas.height = CAMERA_FRAME_HEIGHT;
-    goalContainer.appendChild(goalCanvas);
 
-    this.renderingContexts = {
-      gameWorld: canvas.getContext("2d")!,
-      playerFrame: photoCanvas.getContext("2d")!,
-      goalFrame: goalCanvas.getContext("2d")!,
-    };
+    this.viewRenderer = new CameraFrameRenderer(viewContainer);
+    this.goalRenderer = new CameraFrameRenderer(goalContainer);
+
+    this.renderingContext = canvas.getContext("2d")!;
 
     this.game = game;
 
@@ -82,7 +71,7 @@ export default class Renderer {
       this.game.keysDown.delete(ev.key);
     };
 
-    const gradient = this.renderingContexts.gameWorld.createLinearGradient(
+    const gradient = this.renderingContext.createLinearGradient(
       0,
       0,
       0,
@@ -117,7 +106,7 @@ export default class Renderer {
    * Draw everything including the goal and current camera frames.
    */
   draw() {
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
     if (this.mousePosition) {
       this.game.focusPoint = this.mousePosition;
     }
@@ -141,7 +130,7 @@ export default class Renderer {
   }
 
   drawBackground() {
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
 
     context.closePath();
     context.fillStyle = this.backgroundGradient;
@@ -149,7 +138,7 @@ export default class Renderer {
   }
 
   drawBackgroundStars() {
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
 
     context.fillStyle = "white";
     this.stars.forEach((star) => {
@@ -163,7 +152,7 @@ export default class Renderer {
   }
 
   drawPlayer() {
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
     context.fillStyle = "#ddd";
     context.beginPath();
     context.moveTo(this.game.player.x - 10, this.game.player.y - 20);
@@ -176,7 +165,7 @@ export default class Renderer {
 
   drawViewCone() {
     if (this.game.viewDirection == null) return;
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
     // draw view cone
     context.strokeStyle = "rgba(255, 255, 255, 0.6)";
     context.lineWidth = 3.9;
@@ -241,7 +230,7 @@ export default class Renderer {
   }
 
   drawObject(obj: ColorGeometry | GroundGeometry | ColorLineGeometry) {
-    const context = this.renderingContexts.gameWorld;
+    const context = this.renderingContext;
 
     if (obj instanceof ColorGeometry) {
       context.fillStyle = obj.color;
@@ -277,14 +266,11 @@ export default class Renderer {
   }
 
   drawCameraFrame() {
-    this.drawCamera(this.game.cameraFrame, this.renderingContexts.playerFrame);
+    this.viewRenderer.drawCamera(this.game.cameraFrame);
   }
 
   drawGoalCameraFrame() {
-    this.drawCamera(
-      this.game.goals[this.game.currentGoalIndex],
-      this.renderingContexts.goalFrame
-    );
+    this.goalRenderer.drawCamera(this.game.goals[this.game.currentGoalIndex]);
   }
 
   drawCamera(frame: CameraFrame, target: CanvasRenderingContext2D) {
