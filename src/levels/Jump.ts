@@ -53,36 +53,19 @@ const lineGeometries: LineGeometryProps[] = [];
 const colorGeometries: ColorGeometryProps[] = [
   {
     points: [
-      { x: 100, y: 600 },
-      { x: 100, y: 700 },
-      { x: 150, y: 700 },
-      { x: 150, y: 600 },
+      { x: 0, y: 300 },
+      { x: 0, y: 400 },
+      { x: 150, y: 400 },
+      { x: 150, y: 300 },
     ],
     color: "#44e244",
     motion: {
       offset: {
         x: 200,
-        y: 0,
+        y: 200,
       },
       duration: 2500,
       delay: 1250,
-    },
-  },
-  {
-    points: [
-      { x: 400, y: 640 },
-      { x: 400, y: 660 },
-      { x: 420, y: 660 },
-      { x: 420, y: 640 },
-    ],
-    color: "#5522dd",
-    motion: {
-      offset: {
-        x: 0,
-        y: -400,
-      },
-      duration: 5000,
-      delay: 0,
     },
   },
 ];

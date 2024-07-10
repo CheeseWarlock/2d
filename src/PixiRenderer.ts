@@ -1,4 +1,21 @@
-import { Application, Sprite, Graphics } from "pixi.js";
+import {
+  Application,
+  Sprite,
+  Graphics,
+  Container,
+  FillGradient,
+  Color,
+  RenderTexture,
+  BlurFilter,
+} from "pixi.js";
+import Game from "./Game";
+import GameObject from "./gameObjects/IGameObject";
+import ColorGeometry from "./gameObjects/ColorGeometry";
+import GroundGeometry from "./gameObjects/GroundGeometry";
+import CameraFrameRenderer from "./CameraFrameRenderer";
+
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 1000;
 
 const ms = async () => {
   return new Promise<void>((res, rej) => {
@@ -8,44 +25,138 @@ const ms = async () => {
   });
 };
 
-const renderPixi = async () => {
-  // The application will create a renderer using WebGL, if possible,
-  // with a fallback to a canvas render. It will also setup the ticker
-  // and the root stage PIXI.Container
-  const app = new Application();
+class PixiRenderer {
+  game: Game;
+  objectsToDraw: Map<GameObject, Container> = new Map();
+  playerSprite: Container;
+  viewConeGraphics: Container;
+  mousePosition?: { x: number; y: number };
+  viewRenderer?: CameraFrameRenderer;
+  goalRenderer?: CameraFrameRenderer;
 
-  // Wait for the Renderer to be available
-  console.log("before");
-  await app.init({
-    width: 1000,
-    height: 1000,
-  });
+  constructor() {
+    this.init();
+    this.game = new Game();
+    this.playerSprite = new Graphics().rect(-10, -20, 20, 40).fill("white");
+    this.viewConeGraphics = new Graphics()
+      .setStrokeStyle({ width: 4, cap: "square" })
+      .poly([
+        0,
+        0,
+        2000 * Math.cos(-this.game.fov),
+        2000 * Math.sin(-this.game.fov),
+        2000 * Math.cos(this.game.fov),
+        2000 * Math.sin(this.game.fov),
+      ])
+      .fill(new Color({ r: 255, g: 255, b: 255, a: 0.5 }))
+      .moveTo(2000 * Math.cos(-this.game.fov), 2000 * Math.sin(-this.game.fov))
+      .lineTo(0, 0)
+      .stroke()
+      .lineTo(2000 * Math.cos(this.game.fov), 2000 * Math.sin(this.game.fov))
+      .stroke()
+      .moveTo(0, 0)
+      .lineTo(2000, 0)
+      .stroke();
+  }
 
-  // The application will create a canvas element for you that you
-  // can then insert into the DOM
-  document.body.appendChild(app.canvas);
+  async init() {
+    const container = document.getElementById("game-world-container")!;
+    const canvas = document.createElement("canvas");
+    canvas.width = GAME_WIDTH;
+    canvas.height = GAME_HEIGHT;
+    container.appendChild(canvas);
+    const app = new Application();
+    await app.init({
+      antialias: true,
+      width: 1000,
+      height: 1000,
+      background: "#444",
+      canvas,
+    });
+    const viewContainer = document.getElementById("view-camera-container")!;
+    const goalContainer = document.getElementById("goal-camera-container")!;
+    this.viewRenderer = new CameraFrameRenderer(viewContainer);
+    this.goalRenderer = new CameraFrameRenderer(goalContainer);
 
-  // load the texture we need
-  const bunny = new Graphics().circle(100, 100, 50).fill("red");
+    document.onmousemove = (ev) => {
+      const canvasX =
+        canvas.getBoundingClientRect().left +
+        document.documentElement.scrollTop;
+      const canvasY =
+        canvas.getBoundingClientRect().top + document.documentElement.scrollTop;
+      if (!this.mousePosition) {
+        this.mousePosition = { x: 0, y: 0 };
+      }
+      this.mousePosition.x = ev.clientX - canvasX;
+      this.mousePosition.y = ev.clientY - canvasY;
+    };
 
-  // Setup the position of the bunny
-  bunny.x = app.renderer.width / 2;
-  bunny.y = app.renderer.height / 2;
+    canvas.onclick = () => {
+      this.game.clicked = true;
+    };
 
-  // Rotate around the center
-  bunny.pivot.x = 0.5;
-  bunny.pivot.y = 0.5;
+    document.body.onkeydown = (ev) => {
+      this.game.keysDown.add(ev.key);
+    };
 
-  // Add the bunny to the scene we are building
-  app.stage.addChild(bunny);
+    document.body.onkeyup = (ev) => {
+      this.game.keysDown.delete(ev.key);
+    };
+    app.stage.addChild(this.playerSprite);
+    app.stage.addChild(this.viewConeGraphics);
+    this.viewConeGraphics.x = 10;
+    this.viewConeGraphics.y = 300;
+    this.viewConeGraphics.alpha = 0.5;
+    this.viewConeGraphics.zIndex = 1;
 
-  // Listen for frame updates
-  app.ticker.add(() => {
-    // each frame we spin the bunny around a bit
-    bunny.rotation += 0.01;
-  });
+    // Listen for frame updates
+    app.ticker.add(() => {
+      this.game.focusPoint = this.mousePosition;
+      this.game.tick();
+      this.viewRenderer!.drawCamera(this.game.cameraFrame);
+      this.goalRenderer!.drawCamera(
+        this.game.goals[this.game.currentGoalIndex]
+      );
+      this.playerSprite.x = this.game.player.x;
+      this.playerSprite.y = this.game.player.y;
+      this.viewConeGraphics.x = this.game.player.x;
+      this.viewConeGraphics.y = this.game.player.y;
 
-  console.log("27");
-};
+      this.viewConeGraphics.rotation = this.game.viewDirection || 0;
+      this.game.visibleObjects.forEach((obj) => {
+        if (!this.objectsToDraw.has(obj)) {
+          let newGraphics;
+          if (obj instanceof ColorGeometry) {
+            const uhg = obj.lineSegments
+              .map((seg) => {
+                return [seg.from.x, seg.from.y];
+              })
+              .flat();
+            newGraphics = new Graphics()
+              .poly(obj.points.map((seg) => [seg.x, seg.y]).flat())
+              .fill(obj.color);
+          } else if (obj instanceof GroundGeometry) {
+            newGraphics = new Graphics()
+              .poly(
+                obj.lineSegments.map((seg) => [seg.from.x, seg.from.y]).flat()
+              )
+              .fill("black");
+          } else {
+            newGraphics = new Graphics().circle(0, 0, 50).fill("black");
+          }
 
-export default renderPixi;
+          this.objectsToDraw.set(obj, newGraphics);
+          app.stage.addChild(newGraphics);
+        } else {
+          const existingGraphics = this.objectsToDraw.get(obj)!;
+          if (obj instanceof ColorGeometry) {
+            existingGraphics.x = obj.transform.x;
+            existingGraphics.y = obj.transform.y;
+          }
+        }
+      });
+    });
+  }
+}
+
+export default PixiRenderer;

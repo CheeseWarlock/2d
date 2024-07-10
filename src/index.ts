@@ -1,4 +1,4 @@
-import uh from "./PixiRenderer.ts";
+import PixiRenderer from "./PixiRenderer.ts";
 import Renderer from "./Renderer.js";
 
 // @ts-ignore
@@ -7,18 +7,7 @@ window.addEventListener("parcelhmraccept", () => {
 });
 
 const main = async () => {
-  const renderer = new Renderer();
-  await uh();
-  renderer.draw();
-
-  const update = () => {
-    renderer.draw();
-    window.requestAnimationFrame(() => {
-      update();
-    });
-  };
-
-  update();
+  const pixi = new PixiRenderer();
 };
 
 main();
