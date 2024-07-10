@@ -11,7 +11,7 @@ import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point } from "./types.js";
 
-const GAME_LEVELS = [jumpLevel, faceLevel, canyonLevel];
+const GAME_LEVELS = [faceLevel, canyonLevel];
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
@@ -93,7 +93,6 @@ class Game {
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
-      console.log(similarity);
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES

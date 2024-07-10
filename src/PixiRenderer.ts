@@ -13,6 +13,7 @@ import GameObject from "./gameObjects/IGameObject";
 import ColorGeometry from "./gameObjects/ColorGeometry";
 import GroundGeometry from "./gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
+import BaseGeometry from "./gameObjects/BaseGeometry";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
@@ -33,6 +34,7 @@ class PixiRenderer {
   mousePosition?: { x: number; y: number };
   viewRenderer?: CameraFrameRenderer;
   goalRenderer?: CameraFrameRenderer;
+  app?: Application;
 
   constructor() {
     this.init();
@@ -59,6 +61,24 @@ class PixiRenderer {
       .stroke();
   }
 
+  createStars() {
+    const NUM_STARS = 20;
+    let starsRemaining = NUM_STARS;
+    while (starsRemaining > 0) {
+      starsRemaining -= 1;
+      const starX = Math.round(Math.random() * GAME_WIDTH);
+      const starY = Math.round(Math.random() ** 2 * GAME_HEIGHT);
+      const starSize = Math.random() * 3 + 3;
+
+      const starRect = new Graphics()
+        .rect(0, 0, starSize, starSize)
+        .fill("#eee");
+      starRect.x = starX;
+      starRect.y = starY;
+      this.app!.stage.addChild(starRect);
+    }
+  }
+
   async init() {
     const container = document.getElementById("game-world-container")!;
     const canvas = document.createElement("canvas");
@@ -66,6 +86,7 @@ class PixiRenderer {
     canvas.height = GAME_HEIGHT;
     container.appendChild(canvas);
     const app = new Application();
+    this.app = app;
     await app.init({
       antialias: true,
       width: 1000,
@@ -73,6 +94,19 @@ class PixiRenderer {
       background: "#444",
       canvas,
     });
+
+    const backgroundGradient = new FillGradient(0, 0, 0, 1000);
+    backgroundGradient.addColorStop(0, "#222");
+    backgroundGradient.addColorStop(1, "#444");
+
+    const background = new Graphics()
+      .rect(0, 0, 1000, 1000)
+      .fill(backgroundGradient);
+
+    app.stage.addChild(background);
+
+    this.createStars();
+
     const viewContainer = document.getElementById("view-camera-container")!;
     const goalContainer = document.getElementById("goal-camera-container")!;
     this.viewRenderer = new CameraFrameRenderer(viewContainer);
@@ -123,6 +157,15 @@ class PixiRenderer {
       this.viewConeGraphics.y = this.game.player.y;
 
       this.viewConeGraphics.rotation = this.game.viewDirection || 0;
+      // Clean up
+      Array.from(this.objectsToDraw.keys()).forEach((obj) => {
+        if (obj instanceof BaseGeometry) {
+          if (this.game.visibleObjects.indexOf(obj) === -1) {
+            this.objectsToDraw.get(obj)?.destroy();
+            this.objectsToDraw.delete(obj);
+          }
+        }
+      });
       this.game.visibleObjects.forEach((obj) => {
         if (!this.objectsToDraw.has(obj)) {
           let newGraphics;
