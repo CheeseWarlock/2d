@@ -7,6 +7,11 @@ import {
   Color,
   RenderTexture,
   BlurFilter,
+  Assets,
+  TextureStyle,
+  Spritesheet,
+  Texture,
+  AnimatedSprite,
 } from "pixi.js";
 import Game from "./Game";
 import GameObject from "./gameObjects/IGameObject";
@@ -17,14 +22,6 @@ import BaseGeometry from "./gameObjects/BaseGeometry";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
-
-const ms = async () => {
-  return new Promise<void>((res, rej) => {
-    setTimeout(() => {
-      res();
-    }, 500);
-  });
-};
 
 class PixiRenderer {
   game: Game;
@@ -94,6 +91,56 @@ class PixiRenderer {
       background: "#444",
       canvas,
     });
+    TextureStyle.defaultOptions.scaleMode = "nearest";
+
+    const test = new URL("testsprite2.png", import.meta.url);
+
+    const spriteSheetJson = {
+      frames: {
+        "playerstand.png": {
+          frame: { x: 0, y: 0, w: 10, h: 20 },
+          spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
+          sourceSize: { x: 0, y: 0, w: 10, h: 20 },
+        },
+        "playerwalk.png": {
+          frame: { x: 10, y: 0, w: 10, h: 20 },
+          spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
+          sourceSize: { x: 0, y: 0, w: 10, h: 20 },
+        },
+        "playerhurt.png": {
+          frame: { x: 20, y: 0, w: 10, h: 20 },
+          spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
+          sourceSize: { x: 0, y: 0, w: 10, h: 20 },
+        },
+      },
+
+      animations: {
+        enemy: ["playerstand.png", "playerwalk.png"],
+      },
+
+      meta: {
+        image: test.href,
+        format: "RGBA8888",
+        size: { w: 30, h: 20 },
+        scale: "0.5",
+      },
+    };
+
+    const playerTexture = await Assets.load(test.href);
+
+    const sheet = new Spritesheet(playerTexture, spriteSheetJson);
+    await sheet.parse();
+    const anim = new AnimatedSprite(sheet.animations.enemy);
+    anim.animationSpeed = 0.1;
+    anim.play();
+    anim.anchor.set(0.5);
+    anim.scale.x = -1;
+
+    const nPS = new Sprite(playerTexture);
+    nPS.setSize(20, 40);
+    nPS.anchor.set(0.5);
+
+    this.playerSprite = anim;
 
     const backgroundGradient = new FillGradient(0, 0, 0, 1000);
     backgroundGradient.addColorStop(0, "#222");

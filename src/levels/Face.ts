@@ -16,6 +16,25 @@ const goals = [
       color: "#44e244",
     },
   ],
+  [
+    {
+      start: 0,
+      end: 1,
+      color: "#7799ff",
+    },
+  ],
+  [
+    {
+      start: 0,
+      end: 0.5,
+      color: "#ff3060",
+    },
+    { start: 0.5, end: 1, color: "#7799ff" },
+  ],
+  [
+    { start: 0, end: 0.5, color: "black" },
+    { start: 0.5, end: 1, color: "#7799ff" },
+  ],
 ];
 
 const lineGeometries: LineGeometryProps[] = [];
@@ -24,8 +43,8 @@ const colorGeometries: ColorGeometryProps[] = [
   {
     points: [
       { x: 50, y: 100 },
-      { x: 350, y: 100 },
-      { x: 350, y: 200 },
+      { x: 400, y: 100 },
+      { x: 400, y: 200 },
       { x: 50, y: 200 },
     ],
     color: "#44e244",
@@ -40,19 +59,36 @@ const colorGeometries: ColorGeometryProps[] = [
   },
   {
     points: [
-      { x: 650, y: 100 },
-      { x: 950, y: 100 },
-      { x: 950, y: 200 },
-      { x: 650, y: 200 },
+      { x: 650, y: 50 },
+      { x: 950, y: 50 },
+      { x: 950, y: 350 },
+      { x: 650, y: 350 },
     ],
     color: "#ff3060",
     motion: {
       offset: {
         x: 0,
-        y: 20,
+        y: 15,
       },
       duration: 2500,
       delay: 0,
+    },
+  },
+  {
+    points: [
+      { x: 700, y: 600 },
+      { x: 700, y: 700 },
+      { x: 800, y: 700 },
+      { x: 800, y: 600 },
+    ],
+    color: "#7799ff",
+    motion: {
+      offset: {
+        x: 0,
+        y: 10,
+      },
+      duration: 2500,
+      delay: 1000,
     },
   },
 ];
@@ -60,14 +96,18 @@ const colorGeometries: ColorGeometryProps[] = [
 const groundGeometries: GeometryProps[] = [
   {
     points: [
-      { x: 50, y: 400 },
-      { x: 100, y: 400 },
-      { x: 100, y: 600 },
-      { x: 900, y: 600 },
-      { x: 900, y: 400 },
-      { x: 950, y: 400 },
-      { x: 950, y: 700 },
-      { x: 50, y: 700 },
+      { x: 0, y: 400 },
+      { x: 100, y: 430 },
+      { x: 100, y: 700 },
+      { x: 400, y: 750 },
+      { x: 650, y: 710 },
+      { x: 850, y: 730 },
+      { x: 850, y: 470 },
+      { x: 920, y: 460 },
+      { x: 940, y: 400 },
+      { x: 1000, y: 390 },
+      { x: 1000, y: 1000 },
+      { x: 0, y: 1000 },
     ],
   },
 ];
@@ -77,7 +117,7 @@ const levelData: ILevelFormat = {
   colors: colorGeometries,
   ground: groundGeometries,
   goals,
-  playerPosition: { x: 700, y: 580 },
+  playerPosition: { x: 200, y: 640 },
 };
 
 export default levelData;

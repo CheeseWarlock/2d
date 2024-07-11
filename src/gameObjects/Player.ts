@@ -56,7 +56,7 @@ export default class Player implements GameObject {
   }
 
   handleLateralMovementChecks() {
-    if (this.moveLeft) {
+    if (this.moveLeft && this.x > 10) {
       if (this.acc > 0) {
         // in-air stuff
         const collisionTestLeft = this.world.collisionTest(
@@ -96,7 +96,7 @@ export default class Player implements GameObject {
               : ANGLETHING;
         }
       }
-    } else if (this.moveRight) {
+    } else if (this.moveRight && this.x < 990) {
       if (this.acc > 0) {
         const collisionTestRight = this.world.collisionTest(
           this.x - 6,

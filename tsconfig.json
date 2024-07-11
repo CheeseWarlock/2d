@@ -11,7 +11,7 @@
     ],
     "rootDir": "src",
     "moduleResolution": "node",
-    "target": "ES2017",
+    "target": "es2022",
     "module": "NodeNext",
     "allowImportingTsExtensions": true
   },
