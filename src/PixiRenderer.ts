@@ -26,7 +26,7 @@ const GAME_HEIGHT = 1000;
 class PixiRenderer {
   game: Game;
   objectsToDraw: Map<GameObject, Container> = new Map();
-  playerSprite: Container;
+  playerSprite?: AnimatedSprite;
   viewConeGraphics: Container;
   mousePosition?: { x: number; y: number };
   viewRenderer?: CameraFrameRenderer;
@@ -36,7 +36,6 @@ class PixiRenderer {
   constructor() {
     this.init();
     this.game = new Game();
-    this.playerSprite = new Graphics().rect(-10, -20, 20, 40).fill("white");
     this.viewConeGraphics = new Graphics()
       .setStrokeStyle({ width: 4, cap: "square" })
       .poly([
@@ -194,14 +193,29 @@ class PixiRenderer {
     app.ticker.add(() => {
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
+
+      this.playerSprite!.scale.x =
+        (this.game.viewDirection || 0) < -(Math.PI / 2) ||
+        (this.game.viewDirection || 0) > Math.PI / 2
+          ? -1
+          : 1;
+      if (this.game.player.isWalking) {
+        if (!this.playerSprite!.playing) {
+          this.playerSprite!.currentFrame = 1;
+        }
+        this.playerSprite!.play();
+      } else {
+        this.playerSprite!.currentFrame = 0;
+        this.playerSprite!.stop();
+      }
       this.viewRenderer!.drawCamera(this.game.cameraFrame);
       this.goalRenderer!.drawCamera(
         this.game.goals[this.game.currentGoalIndex]
       );
-      this.playerSprite.x = this.game.player.x;
-      this.playerSprite.y = this.game.player.y;
-      this.viewConeGraphics.x = this.game.player.x;
-      this.viewConeGraphics.y = this.game.player.y;
+      this.playerSprite!.x = this.game.player.x;
+      this.playerSprite!.y = this.game.player.y;
+      this.viewConeGraphics.x = this.game.viewOrigin!.x || 0;
+      this.viewConeGraphics.y = this.game.viewOrigin!.y || 0;
 
       this.viewConeGraphics.rotation = this.game.viewDirection || 0;
       // Clean up

@@ -14,6 +14,8 @@ export default class Player implements GameObject {
   jump: boolean = false;
   isOnGround: boolean = false;
   isDead: boolean = false;
+  isLookingLeft: boolean = false;
+  isWalking: boolean = false;
 
   constructor(x: number, y: number, world: World) {
     this.world = world;
@@ -56,6 +58,7 @@ export default class Player implements GameObject {
   }
 
   handleLateralMovementChecks() {
+    this.isWalking = false;
     if (this.moveLeft && this.x > 10) {
       if (this.acc > 0) {
         // in-air stuff
@@ -69,6 +72,7 @@ export default class Player implements GameObject {
         );
         if (!collisionTestLeft.collisionFound) {
           this.x -= HSPEED;
+          this.isWalking = true;
         }
       } else {
         const collisionTest = this.world.collisionTest(
@@ -88,6 +92,7 @@ export default class Player implements GameObject {
           "ground"
         );
         if (!collisionTest2.collisionFound) {
+          this.isWalking = true;
           this.x -= HSPEED;
           this.y -= ANGLETHING;
           this.y +=
@@ -107,6 +112,7 @@ export default class Player implements GameObject {
           "ground"
         );
         if (!collisionTestRight.collisionFound) {
+          this.isWalking = true;
           this.x += HSPEED;
         }
       } else {
@@ -127,6 +133,7 @@ export default class Player implements GameObject {
           "ground"
         );
         if (!collisionTest2.collisionFound) {
+          this.isWalking = true;
           this.x += HSPEED;
           this.y -= ANGLETHING;
           this.y +=

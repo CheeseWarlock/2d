@@ -21,7 +21,14 @@ let levelIndex = 0;
 
 class Game {
   visibleObjects: BaseGeometry[] = [];
+  /**
+   * The focus position (i.e. of the cursor)
+   */
   focusPoint?: Point;
+  /**
+   * The origin point for the view cone, based on the player's position and direction.
+   */
+  viewOrigin?: Point = { x: 0, y: 0 };
   viewDirection?: number;
   world: World = new World();
   player: Player = new Player(0, 0, this.world);
@@ -75,9 +82,21 @@ class Game {
 
     this.world.update();
     if (this.focusPoint) {
-      this.viewDirection = Math.atan2(
+      const centerToFocusPoint = Math.atan2(
         this.focusPoint.y - this.player.y,
         this.focusPoint.x - this.player.x
+      );
+      const isLeft =
+        centerToFocusPoint < -(Math.PI / 2) || centerToFocusPoint > Math.PI / 2;
+
+      if (isLeft) {
+        this.viewOrigin = { x: this.player.x - 9, y: this.player.y - 7 };
+      } else {
+        this.viewOrigin = { x: this.player.x + 9, y: this.player.y - 7 };
+      }
+      this.viewDirection = Math.atan2(
+        this.focusPoint.y - this.viewOrigin!.y,
+        this.focusPoint.x - this.viewOrigin!.x
       );
     }
 
@@ -123,7 +142,7 @@ class Game {
       this.fov * 1.25
     );
     const cameraFrame = this.world.calculatePhotoContent(
-      { x: this.player.x, y: this.player.y },
+      { x: this.viewOrigin!.x, y: this.viewOrigin!.y },
       this.viewDirection,
       this.fov
     );

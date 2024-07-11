@@ -10,10 +10,9 @@
       "dom"
     ],
     "rootDir": "src",
-    "moduleResolution": "node",
-    "target": "es2022",
-    "module": "NodeNext",
-    "allowImportingTsExtensions": true
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "target": "es2022"
   },
   "exclude": ["**/*.test.ts", "./dist/**/*", "./coverage/**/*", "jest.config.cjs"]
 }
