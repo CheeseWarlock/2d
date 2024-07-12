@@ -48,11 +48,35 @@ export function distance(x1: number, y1: number, x2: number, y2: number) {
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
+/**
+ * Limits a direction so it won't be too close to vertical.
+ * i.e. for camera direction
+ *
+ * @param direction the direction to limit
+ * @param disallowedRange how far away from vertical to limit the direction
+ * @param facing specify a facing direction rather than determining it automatically
+ * @returns the limited direction
+ */
 export function limitNearVerticalDirection(
   direction: number,
-  disallowedRange: number
+  disallowedRange: number,
+  facing?: "left" | "right" | undefined
 ) {
   const VERTICAL = 0.5 * Math.PI;
+  if (facing === "right") {
+    return Math.min(
+      Math.max(-VERTICAL + disallowedRange, direction),
+      VERTICAL - disallowedRange
+    );
+  } else if (facing === "left") {
+    if (direction > 0) {
+      return Math.max(direction, VERTICAL + disallowedRange);
+    } else {
+      return Math.min(direction, -VERTICAL - disallowedRange);
+    }
+  }
+
+  // Facing was unspecified
   if (direction > VERTICAL - disallowedRange && direction <= VERTICAL) {
     return VERTICAL - disallowedRange;
   } else if (direction > VERTICAL && direction < VERTICAL + disallowedRange) {

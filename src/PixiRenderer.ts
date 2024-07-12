@@ -12,6 +12,8 @@ import {
   Spritesheet,
   Texture,
   AnimatedSprite,
+  Filter,
+  GlProgram,
 } from "pixi.js";
 import Game from "./Game";
 import GameObject from "./gameObjects/IGameObject";
@@ -19,6 +21,8 @@ import ColorGeometry from "./gameObjects/ColorGeometry";
 import GroundGeometry from "./gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
 import BaseGeometry from "./gameObjects/BaseGeometry";
+import { AdvancedBloomFilter } from "pixi-filters";
+import aFilter from "./GlowFilter";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
@@ -158,6 +162,8 @@ class PixiRenderer {
     this.viewRenderer = new CameraFrameRenderer(viewContainer);
     this.goalRenderer = new CameraFrameRenderer(goalContainer);
 
+    app.stage.filters = [aFilter];
+
     document.onmousemove = (ev) => {
       const canvasX =
         canvas.getBoundingClientRect().left +
@@ -186,7 +192,7 @@ class PixiRenderer {
     app.stage.addChild(this.viewConeGraphics);
     this.viewConeGraphics.x = 10;
     this.viewConeGraphics.y = 300;
-    this.viewConeGraphics.alpha = 0.5;
+    // this.viewConeGraphics.alpha = 0.5;
     this.viewConeGraphics.zIndex = 1;
 
     // Listen for frame updates
