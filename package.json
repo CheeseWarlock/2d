@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@parcel/transformer-glsl": "^2.12.0",
     "@timohausmann/quadtree-ts": "^2.2.2",
     "@tweenjs/tween.js": "^23.1.2",
     "cookie-parser": "~1.4.4",

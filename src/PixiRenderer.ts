@@ -21,11 +21,12 @@ import ColorGeometry from "./gameObjects/ColorGeometry";
 import GroundGeometry from "./gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
 import BaseGeometry from "./gameObjects/BaseGeometry";
-import { AdvancedBloomFilter } from "pixi-filters";
-import aFilter from "./GlowFilter";
+import { ShockwaveFilter } from "./renderer/GlowFilter";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
+
+const aFilter = new ShockwaveFilter();
 
 class PixiRenderer {
   game: Game;
@@ -197,6 +198,7 @@ class PixiRenderer {
 
     // Listen for frame updates
     app.ticker.add(() => {
+      aFilter.time += 0.01;
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
