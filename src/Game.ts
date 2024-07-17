@@ -28,7 +28,7 @@ class Game {
   /**
    * The origin point for the view cone, based on the player's position and direction.
    */
-  viewOrigin?: Point = { x: 0, y: 0 };
+  viewOrigin?: Point;
   viewDirection?: number;
   world: World = new World();
   player: Player = new Player(0, 0, this.world);

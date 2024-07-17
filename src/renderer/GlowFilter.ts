@@ -10,7 +10,11 @@ import {
   Texture,
 } from "pixi.js";
 
-export class ShockwaveFilter extends Filter {
+/**
+ * A filter which adds a glow effect to all non-greyscale colors.
+ * To animate it, update the time property.
+ */
+export class GlowFilter extends Filter {
   public uniforms: {
     uTime: number;
     uCenter: PointData;

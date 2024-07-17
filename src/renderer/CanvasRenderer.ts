@@ -1,8 +1,8 @@
-import CameraFrame from "./CameraFrame.js";
-import Game from "./Game.js";
-import GroundGeometry from "./gameObjects/GroundGeometry.js";
-import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
-import ColorGeometry from "./gameObjects/ColorGeometry.js";
+import CameraFrame from "../CameraFrame.js";
+import Game from "../Game.js";
+import GroundGeometry from "../gameObjects/GroundGeometry.js";
+import ColorLineGeometry from "../gameObjects/ColorLineGeometry.js";
+import ColorGeometry from "../gameObjects/ColorGeometry.js";
 import CameraFrameRenderer from "./CameraFrameRenderer.js";
 
 const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
@@ -19,6 +19,9 @@ type StarDetail = {
   size: number;
 };
 
+/**
+ * Old renderer, using Canvas.
+ */
 export default class Renderer {
   game: Game;
   renderingContext: CanvasRenderingContext2D;

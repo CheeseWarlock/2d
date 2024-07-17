@@ -1,9 +1,13 @@
-import CameraFrame from "./CameraFrame";
+import CameraFrame from "../CameraFrame";
 
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
 const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 
+/**
+ * Special renderer for a camera frame (the view or the goal).
+ * Uses a canvas under the hood.
+ */
 class CameraFrameRenderer {
   context: CanvasRenderingContext2D;
 

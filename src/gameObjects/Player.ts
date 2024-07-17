@@ -14,7 +14,6 @@ export default class Player implements GameObject {
   jump: boolean = false;
   isOnGround: boolean = false;
   isDead: boolean = false;
-  isLookingLeft: boolean = false;
   isWalking: boolean = false;
 
   constructor(x: number, y: number, world: World) {

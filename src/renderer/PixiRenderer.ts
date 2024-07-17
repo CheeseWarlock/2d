@@ -5,28 +5,23 @@ import {
   Container,
   FillGradient,
   Color,
-  RenderTexture,
-  BlurFilter,
   Assets,
   TextureStyle,
   Spritesheet,
-  Texture,
   AnimatedSprite,
-  Filter,
-  GlProgram,
 } from "pixi.js";
-import Game from "./Game";
-import GameObject from "./gameObjects/IGameObject";
-import ColorGeometry from "./gameObjects/ColorGeometry";
-import GroundGeometry from "./gameObjects/GroundGeometry";
+import Game from "../Game";
+import GameObject from "../gameObjects/IGameObject";
+import ColorGeometry from "../gameObjects/ColorGeometry";
+import GroundGeometry from "../gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
-import BaseGeometry from "./gameObjects/BaseGeometry";
-import { ShockwaveFilter } from "./renderer/GlowFilter";
+import BaseGeometry from "../gameObjects/BaseGeometry";
+import { GlowFilter } from "./GlowFilter";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
 
-const aFilter = new ShockwaveFilter();
+const glowFilter = new GlowFilter();
 
 class PixiRenderer {
   game: Game;
@@ -97,7 +92,7 @@ class PixiRenderer {
     });
     TextureStyle.defaultOptions.scaleMode = "nearest";
 
-    const test = new URL("testsprite2.png", import.meta.url);
+    const test = new URL("../images/player.png", import.meta.url);
 
     const spriteSheetJson = {
       frames: {
@@ -163,14 +158,11 @@ class PixiRenderer {
     this.viewRenderer = new CameraFrameRenderer(viewContainer);
     this.goalRenderer = new CameraFrameRenderer(goalContainer);
 
-    app.stage.filters = [aFilter];
+    app.stage.filters = [glowFilter];
 
     document.onmousemove = (ev) => {
-      const canvasX =
-        canvas.getBoundingClientRect().left +
-        document.documentElement.scrollTop;
-      const canvasY =
-        canvas.getBoundingClientRect().top + document.documentElement.scrollTop;
+      const canvasX = canvas.getBoundingClientRect().left;
+      const canvasY = canvas.getBoundingClientRect().top;
       if (!this.mousePosition) {
         this.mousePosition = { x: 0, y: 0 };
       }
@@ -178,7 +170,7 @@ class PixiRenderer {
       this.mousePosition.y = ev.clientY - canvasY;
     };
 
-    canvas.onclick = () => {
+    document.onclick = () => {
       this.game.clicked = true;
     };
 
@@ -193,12 +185,12 @@ class PixiRenderer {
     app.stage.addChild(this.viewConeGraphics);
     this.viewConeGraphics.x = 10;
     this.viewConeGraphics.y = 300;
-    // this.viewConeGraphics.alpha = 0.5;
+    this.viewConeGraphics.alpha = 0.5;
     this.viewConeGraphics.zIndex = 1;
 
     // Listen for frame updates
     app.ticker.add(() => {
-      aFilter.time += 0.02;
+      glowFilter.time += 0.02;
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
@@ -222,10 +214,15 @@ class PixiRenderer {
       );
       this.playerSprite!.x = this.game.player.x;
       this.playerSprite!.y = this.game.player.y;
-      this.viewConeGraphics.x = this.game.viewOrigin!.x || 0;
-      this.viewConeGraphics.y = this.game.viewOrigin!.y || 0;
+      if (this.game.viewOrigin) {
+        this.viewConeGraphics.visible = true;
+        this.viewConeGraphics.x = this.game.viewOrigin!.x || 0;
+        this.viewConeGraphics.y = this.game.viewOrigin!.y || 0;
+        this.viewConeGraphics.rotation = this.game.viewDirection || 0;
+      } else {
+        this.viewConeGraphics.visible = false;
+      }
 
-      this.viewConeGraphics.rotation = this.game.viewDirection || 0;
       // Clean up
       Array.from(this.objectsToDraw.keys()).forEach((obj) => {
         if (obj instanceof BaseGeometry) {

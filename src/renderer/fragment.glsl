@@ -102,7 +102,7 @@ float getNoise(vec2 fragCoord)
 vec4 convolute(vec2 uv, bool noisy)
 {
     vec4 color = vec4(0);
-		int size = 14;
+		int size = 10;
 		float pixelsInWindow = pow((float(size) * 2. + 1.), 2.);
 		vec4 currentColor = texture(uTexture, vTextureCoord);
 		
@@ -136,7 +136,7 @@ vec4 convolute(vec2 uv, bool noisy)
 			}
 			float distance = pow(nearestColoredPixel, 0.5);
 			float noiseProportion = getNoise(uv);
-			float proximityProportion = pow(1. - clamp(distance / 13., 0., 1.), 2.) * noiseProportion * 0.75;
+			float proximityProportion = pow(1. - clamp(distance / 8., 0., 1.), 2.) * noiseProportion * 0.75;
 			// return vec4(proximityProportion, proximityProportion, proximityProportion, 1.);
 			color = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
     	return color;
@@ -145,8 +145,5 @@ vec4 convolute(vec2 uv, bool noisy)
 
 void main(void)
 {
-  // 
   finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
-  // float aa = getNoise(vec2(aaPosition.x, aaPosition.y));
-  // finalColor = vec4(aa, aa, aa, 1.0);
 }

@@ -1,4 +1,4 @@
-import PixiRenderer from "./PixiRenderer.js";
+import PixiRenderer from "./renderer/PixiRenderer.js";
 
 // @ts-ignore
 window.addEventListener("parcelhmraccept", () => {
