@@ -10,141 +10,143 @@ uniform float uTime;
 uniform sampler2D uTexture;
 uniform float uTolerance;
 
-// implementation of MurmurHash (https://sites.google.com/site/murmurhash/) for a 
-// single unsigned integer.
-
-uint hash(uint x, uint seed) {
-    const uint m = 0x5bd1e995U;
-    uint hash = seed;
-    // process input
-    uint k = x;
-    k *= m;
-    k ^= k >> 24;
-    k *= m;
-    hash *= m;
-    hash ^= k;
-    // some final mixing
-    hash ^= hash >> 13;
-    hash *= m;
-    hash ^= hash >> 15;
-    return hash;
+vec3 random3(vec3 c) {
+	float j = 4096.0*sin(dot(c,vec3(17.0, 59.4, 15.0)));
+	vec3 r;
+	r.z = fract(512.0*j);
+	j *= .125;
+	r.x = fract(512.0*j);
+	j *= .125;
+	r.y = fract(512.0*j);
+	return r-0.5;
 }
 
-// implementation of MurmurHash (https://sites.google.com/site/murmurhash/) for a  
-// 2-dimensional unsigned integer input vector.
+/* skew constants for 3d simplex functions */
+const float F3 =  0.3333333;
+const float G3 =  0.1666667;
 
-uint hash(uvec2 x, uint seed){
-    const uint m = 0x5bd1e995U;
-    uint hash = seed;
-    // process first vector element
-    uint k = x.x; 
-    k *= m;
-    k ^= k >> 24;
-    k *= m;
-    hash *= m;
-    hash ^= k;
-    // process second vector element
-    k = x.y; 
-    k *= m;
-    k ^= k >> 24;
-    k *= m;
-    hash *= m;
-    hash ^= k;
-	// some final mixing
-    hash ^= hash >> 13;
-    hash *= m;
-    hash ^= hash >> 15;
-    return hash;
+/* 3d simplex noise */
+float simplex3d(vec3 p) {
+	 /* 1. find current tetrahedron T and it's four vertices */
+	 /* s, s+i1, s+i2, s+1.0 - absolute skewed (integer) coordinates of T vertices */
+	 /* x, x1, x2, x3 - unskewed coordinates of p relative to each of T vertices*/
+	 
+	 /* calculate s and x */
+	 vec3 s = floor(p + dot(p, vec3(F3)));
+	 vec3 x = p - s + dot(s, vec3(G3));
+	 
+	 /* calculate i1 and i2 */
+	 vec3 e = step(vec3(0.0), x - x.yzx);
+	 vec3 i1 = e*(1.0 - e.zxy);
+	 vec3 i2 = 1.0 - e.zxy*(1.0 - e);
+	 	
+	 /* x1, x2, x3 */
+	 vec3 x1 = x - i1 + G3;
+	 vec3 x2 = x - i2 + 2.0*G3;
+	 vec3 x3 = x - 1.0 + 3.0*G3;
+	 
+	 /* 2. find four surflets and store them in d */
+	 vec4 w, d;
+	 
+	 /* calculate surflet weights */
+	 w.x = dot(x, x);
+	 w.y = dot(x1, x1);
+	 w.z = dot(x2, x2);
+	 w.w = dot(x3, x3);
+	 
+	 /* w fades from 0.6 at the center of the surflet to 0.0 at the margin */
+	 w = max(0.6 - w, 0.0);
+	 
+	 /* calculate surflet components */
+	 d.x = dot(random3(s), x);
+	 d.y = dot(random3(s + i1), x1);
+	 d.z = dot(random3(s + i2), x2);
+	 d.w = dot(random3(s + 1.0), x3);
+	 
+	 /* multiply d by w^4 */
+	 w *= w;
+	 w *= w;
+	 d *= w;
+	 
+	 /* 3. return the sum of the four surflets */
+	 return dot(d, vec4(52.0));
 }
 
+/* const matrices for 3d rotation */
+const mat3 rot1 = mat3(-0.37, 0.36, 0.85,-0.14,-0.93, 0.34,0.92, 0.01,0.4);
+const mat3 rot2 = mat3(-0.55,-0.39, 0.74, 0.33,-0.91,-0.24,0.77, 0.12,0.63);
+const mat3 rot3 = mat3(-0.71, 0.52,-0.47,-0.08,-0.72,-0.68,-0.7,-0.45,0.56);
 
-vec2 gradientDirection(uint hash) {
-    switch (int(hash) & 3) { // look at the last two bits to pick a gradient direction
-    case 0:
-        return vec2(1.0, 1.0);
-    case 1:
-        return vec2(-1.0, 1.0);
-    case 2:
-        return vec2(1.0, -1.0);
-    case 3:
-        return vec2(-1.0, -1.0);
-    }
+/* directional artifacts can be reduced by rotating each octave */
+float simplex3d_fractal(vec3 m) {
+    return   0.5333333*simplex3d(m*rot1)
+			+0.2666667*simplex3d(2.0*m*rot2)
+			+0.1333333*simplex3d(4.0*m*rot3)
+			+0.0666667*simplex3d(8.0*m);
 }
 
-float interpolate(float value1, float value2, float value3, float value4, vec2 t) {
-    return mix(mix(value1, value2, t.x), mix(value3, value4, t.x), t.y);
+float getNoise(vec2 fragCoord)
+{
+	vec2 p = fragCoord.xy/aaInputSize.x;
+	vec3 p3 = vec3(p, uTime*0.025);
+	
+	float value;
+	
+	value = simplex3d(p3*32.0);
+	
+	value = 0.5 + 0.5 * value;
+	
+	return value;
 }
 
-vec2 fade(vec2 t) {
-    // 6t^5 - 15t^4 + 10t^3
-	return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
-}
-
-float perlinNoise(vec2 position, uint seed) {
-    vec2 floorPosition = floor(position);
-    vec2 fractPosition = position - floorPosition;
-    uvec2 cellCoordinates = uvec2(floorPosition);
-    float value1 = dot(gradientDirection(hash(cellCoordinates, seed)), fractPosition);
-    float value2 = dot(gradientDirection(hash((cellCoordinates + uvec2(1, 0)), seed)), fractPosition - vec2(1.0, 0.0));
-    float value3 = dot(gradientDirection(hash((cellCoordinates + uvec2(0, 1)), seed)), fractPosition - vec2(0.0, 1.0));
-    float value4 = dot(gradientDirection(hash((cellCoordinates + uvec2(1, 1)), seed)), fractPosition - vec2(1.0, 1.0));
-    return interpolate(value1, value2, value3, value4, fade(fractPosition));
-}
-
-float perlinNoise(vec2 position, int frequency, int octaveCount, float persistence, float lacunarity, uint seed) {
-    float value = 0.0;
-    float amplitude = 1.0;
-    float currentFrequency = float(frequency);
-    uint currentSeed = seed;
-    for (int i = 0; i < octaveCount; i++) {
-        currentSeed = hash(currentSeed, 0x0U); // create a new seed for each octave
-        value += perlinNoise(position * currentFrequency, currentSeed) * amplitude;
-        amplitude *= persistence;
-        currentFrequency *= lacunarity;
-    }
-    return value;
-}
-
-float mainImage(vec2 fragCoord) {
-    vec2 position = fragCoord / aaInputSize.xy;
-    position.x *= aaInputSize.x / aaInputSize.y;
-    position += uTime * 0.25;
-    uint seed = 0x578438adU; // can be set to something else if you want a different set of random values
-    // float frequency = 16.0;
-    // float value = perlinNoise(position * frequency, seed); // single octave perlin noise
-    float value = perlinNoise(position, 10, 6, 0.5, 2.0, seed); // multiple octaves
-    value = (value + 0.5); // convert from range [-1, 1] to range [0, 1]
-    return value;
-}
-
-vec4 convolute(vec2 uv, mat3 kernel)
+vec4 convolute(vec2 uv, bool noisy)
 {
     vec4 color = vec4(0);
+		int size = 14;
+		float pixelsInWindow = pow((float(size) * 2. + 1.), 2.);
+		vec4 currentColor = texture(uTexture, vTextureCoord);
+		
+		if (currentColor.r != currentColor.b || currentColor.r != currentColor.g || currentColor.g != currentColor.b) {
+			return currentColor;
+		} else {
+			float nearestColoredPixel = 10000.0;
+			vec4 nearbyColor = currentColor;
+			int nearbys = 0;
+			for (int x = 0; x < (size * 2 + 1); x++)
+				{
+						for (int y = 0; y < (size * 2 + 1); y++)
+						{
+								vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
+								vec4 tryColor = texture(uTexture, vTextureCoord+offset);
 
-    vec3 direction = vec3(-1.0, 0.0, 1.0);    
-    for (int x = 0; x < 3; x++)
-    {
-        for (int y = 0; y < 3; y++)
-        {
-            vec2 offset = vec2(direction[x], direction[y]) / aaInputSize.xy * 10.0;
-            vec4 tryColor = texture(uTexture, vTextureCoord+offset) * kernel[x][y];
+								if (tryColor.r != tryColor.b || tryColor.r != tryColor.g || tryColor.g != tryColor.b) {
+									nearestColoredPixel = min(nearestColoredPixel, (pow(float(x - size), 2.) + pow(float(y - size), 2.))); // squared distance
+									if (nearbys == 0) {
+										nearbyColor = tryColor;
+									} else {
+										nearbyColor += tryColor;
+									}
+									nearbys += 1;
+								}
+						}
+				}
 
-            if (tryColor.r != tryColor.b || tryColor.r != tryColor.g || tryColor.g != tryColor.b) {
-              float amount = mainImage(uv);
-              color += (tryColor * amount);
-              color += texture(uTexture, vTextureCoord) * kernel[x][y] * (1.0 - amount);
-            } else {
-              color += texture(uTexture, vTextureCoord) * kernel[x][y];
-            }
-        }
-    }
-    return color;
+			if (nearbys > 1) {
+				nearbyColor /= vec4(float(nearbys), float(nearbys), float(nearbys), 1.0);
+			}
+			float distance = pow(nearestColoredPixel, 0.5);
+			float noiseProportion = getNoise(uv);
+			float proximityProportion = pow(1. - clamp(distance / 13., 0., 1.), 2.) * noiseProportion * 0.75;
+			// return vec4(proximityProportion, proximityProportion, proximityProportion, 1.);
+			color = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
+    	return color;
+		}
 }
 
 void main(void)
 {
-  // finalColor = vec4(uTime, uTime, uTime, 1.0);
-  finalColor = convolute(vec2(aaPosition.x, aaPosition.y), mat3(1, 2, 1, 2, 4, 2, 1, 2, 1) * 0.0625);
-  // float aa = mainImage(vec2(aaPosition.x, aaPosition.y));
+  // 
+  finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
+  // float aa = getNoise(vec2(aaPosition.x, aaPosition.y));
   // finalColor = vec4(aa, aa, aa, 1.0);
 }

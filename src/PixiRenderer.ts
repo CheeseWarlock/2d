@@ -198,7 +198,7 @@ class PixiRenderer {
 
     // Listen for frame updates
     app.ticker.add(() => {
-      aFilter.time += 0.01;
+      aFilter.time += 0.02;
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
