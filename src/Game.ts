@@ -2,16 +2,13 @@ import Player from "./gameObjects/Player.js";
 import CameraFrame, { Segment } from "./CameraFrame.js";
 import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import { limitNearVerticalDirection } from "./utils.js";
-import canyonLevel from "./levels/Canyon.js";
-import faceLevel from "./levels/Face.js";
-import jumpLevel from "./levels/Jump.js";
 import World from "./World.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point } from "./types.js";
 
-const GAME_LEVELS = [faceLevel, canyonLevel];
+import { GAME_LEVELS } from "./levels/levelIndex.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
@@ -38,6 +35,7 @@ class Game {
   cameraFrame: CameraFrame = new CameraFrame();
   goals: CameraFrame[] = [];
   currentGoalIndex = 0;
+  timeSinceLastPhoto = 100;
 
   constructor() {
     this.loadLevel(0);
@@ -48,9 +46,10 @@ class Game {
     this.goals = level.goals.map((goal) => new CameraFrame(goal));
     this.world = new World();
     level.ground.forEach((g) => {
-      const geo = new GroundGeometry([
-        ...g.points.map((m) => ({ x: m.x, y: m.y })),
-      ]);
+      const geo = new GroundGeometry(
+        [...g.points.map((m) => ({ x: m.x, y: m.y }))],
+        g.color
+      );
       this.world.addGeometry(geo);
     });
     level.lines.forEach((l) => {
@@ -109,7 +108,9 @@ class Game {
     if (this.player.isDead) {
       this.restartCurrentLevel();
     }
+    this.timeSinceLastPhoto += 1;
     if (this.clicked) {
+      this.timeSinceLastPhoto = 0;
       this.clicked = false;
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]

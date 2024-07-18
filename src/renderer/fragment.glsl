@@ -7,6 +7,8 @@ in vec4 outputFrame;
 in vec4 aaInputSize;
 
 uniform float uTime;
+uniform float white;
+uniform float black;
 uniform sampler2D uTexture;
 uniform float uTolerance;
 
@@ -136,7 +138,7 @@ vec4 convolute(vec2 uv, bool noisy)
 			}
 			float distance = pow(nearestColoredPixel, 0.5);
 			float noiseProportion = getNoise(uv);
-			float proximityProportion = pow(1. - clamp(distance / 8., 0., 1.), 2.) * noiseProportion * 0.75;
+			float proximityProportion = pow(1. - clamp(distance / 12., 0., 1.), 2.) * noiseProportion * 0.75;
 			// return vec4(proximityProportion, proximityProportion, proximityProportion, 1.);
 			color = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
     	return color;
@@ -146,4 +148,5 @@ vec4 convolute(vec2 uv, bool noisy)
 void main(void)
 {
   finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
+	finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
 }

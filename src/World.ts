@@ -7,7 +7,6 @@ import GameObject from "./gameObjects/IGameObject.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import {
   Quadtree,
-  Line,
   Rectangle,
 } from "@timohausmann/quadtree-ts/src/index.esm.js";
 

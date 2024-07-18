@@ -34,7 +34,6 @@ class PixiRenderer {
   app?: Application;
 
   constructor() {
-    this.init();
     this.game = new Game();
     this.viewConeGraphics = new Graphics()
       .setStrokeStyle({ width: 4, cap: "square" })
@@ -55,6 +54,7 @@ class PixiRenderer {
       .moveTo(0, 0)
       .lineTo(2000, 0)
       .stroke();
+    this.init();
   }
 
   createStars() {
@@ -92,7 +92,7 @@ class PixiRenderer {
     });
     TextureStyle.defaultOptions.scaleMode = "nearest";
 
-    const test = new URL("../images/player.png", import.meta.url);
+    const playerSprite = new URL("../images/player.png", import.meta.url);
 
     const spriteSheetJson = {
       frames: {
@@ -118,14 +118,14 @@ class PixiRenderer {
       },
 
       meta: {
-        image: test.href,
+        image: playerSprite.href,
         format: "RGBA8888",
         size: { w: 30, h: 20 },
         scale: "0.5",
       },
     };
 
-    const playerTexture = await Assets.load(test.href);
+    const playerTexture = await Assets.load(playerSprite.href);
 
     const sheet = new Spritesheet(playerTexture, spriteSheetJson);
     await sheet.parse();
@@ -170,7 +170,7 @@ class PixiRenderer {
       this.mousePosition.y = ev.clientY - canvasY;
     };
 
-    document.onclick = () => {
+    document.onmousedown = () => {
       this.game.clicked = true;
     };
 
@@ -191,6 +191,10 @@ class PixiRenderer {
     // Listen for frame updates
     app.ticker.add(() => {
       glowFilter.time += 0.02;
+      glowFilter.white = Math.min(
+        1,
+        Math.max(0, 0.7 - this.game.timeSinceLastPhoto / 16)
+      );
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
@@ -249,7 +253,7 @@ class PixiRenderer {
               .poly(
                 obj.lineSegments.map((seg) => [seg.from.x, seg.from.y]).flat()
               )
-              .fill("black");
+              .fill(obj.color);
           } else {
             newGraphics = new Graphics().circle(0, 0, 50).fill("black");
           }

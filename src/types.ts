@@ -14,6 +14,7 @@ export type Motion = {
 
 export type GeometryProps = {
   points: Point[];
+  color?: string;
 };
 
 export type LineGeometryProps = {

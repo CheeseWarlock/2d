@@ -5,6 +5,9 @@ import {
   LineGeometryProps,
 } from "../types";
 
+/**
+ * A JSON format defining level data.
+ */
 export default interface ILevelFormat {
   ground: GeometryProps[];
   colors: ColorGeometryProps[];

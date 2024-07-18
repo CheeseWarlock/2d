@@ -17,12 +17,12 @@ import {
 export class GlowFilter extends Filter {
   public uniforms: {
     uTime: number;
-    uCenter: PointData;
-    uSpeed: number;
-    uWave: Float32Array;
+    white: number;
+    black: number;
   };
 
   public time: number;
+  public white: number = 0.5;
 
   constructor() {
     const glProgram = GlProgram.from({
@@ -34,13 +34,15 @@ export class GlowFilter extends Filter {
     super({
       glProgram,
       resources: {
-        shockwaveUniforms: {
+        glowUniforms: {
           uTime: { value: 0, type: "f32" },
+          white: { value: 0.5, type: "f32" },
+          black: { value: 0, type: "f32" },
         },
       },
     });
     this.time = 0;
-    this.uniforms = this.resources.shockwaveUniforms.uniforms;
+    this.uniforms = this.resources.glowUniforms.uniforms;
   }
 
   public override apply(
@@ -50,6 +52,7 @@ export class GlowFilter extends Filter {
     clearMode: boolean
   ): void {
     this.uniforms.uTime = this.time;
+    this.uniforms.white = this.white;
     filterManager.applyFilter(this, input, output, clearMode);
   }
 }

@@ -3,6 +3,10 @@
   <head>
     <title>Colors Game</title>
     <style type="text/css">
+      @keyframes action {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50px); }
+}
       body {
         background-color: #aaa;
         margin: 50px;
@@ -11,6 +15,8 @@
       canvas {
         margin: 0 30px;
         border-radius: 12px;
+        background-color: #444;
+        box-shadow: 1px 3px 6px rgba(0,0,0,40%);
       }
 
       #container {
@@ -33,6 +39,8 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        animation: .2s cubic-bezier(0, .1, .5, 1.00) infinite alternate action;
+        position: relative;
       }
     </style>
   </head>
