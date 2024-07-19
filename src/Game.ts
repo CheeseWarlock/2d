@@ -11,6 +11,7 @@ import { Point } from "./types.js";
 import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
+import ILevelFormat from "./levels/ILevelFormat.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
@@ -42,6 +43,7 @@ class Game {
   goals: CameraFrame[] = [];
   currentGoalIndex = 0;
   takePhoto = false;
+  levelManager: LevelManager = new LevelManager();
 
   constructor() {
     this.loadLevel(0);
@@ -51,12 +53,18 @@ class Game {
   }
 
   loadLevel(index: number) {
-    const lm = new LevelManager();
-    lm.currentLevelIndex = index;
+    this.levelManager.currentLevelIndex = index;
 
-    const json = lm.export();
-    const data = lm.import(json);
+    const json = this.levelManager.export();
+    const data = this.levelManager.import(json);
 
+    this.player = data.player;
+    this.goals = data.goals;
+    this.world = data.world;
+    this.visibleObjects = [...this.world.geometryObjects];
+  }
+
+  loadLevel2(data: { world: World; goals: CameraFrame[]; player: Player }) {
     this.player = data.player;
     this.goals = data.goals;
     this.world = data.world;

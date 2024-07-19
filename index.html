@@ -47,6 +47,13 @@
       .camera-container-bounce {
         animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate action;
       }
+
+      #debug-container {
+        position: absolute;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+      }
     </style>
   </head>
   <body>
@@ -58,6 +65,9 @@
       <div id="goal-camera-container" class="camera-container">
         <span class="header-text">Goal</span>
       </div>
+    </div>
+    <div id="debug-container">
+
     </div>
     <script type="module" src="./src/index.ts"></script>
   </body>
