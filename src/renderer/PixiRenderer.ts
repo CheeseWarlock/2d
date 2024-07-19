@@ -32,6 +32,7 @@ class PixiRenderer {
   viewRenderer?: CameraFrameRenderer;
   goalRenderer?: CameraFrameRenderer;
   app?: Application;
+  timeSinceLastPhoto: number = 100;
 
   constructor() {
     this.game = new Game();
@@ -187,13 +188,22 @@ class PixiRenderer {
     this.viewConeGraphics.y = 300;
     this.viewConeGraphics.alpha = 0.5;
     this.viewConeGraphics.zIndex = 1;
+    this.game.events.on("goalAchieved", () => {
+      goalContainer.classList.remove("camera-container-bounce");
+      goalContainer.offsetHeight;
+      goalContainer.classList.add("camera-container-bounce");
+    });
+    this.game.events.on("photoTaken", () => {
+      this.timeSinceLastPhoto = 0;
+    });
 
     // Listen for frame updates
     app.ticker.add(() => {
+      this.timeSinceLastPhoto += 1;
       glowFilter.time += 0.02;
       glowFilter.white = Math.min(
         1,
-        Math.max(0, 0.7 - this.game.timeSinceLastPhoto / 16)
+        Math.max(0, 0.8 - this.timeSinceLastPhoto / 30)
       );
       this.game.focusPoint = this.mousePosition;
       this.game.tick();

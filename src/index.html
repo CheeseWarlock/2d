@@ -5,7 +5,7 @@
     <style type="text/css">
       @keyframes action {
     0% { transform: translateY(0); }
-    100% { transform: translateY(-50px); }
+    100% { transform: translateY(-40px); }
 }
       body {
         background-color: #aaa;
@@ -39,8 +39,11 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        animation: .2s cubic-bezier(0, .1, .5, 1.00) infinite alternate action;
         position: relative;
+      }
+
+      .camera-container-bounce {
+        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate action;
       }
     </style>
   </head>

@@ -9,6 +9,7 @@ import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point } from "./types.js";
 
 import { GAME_LEVELS } from "./levels/levelIndex.js";
+import { EventDispatcher } from "./EventDispatcher.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
@@ -17,6 +18,11 @@ const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 let levelIndex = 0;
 
 class Game {
+  events: EventDispatcher<{
+    goalAchieved: void;
+    photoTaken: void;
+  }> = new EventDispatcher();
+
   visibleObjects: BaseGeometry[] = [];
   /**
    * The focus position (i.e. of the cursor)
@@ -35,7 +41,6 @@ class Game {
   cameraFrame: CameraFrame = new CameraFrame();
   goals: CameraFrame[] = [];
   currentGoalIndex = 0;
-  timeSinceLastPhoto = 100;
 
   constructor() {
     this.loadLevel(0);
@@ -108,9 +113,8 @@ class Game {
     if (this.player.isDead) {
       this.restartCurrentLevel();
     }
-    this.timeSinceLastPhoto += 1;
     if (this.clicked) {
-      this.timeSinceLastPhoto = 0;
+      this.events.publish("photoTaken");
       this.clicked = false;
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
@@ -122,6 +126,7 @@ class Game {
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
       ) {
+        this.events.publish("goalAchieved");
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
           this.goToNextLevel();
