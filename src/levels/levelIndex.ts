@@ -61,6 +61,6 @@ export class LevelManager {
   };
 
   export = () => {
-    return JSON.stringify(GAME_LEVELS[this.currentLevelIndex]);
+    return JSON.stringify(GAME_LEVELS[this.currentLevelIndex], null, 2);
   };
 }

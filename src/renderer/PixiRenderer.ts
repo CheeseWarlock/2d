@@ -34,6 +34,7 @@ class PixiRenderer {
   goalRenderer?: CameraFrameRenderer;
   app?: Application;
   timeSinceLastPhoto: number = 100;
+  playerDeadSprite?: Sprite;
 
   constructor() {
     this.game = new Game();
@@ -98,17 +99,17 @@ class PixiRenderer {
 
     const spriteSheetJson = {
       frames: {
-        "playerstand.png": {
+        playerstand: {
           frame: { x: 0, y: 0, w: 10, h: 20 },
           spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
           sourceSize: { x: 0, y: 0, w: 10, h: 20 },
         },
-        "playerwalk.png": {
+        playerwalk: {
           frame: { x: 10, y: 0, w: 10, h: 20 },
           spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
           sourceSize: { x: 0, y: 0, w: 10, h: 20 },
         },
-        "playerhurt.png": {
+        playerhurt: {
           frame: { x: 20, y: 0, w: 10, h: 20 },
           spriteSourceSize: { x: 0, y: 0, w: 10, h: 20 },
           sourceSize: { x: 0, y: 0, w: 10, h: 20 },
@@ -116,7 +117,7 @@ class PixiRenderer {
       },
 
       animations: {
-        enemy: ["playerstand.png", "playerwalk.png"],
+        enemy: ["playerstand", "playerwalk"],
       },
 
       meta: {
@@ -131,17 +132,20 @@ class PixiRenderer {
 
     const sheet = new Spritesheet(playerTexture, spriteSheetJson);
     await sheet.parse();
+    const deathSprite = new Sprite(sheet.textures.playerhurt);
     const anim = new AnimatedSprite(sheet.animations.enemy);
     anim.animationSpeed = 0.1;
     anim.play();
     anim.anchor.set(0.5);
     anim.scale.x = -1;
+    deathSprite.anchor.set(0.5);
 
     const nPS = new Sprite(playerTexture);
     nPS.setSize(20, 40);
     nPS.anchor.set(0.5);
 
     this.playerSprite = anim;
+    this.playerDeadSprite = deathSprite;
 
     const backgroundGradient = new FillGradient(0, 0, 0, 1000);
     backgroundGradient.addColorStop(0, "#222");
@@ -225,33 +229,49 @@ class PixiRenderer {
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
-      this.playerSprite!.scale.x =
-        (this.game.viewDirection || 0) < -(Math.PI / 2) ||
-        (this.game.viewDirection || 0) > Math.PI / 2
-          ? -1
-          : 1;
-      if (this.game.player.isWalking) {
-        if (!this.playerSprite!.playing) {
-          this.playerSprite!.currentFrame = 1;
-        }
-        this.playerSprite!.play();
-      } else {
-        this.playerSprite!.currentFrame = 0;
-        this.playerSprite!.stop();
-      }
-      this.viewRenderer!.drawCamera(this.game.cameraFrame);
-      this.goalRenderer!.drawCamera(
-        this.game.goals[this.game.currentGoalIndex]
-      );
-      this.playerSprite!.x = this.game.player.x;
-      this.playerSprite!.y = this.game.player.y;
-      if (this.game.viewOrigin) {
-        this.viewConeGraphics.visible = true;
-        this.viewConeGraphics.x = this.game.viewOrigin!.x || 0;
-        this.viewConeGraphics.y = this.game.viewOrigin!.y || 0;
-        this.viewConeGraphics.rotation = this.game.viewDirection || 0;
-      } else {
+      if (this.game.player.isDead) {
         this.viewConeGraphics.visible = false;
+        this.app?.stage.removeChild(this.playerSprite!);
+        this.app?.stage.addChild(this.playerDeadSprite!);
+        this.playerDeadSprite!.scale.x =
+          (this.game.viewDirection || 0) < -(Math.PI / 2) ||
+          (this.game.viewDirection || 0) > Math.PI / 2
+            ? -1
+            : 1;
+        this.playerDeadSprite!.x = this.game.player.x;
+        this.playerDeadSprite!.y = this.game.player.y;
+      } else {
+        this.app?.stage.removeChild(this.playerDeadSprite!);
+        this.app?.stage.addChild(this.playerSprite!);
+        this.playerSprite!.scale.x =
+          (this.game.viewDirection || 0) < -(Math.PI / 2) ||
+          (this.game.viewDirection || 0) > Math.PI / 2
+            ? -1
+            : 1;
+        if (this.game.player.isWalking) {
+          if (!this.playerSprite!.playing) {
+            this.playerSprite!.currentFrame = 1;
+          }
+          this.playerSprite!.play();
+        } else {
+          this.playerSprite!.currentFrame = 0;
+          this.playerSprite!.stop();
+        }
+        this.viewRenderer!.drawCamera(this.game.cameraFrame);
+        this.goalRenderer!.drawCamera(
+          this.game.goals[this.game.currentGoalIndex]
+        );
+        this.playerSprite!.x = this.game.player.x;
+        this.playerSprite!.y = this.game.player.y;
+
+        if (this.game.viewOrigin) {
+          this.viewConeGraphics.visible = true;
+          this.viewConeGraphics.x = this.game.viewOrigin!.x || 0;
+          this.viewConeGraphics.y = this.game.viewOrigin!.y || 0;
+          this.viewConeGraphics.rotation = this.game.viewDirection || 0;
+        } else {
+          this.viewConeGraphics.visible = false;
+        }
       }
 
       // Clean up

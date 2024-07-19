@@ -23,6 +23,7 @@ class Game {
   events: EventDispatcher<{
     goalAchieved: void;
     photoTaken: void;
+    playerDied: void;
   }> = new EventDispatcher();
 
   visibleObjects: BaseGeometry[] = [];
@@ -44,11 +45,17 @@ class Game {
   currentGoalIndex = 0;
   takePhoto = false;
   levelManager: LevelManager = new LevelManager();
+  gameIsActive: boolean = true;
 
   constructor() {
     this.loadLevel(0);
     this.controls.on(BUTTONS.CLICK, () => {
-      this.takePhoto = true;
+      if (this.gameIsActive) {
+        this.takePhoto = true;
+      } else {
+        this.restartCurrentLevel();
+        this.gameIsActive = true;
+      }
     });
   }
 
@@ -72,6 +79,9 @@ class Game {
   }
 
   tick() {
+    if (!this.gameIsActive) {
+      return;
+    }
     this.player.moveLeft =
       this.controls.buttonsDown.has(BUTTONS.LEFT) &&
       !this.controls.buttonsDown.has(BUTTONS.RIGHT);
@@ -105,8 +115,9 @@ class Game {
     }
 
     this.calculatePhotoContent();
-    if (this.player.isDead) {
-      this.restartCurrentLevel();
+    if (this.player.isDead && this.gameIsActive) {
+      this.events.publish("playerDied");
+      this.gameIsActive = false;
     }
     if (this.takePhoto) {
       this.events.publish("photoTaken");

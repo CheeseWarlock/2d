@@ -15,11 +15,11 @@ if (DEBUG_MODE) {
 
   const importButton = document.createElement("input");
   importButton.setAttribute("type", "button");
-  importButton.setAttribute("value", "Import");
+  importButton.setAttribute("value", "Load From JSON");
 
   const exportButton = document.createElement("input");
   exportButton.setAttribute("type", "button");
-  exportButton.setAttribute("value", "Export");
+  exportButton.setAttribute("value", "Write Current Level");
 
   const textarea = document.createElement("textarea");
 
@@ -36,5 +36,9 @@ if (DEBUG_MODE) {
   importButton.onclick = () => {
     const d = pixi!.game.levelManager.import(textarea.value);
     pixi!.game.loadLevel2(d);
+  };
+
+  container.onmousedown = (e) => {
+    e.stopPropagation();
   };
 }
