@@ -1,6 +1,4 @@
-// @ts-ignore
 import fragmentShader from "./fragment.glsl";
-// @ts-ignore
 import basicVertexShader from "./vertex.glsl";
 
 import {

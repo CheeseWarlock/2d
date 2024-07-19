@@ -5,10 +5,7 @@ import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
-import {
-  Quadtree,
-  Rectangle,
-} from "@timohausmann/quadtree-ts/src/index.esm.js";
+import { Quadtree, Rectangle } from "@timohausmann/quadtree-ts";
 
 const rangesOverlap = (
   a: { start: number; finish: number },

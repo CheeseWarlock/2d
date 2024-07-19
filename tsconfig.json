@@ -7,12 +7,17 @@
     "allowJs": true,
     "lib": [
       "es6",
-      "dom"
+      "dom",
+      "es2019"
     ],
     "rootDir": "src",
     "module": "es2022",
     "moduleResolution": "bundler",
-    "target": "es2022"
+    "target": "es2022",
+    "types": [
+      "vite-plugin-glsl/ext"
+    ]
   },
+  "include": ["./src"],
   "exclude": ["**/*.test.ts", "./dist/**/*", "./coverage/**/*", "jest.config.cjs"]
 }

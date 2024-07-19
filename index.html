@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Colors Game</title>
+    <style type="text/css">
+      @keyframes action {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-40px); }
+}
+      body {
+        background-color: #aaa;
+        margin: 50px;
+      }
+
+      canvas {
+        margin: 0 30px;
+        border-radius: 12px;
+        background-color: #444;
+        box-shadow: 1px 3px 6px rgba(0,0,0,40%);
+      }
+
+      #container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .header-text {
+        position: relative;
+        top: -38px;
+        font-size: 30px;
+        font-family: "Consolas", sans-serif;
+        height: 0;
+      }
+
+      .camera-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 120px;
+        height: 1000px;
+      }
+
+      .camera-container-bounce {
+        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate action;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="game-world-container"></div>
+      <div id="view-camera-container" class="camera-container">
+        <span class="header-text">View</span>
+      </div>
+      <div id="goal-camera-container" class="camera-container">
+        <span class="header-text">Goal</span>
+      </div>
+    </div>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+  </html>
