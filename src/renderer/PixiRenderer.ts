@@ -17,6 +17,7 @@ import GroundGeometry from "../gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
 import BaseGeometry from "../gameObjects/BaseGeometry";
 import { GlowFilter } from "./GlowFilter";
+import { BUTTONS } from "../Controls";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
@@ -172,15 +173,31 @@ class PixiRenderer {
     };
 
     document.onmousedown = () => {
-      this.game.clicked = true;
+      this.game.controls.press(BUTTONS.CLICK);
+    };
+
+    document.onmouseup = () => {
+      this.game.controls.unpress(BUTTONS.CLICK);
     };
 
     document.body.onkeydown = (ev) => {
-      this.game.keysDown.add(ev.key);
+      if (ev.key === "w" || ev.key === "ArrowUp") {
+        this.game.controls.press(BUTTONS.UP);
+      } else if (ev.key === "a" || ev.key === "ArrowLeft") {
+        this.game.controls.press(BUTTONS.LEFT);
+      } else if (ev.key === "d" || ev.key === "ArrowRight") {
+        this.game.controls.press(BUTTONS.RIGHT);
+      }
     };
 
     document.body.onkeyup = (ev) => {
-      this.game.keysDown.delete(ev.key);
+      if (ev.key === "w" || ev.key === "ArrowUp") {
+        this.game.controls.unpress(BUTTONS.UP);
+      } else if (ev.key === "a" || ev.key === "ArrowLeft") {
+        this.game.controls.unpress(BUTTONS.LEFT);
+      } else if (ev.key === "d" || ev.key === "ArrowRight") {
+        this.game.controls.unpress(BUTTONS.RIGHT);
+      }
     };
     app.stage.addChild(this.playerSprite);
     app.stage.addChild(this.viewConeGraphics);

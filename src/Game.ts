@@ -10,6 +10,7 @@ import { Point } from "./types.js";
 
 import { GAME_LEVELS } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
+import { BUTTONS, Controls } from "./Controls.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
@@ -36,14 +37,17 @@ class Game {
   world: World = new World();
   player: Player = new Player(0, 0, this.world);
   fov: number = 0.25;
-  keysDown: Set<string> = new Set();
-  clicked = false;
+  controls = new Controls();
   cameraFrame: CameraFrame = new CameraFrame();
   goals: CameraFrame[] = [];
   currentGoalIndex = 0;
+  takePhoto = false;
 
   constructor() {
     this.loadLevel(0);
+    this.controls.on(BUTTONS.CLICK, () => {
+      this.takePhoto = true;
+    });
   }
 
   loadLevel(index: number) {
@@ -80,10 +84,13 @@ class Game {
   }
 
   tick() {
-    this.player.moveLeft = this.keysDown.has("a");
-    this.player.moveRight = this.keysDown.has("d");
-    this.player.jump = this.keysDown.has("w");
-
+    this.player.moveLeft =
+      this.controls.buttonsDown.has(BUTTONS.LEFT) &&
+      !this.controls.buttonsDown.has(BUTTONS.RIGHT);
+    this.player.moveRight =
+      this.controls.buttonsDown.has(BUTTONS.RIGHT) &&
+      !this.controls.buttonsDown.has(BUTTONS.LEFT);
+    this.player.jump = this.controls.buttonsDown.has(BUTTONS.UP);
     this.world.update();
     if (this.focusPoint) {
       const centerToFocusPoint = Math.atan2(
@@ -94,9 +101,9 @@ class Game {
         centerToFocusPoint < -(Math.PI / 2) || centerToFocusPoint > Math.PI / 2;
 
       if (isLeft) {
-        this.viewOrigin = { x: this.player.x - 9, y: this.player.y - 9 };
+        this.viewOrigin = { x: this.player.x - 9, y: this.player.y - 11 };
       } else {
-        this.viewOrigin = { x: this.player.x + 9, y: this.player.y - 9 };
+        this.viewOrigin = { x: this.player.x + 9, y: this.player.y - 11 };
       }
       this.viewDirection = Math.atan2(
         this.focusPoint.y - this.viewOrigin!.y,
@@ -113,9 +120,9 @@ class Game {
     if (this.player.isDead) {
       this.restartCurrentLevel();
     }
-    if (this.clicked) {
+    if (this.takePhoto) {
       this.events.publish("photoTaken");
-      this.clicked = false;
+      this.takePhoto = false;
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
