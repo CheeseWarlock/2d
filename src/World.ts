@@ -20,6 +20,8 @@ export default class World {
     height: 1000,
   });
 
+  constructor() {}
+
   addGeometry(geometry: BaseGeometry) {
     this.objects.push(geometry);
     geometry.lineSegments.forEach((seg) =>

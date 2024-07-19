@@ -8,7 +8,7 @@ import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point } from "./types.js";
 
-import { GAME_LEVELS } from "./levels/levelIndex.js";
+import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 
@@ -51,36 +51,16 @@ class Game {
   }
 
   loadLevel(index: number) {
-    const level = GAME_LEVELS[index];
-    this.goals = level.goals.map((goal) => new CameraFrame(goal));
-    this.world = new World();
-    level.ground.forEach((g) => {
-      const geo = new GroundGeometry(
-        [...g.points.map((m) => ({ x: m.x, y: m.y }))],
-        g.color
-      );
-      this.world.addGeometry(geo);
-    });
-    level.lines.forEach((l) => {
-      const geo = new ColorLineGeometry(l.from, l.to, l.color);
-      this.world.addGeometry(geo);
-    });
-    level.colors.forEach((c) => {
-      const geo = new ColorGeometry(
-        [...c.points.map((m) => ({ x: m.x, y: m.y }))],
-        c.color,
-        c.motion
-      );
-      this.world.addGeometry(geo);
-    });
+    const lm = new LevelManager();
+    lm.currentLevelIndex = index;
 
-    this.player = new Player(
-      level.playerPosition.x,
-      level.playerPosition.y,
-      this.world
-    );
+    const json = lm.export();
+    const data = lm.import(json);
+
+    this.player = data.player;
+    this.goals = data.goals;
+    this.world = data.world;
     this.visibleObjects = [...this.world.geometryObjects];
-    this.world.objects.push(this.player);
   }
 
   tick() {

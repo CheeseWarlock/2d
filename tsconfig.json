@@ -15,6 +15,7 @@
     "moduleResolution": "bundler",
     "target": "es2022",
     "types": [
+      "vite/client",
       "vite-plugin-glsl/ext"
     ]
   },
