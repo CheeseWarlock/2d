@@ -11,7 +11,7 @@ uniform vec4 uOutputTexture;
 out vec4 outputFrame;
 out vec4 aaInputSize;
 
-vec4 filterVertexPosition( void )
+vec4 filterVertexPosition(void)
 {
     vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;
     
@@ -21,7 +21,7 @@ vec4 filterVertexPosition( void )
     return vec4(position, 0.0, 1.0);
 }
 
-vec2 filterTextureCoord( void )
+vec2 filterTextureCoord(void)
 {
     return aPosition * (uOutputFrame.zw * uInputSize.zw);
 }
