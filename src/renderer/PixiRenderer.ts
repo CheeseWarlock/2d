@@ -258,6 +258,11 @@ class PixiRenderer {
       this.timeSinceLastPhoto += 1;
       glowFilter.time += 0.02;
 
+      this.viewConeGraphics.alpha = Math.max(
+        0.5,
+        0.9 - this.timeSinceLastPhoto / 50
+      );
+
       // set the white fade to the max of fade for any reason
       glowFilter.white = Math.min(
         1,
