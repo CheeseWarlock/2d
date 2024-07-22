@@ -6,7 +6,7 @@ import World from "./World.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
-import { Point } from "./types.js";
+import { Point, RendererAnimationEvents } from "./types.js";
 
 import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
@@ -17,14 +17,19 @@ const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
 
 const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
-let levelIndex = 0;
-
 class Game {
   events: EventDispatcher<{
     goalAchieved: void;
     photoTaken: void;
     playerDied: void;
+    levelCompleted: void;
+    levelRestarted: void;
   }> = new EventDispatcher();
+
+  /**
+   * The current level JSON if it was loaded from the editor.
+   */
+  currentLevelData?: string;
 
   visibleObjects: BaseGeometry[] = [];
   /**
@@ -46,9 +51,10 @@ class Game {
   takePhoto = false;
   levelManager: LevelManager = new LevelManager();
   gameIsActive: boolean = true;
+  animationEvents?: EventDispatcher<RendererAnimationEvents>;
 
   constructor() {
-    this.loadLevel(0);
+    this.loadLevelByIndex(0);
     this.controls.on(BUTTONS.CLICK, () => {
       if (this.gameIsActive) {
         this.takePhoto = true;
@@ -59,11 +65,10 @@ class Game {
     });
   }
 
-  loadLevel(index: number) {
+  loadLevelByIndex(index: number) {
     this.levelManager.currentLevelIndex = index;
 
-    const json = this.levelManager.export();
-    const data = this.levelManager.import(json);
+    const data = this.levelManager.loadLevel(GAME_LEVELS[index]);
 
     this.player = data.player;
     this.goals = data.goals;
@@ -71,7 +76,11 @@ class Game {
     this.visibleObjects = [...this.world.geometryObjects];
   }
 
-  loadLevel2(data: { world: World; goals: CameraFrame[]; player: Player }) {
+  loadLevelFromData(data: {
+    world: World;
+    goals: CameraFrame[];
+    player: Player;
+  }) {
     this.player = data.player;
     this.goals = data.goals;
     this.world = data.world;
@@ -135,20 +144,38 @@ class Game {
         this.events.publish("goalAchieved");
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
-          this.goToNextLevel();
+          this.events.publish("levelCompleted");
+          if (this.animationEvents) {
+            this.animationEvents.on(
+              "levelCompleteAnimationMidTransition",
+              () => {
+                this.goToNextLevel();
+                this.gameIsActive = true;
+              }
+            );
+            this.gameIsActive = false;
+          } else {
+            this.goToNextLevel();
+          }
         }
       }
     }
   }
 
   restartCurrentLevel() {
-    this.loadLevel(levelIndex);
+    if (this.currentLevelData) {
+      const parsedData = this.levelManager.import(this.currentLevelData);
+      this.loadLevelFromData(parsedData);
+    } else {
+      this.loadLevelByIndex(this.levelManager.currentLevelIndex);
+    }
+
     this.currentGoalIndex = 0;
   }
 
   goToNextLevel() {
-    levelIndex += 1;
-    this.loadLevel(levelIndex);
+    this.levelManager.currentLevelIndex += 1;
+    this.loadLevelByIndex(this.levelManager.currentLevelIndex);
     this.currentGoalIndex = 0;
   }
 

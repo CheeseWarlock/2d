@@ -9,6 +9,9 @@ in vec4 aaInputSize;
 uniform float uTime;
 uniform float white;
 uniform float black;
+uniform float focusX;
+uniform float focusY;
+uniform float focusDistance;
 uniform sampler2D uTexture;
 uniform float uTolerance;
 
@@ -149,4 +152,12 @@ void main(void)
 {
   finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
 	finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
+	float dx = aaPosition.x - focusX;
+	float dy = aaPosition.y - focusY;
+	float dist = pow((dx * dx) + (dy * dy), 0.5);
+	if (dist > focusDistance && black > 0.) {
+		float minColor = min(finalColor.x, min(finalColor.y, finalColor.z));
+		finalColor = vec4(minColor, minColor, minColor, 1.);
+		finalColor = (finalColor * (1. - black)) + vec4(0., 0., 0., 1.) * black;
+	}
 }

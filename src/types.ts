@@ -36,3 +36,7 @@ export type CameraFrameElementProps = {
   end: number;
   color: string;
 };
+
+export type RendererAnimationEvents = {
+  levelCompleteAnimationFinished: void;
+};

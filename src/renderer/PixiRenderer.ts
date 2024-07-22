@@ -18,6 +18,9 @@ import CameraFrameRenderer from "./CameraFrameRenderer";
 import BaseGeometry from "../gameObjects/BaseGeometry";
 import { GlowFilter } from "./GlowFilter";
 import { BUTTONS } from "../Controls";
+import { DebugLevelManager } from "../DebugLevelManager";
+import { EventDispatcher } from "../EventDispatcher";
+import { RendererAnimationEvents } from "../types";
 
 const GAME_WIDTH = 1000;
 const GAME_HEIGHT = 1000;
@@ -35,9 +38,17 @@ class PixiRenderer {
   app?: Application;
   timeSinceLastPhoto: number = 100;
   playerDeadSprite?: Sprite;
+  animationEvents: EventDispatcher<RendererAnimationEvents> =
+    new EventDispatcher();
+  isFadingToWhite = false;
+  isFadingFromWhite = false;
+  whiteMultiplier = 0;
+  blackMultiplier = 0;
+  blackFocusDistance = 0;
 
   constructor() {
     this.game = new Game();
+    this.game.animationEvents = this.animationEvents;
     this.viewConeGraphics = new Graphics()
       .setStrokeStyle({ width: 4, cap: "square" })
       .poly([
@@ -93,6 +104,7 @@ class PixiRenderer {
       background: "#444",
       canvas,
     });
+    new DebugLevelManager(this);
     TextureStyle.defaultOptions.scaleMode = "nearest";
 
     const playerSprite = new URL("../images/player.png", import.meta.url);
@@ -217,19 +229,54 @@ class PixiRenderer {
     this.game.events.on("photoTaken", () => {
       this.timeSinceLastPhoto = 0;
     });
+    this.game.events.on("levelCompleted", () => {
+      // start fading out the screen
+      this.isFadingToWhite = true;
+    });
+    this.game.events.on("playerDied", () => {
+      glowFilter.focusDistance = 1400;
+    });
 
     // Listen for frame updates
     app.ticker.add(() => {
+      // Color fades
+      if (this.isFadingToWhite) {
+        this.whiteMultiplier += 0.02;
+        if (this.whiteMultiplier >= 1) {
+          this.isFadingFromWhite = true;
+          this.isFadingToWhite = false;
+          this.animationEvents.publish("levelCompleteAnimationMidTransition");
+        }
+      } else if (this.isFadingFromWhite) {
+        this.whiteMultiplier -= 0.02;
+        if (this.whiteMultiplier <= 0) {
+          this.isFadingFromWhite = false;
+          this.whiteMultiplier = 0;
+          this.animationEvents.publish("levelCompleteAnimationFinished");
+        }
+      }
       this.timeSinceLastPhoto += 1;
       glowFilter.time += 0.02;
+
+      // set the white fade to the max of fade for any reason
       glowFilter.white = Math.min(
         1,
-        Math.max(0, 0.8 - this.timeSinceLastPhoto / 30)
+        Math.max(0, 0.8 - this.timeSinceLastPhoto / 30, this.whiteMultiplier)
       );
       this.game.focusPoint = this.mousePosition;
       this.game.tick();
 
       if (this.game.player.isDead) {
+        glowFilter.black += 0.02;
+        if (glowFilter.black > 0.4) {
+          glowFilter.black = 0.4;
+        }
+        glowFilter.focusDistance -= 50;
+        if (glowFilter.focusDistance < 100) {
+          glowFilter.focusDistance = 100;
+        }
+        glowFilter.focusX = this.game.player.x;
+        glowFilter.focusY = this.game.player.y;
         this.viewConeGraphics.visible = false;
         this.app?.stage.removeChild(this.playerSprite!);
         this.app?.stage.addChild(this.playerDeadSprite!);
@@ -241,6 +288,7 @@ class PixiRenderer {
         this.playerDeadSprite!.x = this.game.player.x;
         this.playerDeadSprite!.y = this.game.player.y;
       } else {
+        glowFilter.black = 0;
         this.app?.stage.removeChild(this.playerDeadSprite!);
         this.app?.stage.addChild(this.playerSprite!);
         this.playerSprite!.scale.x =
@@ -259,7 +307,8 @@ class PixiRenderer {
         }
         this.viewRenderer!.drawCamera(this.game.cameraFrame);
         this.goalRenderer!.drawCamera(
-          this.game.goals[this.game.currentGoalIndex]
+          this.game.goals[this.game.currentGoalIndex] ||
+            this.game.goals[this.game.currentGoalIndex - 1]
         );
         this.playerSprite!.x = this.game.player.x;
         this.playerSprite!.y = this.game.player.y;
