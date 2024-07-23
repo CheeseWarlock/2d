@@ -1,3 +1,5 @@
+import { AnimatedSprite, Graphics, Sprite } from "pixi.js";
+
 export type Point = {
   x: number;
   y: number;
@@ -38,5 +40,12 @@ export type CameraFrameElementProps = {
 };
 
 export type RendererAnimationEvents = {
+  levelCompleteAnimationMidTransition: void;
   levelCompleteAnimationFinished: void;
+};
+
+export type Sprites = {
+  playerWalkSprite: AnimatedSprite;
+  playerDeadSprite: Sprite;
+  viewCone: Graphics;
 };

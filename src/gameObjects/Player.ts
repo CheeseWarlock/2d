@@ -51,7 +51,7 @@ export default class Player implements GameObject {
         "ground"
       );
       if (collisionTest.collisionFound) {
-        this.acc = -8;
+        this.acc = -7;
       }
     }
   }

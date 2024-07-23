@@ -12,7 +12,15 @@ const colorLines: LineGeometryProps[] = [];
 
 const colorGeometries: ColorGeometryProps[] = [];
 
-const goals: CameraFrameProps[] = [];
+const goals: CameraFrameProps[] = [
+  [
+    {
+      start: 0,
+      end: 1,
+      color: "blue",
+    },
+  ],
+];
 
 export default {
   lines: colorLines,

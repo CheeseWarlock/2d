@@ -65,6 +65,16 @@ class Game {
     });
   }
 
+  setupAnimationCallbacks(
+    animationEvents: EventDispatcher<RendererAnimationEvents>
+  ) {
+    this.animationEvents = animationEvents;
+    animationEvents.on("levelCompleteAnimationMidTransition", () => {
+      this.goToNextLevel();
+      this.gameIsActive = true;
+    });
+  }
+
   loadLevelByIndex(index: number) {
     this.levelManager.currentLevelIndex = index;
 
@@ -146,13 +156,6 @@ class Game {
         if (this.currentGoalIndex === this.goals.length) {
           this.events.publish("levelCompleted");
           if (this.animationEvents) {
-            this.animationEvents.on(
-              "levelCompleteAnimationMidTransition",
-              () => {
-                this.goToNextLevel();
-                this.gameIsActive = true;
-              }
-            );
             this.gameIsActive = false;
           } else {
             this.goToNextLevel();

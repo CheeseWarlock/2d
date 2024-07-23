@@ -19,19 +19,23 @@ class CameraFrameRenderer {
     this.context = photoCanvas.getContext("2d")!;
   }
 
-  drawCamera(frame: CameraFrame) {
+  drawCamera(frame?: CameraFrame) {
     this.context.fillStyle = CLEAR_COLOR_FOR_CAMERA_FRAMES;
     this.context.fillRect(0, 0, CAMERA_FRAME_WIDTH, CAMERA_FRAME_HEIGHT);
-    frame.segments.forEach((segment) => {
-      if (segment.color === "empty") return;
-      this.context.fillStyle = segment.color;
-      this.context.fillRect(
-        0,
-        segment.start * CAMERA_FRAME_HEIGHT,
-        CAMERA_FRAME_WIDTH,
-        (segment.end - segment.start) * CAMERA_FRAME_HEIGHT
-      );
-    });
+
+    if (frame) {
+      frame.segments.forEach((segment) => {
+        if (segment.color === "empty") return;
+        this.context.fillStyle = segment.color;
+        this.context.fillRect(
+          0,
+          segment.start * CAMERA_FRAME_HEIGHT,
+          CAMERA_FRAME_WIDTH,
+          (segment.end - segment.start) * CAMERA_FRAME_HEIGHT
+        );
+      });
+    }
+
     this.context.strokeStyle = "rgba(255, 255, 255, 0.6)";
     this.context.lineWidth = 4;
     this.context.beginPath();

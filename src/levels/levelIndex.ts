@@ -8,8 +8,16 @@ import multiShapeLevel from "./Face";
 import canyonLevel from "./Face";
 import ILevelFormat from "./ILevelFormat";
 import introLevel from "./IntroLevel";
+import newFace from "./NewFace.json";
+import jump from "./Jump.json";
 
-export const GAME_LEVELS = [introLevel, multiShapeLevel, canyonLevel];
+export const GAME_LEVELS: ILevelFormat[] = [
+  introLevel,
+  newFace,
+  jump,
+  multiShapeLevel,
+  canyonLevel,
+];
 
 export class LevelManager {
   currentLevelIndex: number = 0;
