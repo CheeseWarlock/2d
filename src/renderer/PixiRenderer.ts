@@ -237,8 +237,17 @@ class PixiRenderer {
             })
             .flat();
           newGraphics = new Graphics()
-            .poly(obj.points.map((seg) => [seg.x, seg.y]).flat())
+            .poly(
+              obj.points
+                .map((seg) => {
+                  return [seg.x, seg.y];
+                })
+                .flat()
+            )
             .fill(obj.color);
+          newGraphics.x = obj.position.x;
+          newGraphics.y = obj.position.y;
+          newGraphics.rotation = obj.rotation;
         } else if (obj instanceof GroundGeometry) {
           newGraphics = new Graphics()
             .poly(
@@ -254,8 +263,9 @@ class PixiRenderer {
       } else {
         const existingGraphics = this.objectsToDraw.get(obj)!;
         if (obj instanceof ColorGeometry) {
-          existingGraphics.x = obj.transform.x;
-          existingGraphics.y = obj.transform.y;
+          existingGraphics.x = obj.position.x + obj.transform.x;
+          existingGraphics.y = obj.position.y + obj.transform.y;
+          existingGraphics.rotation = obj.rotation;
         }
       }
     });

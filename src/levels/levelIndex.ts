@@ -42,7 +42,9 @@ export class LevelManager {
       const geo = new ColorGeometry(
         [...c.points.map((m) => ({ x: m.x, y: m.y }))],
         c.color,
-        c.motion
+        c.motion,
+        c.rotation || 0,
+        c.origin || { x: 0, y: 0 }
       );
       world.addGeometry(geo);
     });

@@ -43,11 +43,13 @@ const colorLines: LineGeometryProps[] = [];
 const colorGeometries: ColorGeometryProps[] = [
   {
     points: [
-      { x: 680, y: 220 },
-      { x: 780, y: 180 },
-      { x: 820, y: 280 },
-      { x: 720, y: 320 },
+      { x: -60, y: 60 },
+      { x: -60, y: -60 },
+      { x: 60, y: -60 },
+      { x: 60, y: 60 },
     ],
+    origin: { x: 750, y: 200 },
+    rotation: 0.3,
     color: "#de60f2",
   },
 ];

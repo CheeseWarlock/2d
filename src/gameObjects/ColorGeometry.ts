@@ -17,12 +17,22 @@ class ColorGeometry extends BaseGeometry {
     delay: 0,
   };
   _time: number;
+  rotation: number = 0;
+  position = { x: 0, y: 0 };
 
-  constructor(points: Point[], color: string, motion?: Motion) {
+  constructor(
+    points: Point[],
+    color: string,
+    motion?: Motion,
+    rotation?: number,
+    position?: Point
+  ) {
     super();
     this.points = points;
     this.color = color;
     if (motion) this.motion = motion;
+    if (rotation) this.rotation = rotation;
+    if (position) this.position = position;
     this._time = -this.motion.delay / 1000;
   }
 
@@ -49,9 +59,21 @@ class ColorGeometry extends BaseGeometry {
   get transformedPoints() {
     const points: Point[] = [];
     for (let i = 0; i != this.points.length; i++) {
+      const nPos = {
+        x: this.transform.x + this.position.x,
+        y: this.transform.y + this.position.y,
+      };
+      const tPos = {
+        x:
+          this.points[i].x * Math.cos(this.rotation) -
+          this.points[i].y * Math.sin(this.rotation),
+        y:
+          this.points[i].y * Math.cos(this.rotation) +
+          this.points[i].x * Math.sin(this.rotation),
+      };
       points.push({
-        x: this.points[i].x + this.transform.x,
-        y: this.points[i].y + this.transform.y,
+        x: nPos.x + tPos.x,
+        y: nPos.y + tPos.y,
       });
     }
     return points;

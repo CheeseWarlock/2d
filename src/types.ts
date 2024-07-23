@@ -26,6 +26,14 @@ export type LineGeometryProps = {
 };
 
 export type ColorGeometryProps = {
+  /**
+   * The origin; 0,0 if unspecified.
+   */
+  origin?: Point;
+  /**
+   * The initial rotation, clockwise in radians; 0 if unspecified.
+   */
+  rotation?: number;
   points: Point[];
   color: string;
   motion?: Motion;
