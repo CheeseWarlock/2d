@@ -89,8 +89,7 @@ export default class Player implements GameObject {
     } else {
       this.framesSinceGround += 1;
     }
-    if (this.framesSinceJumpPressed < JUMP_ANTICIPATION)
-      console.log(this.framesSinceJumpPressed);
+
     if (this.jump || this.framesSinceJumpPressed < JUMP_ANTICIPATION) {
       this.jump = false;
       if (this.framesSinceGround < COYOTE_TIME_FRAMES) {

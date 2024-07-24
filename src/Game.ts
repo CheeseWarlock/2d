@@ -154,7 +154,6 @@ class Game {
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
       ) {
-        this.events.publish("goalAchieved");
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
           this.events.publish("levelCompleted");
@@ -163,6 +162,8 @@ class Game {
           } else {
             this.goToNextLevel();
           }
+        } else {
+          this.events.publish("goalAchieved");
         }
       }
     }

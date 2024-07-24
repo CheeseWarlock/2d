@@ -14,6 +14,11 @@ import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 
 const glowFilter = new GlowFilter();
 
+/**
+ * Duration to pause after a successful photo.
+ */
+const HANG_TIME = 250;
+
 class PixiRenderer {
   game: Game;
   objectsToDraw: Map<GameObject, Container> = new Map();
@@ -114,11 +119,18 @@ class PixiRenderer {
       goalContainer.classList.remove("camera-container-bounce");
       goalContainer.offsetHeight;
       goalContainer.classList.add("camera-container-bounce");
+      this.game.gameIsActive = false;
+      setTimeout(() => {
+        this.game.gameIsActive = true;
+      }, HANG_TIME);
     });
     this.game.events.on("photoTaken", () => {
       this.timeSinceLastPhoto = 0;
     });
     this.game.events.on("levelCompleted", () => {
+      goalContainer.classList.remove("camera-container-bounce");
+      goalContainer.offsetHeight;
+      goalContainer.classList.add("camera-container-bounce");
       // start fading out the screen
       this.isFadingToWhite = true;
     });
@@ -212,6 +224,9 @@ class PixiRenderer {
           this.sprites.playerWalkSprite.currentFrame = 0;
         }
 
+        this.sprites.playerWalkSprite.stop();
+      }
+      if (!this.game.gameIsActive) {
         this.sprites.playerWalkSprite.stop();
       }
       this.viewRenderer.drawCamera(this.game.cameraFrame);
