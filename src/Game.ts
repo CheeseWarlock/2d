@@ -64,6 +64,9 @@ class Game {
         this.gameIsActive = true;
       }
     });
+    this.controls.on(BUTTONS.UP, () => {
+      this.player.acceptJumpPress();
+    });
   }
 
   setupAnimationCallbacks(
@@ -108,7 +111,6 @@ class Game {
     this.player.moveRight =
       this.controls.buttonsDown.has(BUTTONS.RIGHT) &&
       !this.controls.buttonsDown.has(BUTTONS.LEFT);
-    this.player.jump = this.controls.buttonsDown.has(BUTTONS.UP);
     this.world.update();
     if (this.focusPoint) {
       const centerToFocusPoint = Math.atan2(
