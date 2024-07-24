@@ -36,11 +36,10 @@ export default class Player implements GameObject {
   x: number;
   y: number;
   world: World;
-  acc: number;
+  gravityVelocity: number;
   moveLeft: boolean = false;
   moveRight: boolean = false;
   jump: boolean = false;
-  isOnGround: boolean = false;
   isDead: boolean = false;
   isWalking: boolean = false;
   framesSinceGround: number = COYOTE_TIME_FRAMES;
@@ -50,7 +49,7 @@ export default class Player implements GameObject {
     this.world = world;
     this.x = x;
     this.y = y;
-    this.acc = 0;
+    this.gravityVelocity = 0;
   }
 
   acceptJumpPress() {
@@ -94,7 +93,7 @@ export default class Player implements GameObject {
       this.jump = false;
       if (this.framesSinceGround < COYOTE_TIME_FRAMES) {
         this.framesSinceJumpPressed = JUMP_ANTICIPATION;
-        this.acc = -7;
+        this.gravityVelocity = -7;
         this.world.game.events.publish("playerJumped");
         this.framesSinceGround = COYOTE_TIME_FRAMES;
       }
@@ -104,7 +103,7 @@ export default class Player implements GameObject {
   handleLateralMovementChecks() {
     this.isWalking = false;
     if (this.moveLeft && this.x > HALF_BOUNDING_BOX_WIDTH) {
-      if (this.acc > 0) {
+      if (this.gravityVelocity > 0) {
         // in-air stuff
         const collisionTestLeft = this.world.collisionTest(
           this.x - HALF_BOUNDING_BOX_WIDTH - HSPEED,
@@ -140,7 +139,8 @@ export default class Player implements GameObject {
           this.x -= HSPEED;
           this.y -= ANGULAR_STICKINESS;
           this.y +=
-            collisionTest.maxSafe < ANGULAR_STICKINESS * 2
+            collisionTest.maxSafe < ANGULAR_STICKINESS * 2 &&
+            this.gravityVelocity === 0
               ? collisionTest.maxSafe
               : ANGULAR_STICKINESS;
         }
@@ -149,7 +149,7 @@ export default class Player implements GameObject {
       this.moveRight &&
       this.x < GAME_WIDTH - HALF_BOUNDING_BOX_WIDTH
     ) {
-      if (this.acc > 0) {
+      if (this.gravityVelocity > 0) {
         const collisionTestRight = this.world.collisionTest(
           this.x - HALF_BOUNDING_BOX_WIDTH + HSPEED,
           this.y - HALF_BOUNDING_BOX_HEIGHT,
@@ -184,7 +184,8 @@ export default class Player implements GameObject {
           this.x += HSPEED;
           this.y -= ANGULAR_STICKINESS;
           this.y +=
-            collisionTest.maxSafe < ANGULAR_STICKINESS * 2
+            collisionTest.maxSafe < ANGULAR_STICKINESS * 2 &&
+            this.gravityVelocity === 0
               ? collisionTest.maxSafe
               : ANGULAR_STICKINESS;
         }
@@ -193,20 +194,21 @@ export default class Player implements GameObject {
   }
 
   applyGravity() {
-    this.acc += GRAVITY_ACCELERATION;
-    if (this.acc > TERMINAL_VELOCITY) this.acc = TERMINAL_VELOCITY;
+    this.gravityVelocity += GRAVITY_ACCELERATION;
+    if (this.gravityVelocity > TERMINAL_VELOCITY)
+      this.gravityVelocity = TERMINAL_VELOCITY;
 
-    if (this.acc < 0) {
+    if (this.gravityVelocity < 0) {
       const collisionTest = this.world.collisionTest(
         this.x - HALF_BOUNDING_BOX_WIDTH,
-        this.y - HALF_BOUNDING_BOX_HEIGHT + this.acc,
+        this.y - HALF_BOUNDING_BOX_HEIGHT + this.gravityVelocity,
         this.x + HALF_BOUNDING_BOX_WIDTH,
-        this.y + HALF_BOUNDING_BOX_HEIGHT + this.acc,
+        this.y + HALF_BOUNDING_BOX_HEIGHT + this.gravityVelocity,
         0,
         "ground"
       );
       if (collisionTest.collisionFound) {
-        this.acc = 0;
+        this.gravityVelocity = 0;
       }
     } else {
       const collisionTest = this.world.collisionTest(
@@ -214,17 +216,17 @@ export default class Player implements GameObject {
         this.y - HALF_BOUNDING_BOX_HEIGHT,
         this.x + HALF_BOUNDING_BOX_WIDTH,
         this.y + HALF_BOUNDING_BOX_HEIGHT,
-        this.acc,
+        this.gravityVelocity,
         "ground"
       );
 
       if (collisionTest.collisionFound) {
-        this.acc = 0;
+        this.gravityVelocity = 0;
         this.y += collisionTest.maxSafe;
       }
     }
 
-    this.y += this.acc;
+    this.y += this.gravityVelocity;
   }
 
   tick() {
