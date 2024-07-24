@@ -16,8 +16,8 @@ import TeachesJump from "./TeachesJump.json";
 export const GAME_LEVELS: ILevelFormat[] = [
   TeachesPhoto,
   TeachesJump,
-  newFace,
   jump,
+  newFace,
   multiShapeLevel,
   canyonLevel,
 ];

@@ -257,8 +257,8 @@ class PixiRenderer {
                 .flat()
             )
             .fill(obj.color);
-          newGraphics.x = obj.position.x;
-          newGraphics.y = obj.position.y;
+          newGraphics.x = obj.position.x + obj.transform.x;
+          newGraphics.y = obj.position.y + obj.transform.y;
           newGraphics.rotation = obj.rotation;
         } else if (obj instanceof GroundGeometry) {
           newGraphics = new Graphics()
