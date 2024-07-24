@@ -22,6 +22,7 @@ class PixiRenderer {
   goalRenderer: CameraFrameRenderer;
   app: Application;
   timeSinceLastPhoto: number = 100;
+  timeSinceJump: number = 100;
   animationEvents: EventDispatcher<RendererAnimationEvents> =
     new EventDispatcher();
   isFadingToWhite = false;
@@ -122,6 +123,9 @@ class PixiRenderer {
     this.game.events.on("playerDied", () => {
       glowFilter.focusDistance = 1400;
     });
+    this.game.events.on("playerJumped", () => {
+      this.timeSinceJump = 0;
+    });
 
     this.app.ticker.add(() => {
       this.update();
@@ -146,6 +150,7 @@ class PixiRenderer {
       }
     }
     this.timeSinceLastPhoto += 1;
+    this.timeSinceJump += 1;
     glowFilter.time += 0.02;
 
     this.sprites.viewCone.alpha = Math.max(
@@ -186,6 +191,10 @@ class PixiRenderer {
       glowFilter.black = 0;
       this.app?.stage.removeChild(this.sprites.playerDeadSprite);
       this.app?.stage.addChild(this.sprites.playerWalkSprite);
+      if (this.timeSinceJump < 20) {
+        this.sprites.playerWalkSprite.currentFrame = 1;
+      }
+
       this.sprites.playerWalkSprite.scale.x =
         (this.game.viewDirection || 0) < -(Math.PI / 2) ||
         (this.game.viewDirection || 0) > Math.PI / 2
@@ -197,7 +206,10 @@ class PixiRenderer {
         }
         this.sprites.playerWalkSprite.play();
       } else {
-        this.sprites.playerWalkSprite.currentFrame = 0;
+        if (this.timeSinceJump > 20) {
+          this.sprites.playerWalkSprite.currentFrame = 0;
+        }
+
         this.sprites.playerWalkSprite.stop();
       }
       this.viewRenderer.drawCamera(this.game.cameraFrame);

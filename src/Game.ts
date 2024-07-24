@@ -21,6 +21,7 @@ class Game {
   events: EventDispatcher<{
     goalAchieved: void;
     photoTaken: void;
+    playerJumped: void;
     playerDied: void;
     levelCompleted: void;
     levelRestarted: void;
@@ -41,7 +42,7 @@ class Game {
    */
   viewOrigin?: Point;
   viewDirection?: number;
-  world: World = new World();
+  world: World = new World(this);
   player: Player = new Player(0, 0, this.world);
   fov: number = 0.25;
   controls = new Controls();
@@ -49,7 +50,7 @@ class Game {
   goals: CameraFrame[] = [];
   currentGoalIndex = 0;
   takePhoto = false;
-  levelManager: LevelManager = new LevelManager();
+  levelManager: LevelManager = new LevelManager(this);
   gameIsActive: boolean = true;
   animationEvents?: EventDispatcher<RendererAnimationEvents>;
 

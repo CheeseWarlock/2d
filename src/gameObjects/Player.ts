@@ -52,6 +52,7 @@ export default class Player implements GameObject {
       );
       if (collisionTest.collisionFound) {
         this.acc = -7;
+        this.world.game.events.publish("playerJumped");
       }
     }
   }

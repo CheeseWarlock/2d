@@ -1,4 +1,5 @@
 import CameraFrame from "./CameraFrame.js";
+import Game from "./Game.js";
 import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
@@ -19,8 +20,11 @@ export default class World {
     width: 1000,
     height: 1000,
   });
+  game: Game;
 
-  constructor() {}
+  constructor(game: Game) {
+    this.game = game;
+  }
 
   addGeometry(geometry: BaseGeometry) {
     this.objects.push(geometry);

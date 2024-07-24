@@ -10,6 +10,7 @@ import ILevelFormat from "./ILevelFormat";
 import introLevel from "./IntroLevel";
 import newFace from "./NewFace.json";
 import jump from "./Jump.json";
+import Game from "../Game";
 
 export const GAME_LEVELS: ILevelFormat[] = [
   introLevel,
@@ -21,12 +22,17 @@ export const GAME_LEVELS: ILevelFormat[] = [
 
 export class LevelManager {
   currentLevelIndex: number = 0;
+  game: Game;
+
+  constructor(game: Game) {
+    this.game = game;
+  }
   get currentLevel() {
     return this.loadLevel(GAME_LEVELS[this.currentLevelIndex]);
   }
 
   loadLevel = (levelData: ILevelFormat) => {
-    const world = new World();
+    const world = new World(this.game);
     levelData.ground.forEach((g) => {
       const geo = new GroundGeometry(
         [...g.points.map((m) => ({ x: m.x, y: m.y }))],
