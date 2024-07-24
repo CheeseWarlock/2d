@@ -5,7 +5,6 @@ import {
   Filter,
   FilterSystem,
   GlProgram,
-  PointData,
   RenderSurface,
   Texture,
 } from "pixi.js";

@@ -1,25 +1,16 @@
 import {
-  AlphaFilter,
   AnimatedSprite,
   Application,
   Assets,
   Color,
   Container,
-  Filter,
-  Geometry,
-  GlProgram,
   Graphics,
-  Mesh,
-  Shader,
   Sprite,
   Spritesheet,
   TextureStyle,
 } from "pixi.js";
 import PixiRenderer from "./renderer/PixiRenderer";
 import { FOV } from "./config";
-import fragment from "./renderer/2fragment.glsl";
-import vertex from "./renderer/2vertex.glsl";
-import { ColorGradientFilter } from "pixi-filters";
 
 export async function loadPixi() {
   // Create DOM elements
@@ -33,7 +24,7 @@ export async function loadPixi() {
     antialias: true,
     width: 1000,
     height: 1000,
-    background: "#fff",
+    background: "#000",
     canvas,
   });
 
@@ -73,8 +64,15 @@ export async function loadPixi() {
     },
   };
 
-  const playerTexture = await Assets.load(playerSprite.href);
-  const alphaTexture = await Assets.load(alphaSprite.href);
+  let playerTexture: any, alphaTexture: any;
+
+  await Promise.all([
+    Assets.load(playerSprite.href),
+    Assets.load(alphaSprite.href),
+  ]).then((promises) => {
+    playerTexture = promises[0];
+    alphaTexture = promises[1];
+  });
 
   const viewConeAlphaSprite = new Sprite(alphaTexture);
   const sheet = new Spritesheet(playerTexture, spriteSheetJson);
@@ -116,15 +114,15 @@ export async function loadPixi() {
     ])
     .fill();
 
-  const hm: Container = new Container();
-  hm.addChild(viewCone);
-  hm.addChild(viewConeAlphaSprite);
-  hm.addChild(viewConeAlphaMask);
+  const viewConeContainer: Container = new Container();
+  viewConeContainer.addChild(viewCone);
+  viewConeContainer.addChild(viewConeAlphaSprite);
+  viewConeContainer.addChild(viewConeAlphaMask);
   viewConeAlphaSprite.anchor.x = 0;
   viewConeAlphaSprite.anchor.y = 0;
   viewConeAlphaSprite.rotation = -FOV;
   viewConeAlphaSprite.mask = viewConeAlphaMask;
-  hm.alpha = 0.7;
+  viewConeContainer.alpha = 0.7;
   viewConeAlphaSprite.alpha = 0.7;
 
   // Now initialize a pixi renderer
@@ -133,7 +131,7 @@ export async function loadPixi() {
     sprites: {
       playerDeadSprite,
       playerWalkSprite,
-      viewCone: hm,
+      viewCone: viewConeContainer,
     },
     canvas,
   });

@@ -10,7 +10,7 @@ import { BUTTONS } from "../Controls";
 import { DebugLevelManager } from "../DebugLevelManager";
 import { EventDispatcher } from "../EventDispatcher";
 import { RendererAnimationEvents, Sprites } from "../types";
-import { GAME_WIDTH, GAME_HEIGHT } from "../config";
+import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 
 const glowFilter = new GlowFilter();
 
@@ -44,7 +44,9 @@ class PixiRenderer {
 
     this.game = new Game();
     this.game.setupAnimationCallbacks(this.animationEvents);
-    new DebugLevelManager(this);
+    if (DEBUG_MODE) {
+      new DebugLevelManager(this);
+    }
 
     const backgroundGradient = new FillGradient(0, 0, 0, 1000);
     backgroundGradient.addColorStop(0, "#222");
