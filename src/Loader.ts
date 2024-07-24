@@ -1,15 +1,25 @@
 import {
+  AlphaFilter,
   AnimatedSprite,
   Application,
   Assets,
   Color,
+  Container,
+  Filter,
+  Geometry,
+  GlProgram,
   Graphics,
+  Mesh,
+  Shader,
   Sprite,
   Spritesheet,
   TextureStyle,
 } from "pixi.js";
 import PixiRenderer from "./renderer/PixiRenderer";
 import { FOV } from "./config";
+import fragment from "./renderer/2fragment.glsl";
+import vertex from "./renderer/2vertex.glsl";
+import { ColorGradientFilter } from "pixi-filters";
 
 export async function loadPixi() {
   // Create DOM elements
@@ -30,6 +40,7 @@ export async function loadPixi() {
   // Load sprites
   TextureStyle.defaultOptions.scaleMode = "nearest";
   const playerSprite = new URL("./images/player.png", import.meta.url);
+  const alphaSprite = new URL("./images/alpha.png", import.meta.url);
 
   const spriteSheetJson = {
     frames: {
@@ -63,6 +74,9 @@ export async function loadPixi() {
   };
 
   const playerTexture = await Assets.load(playerSprite.href);
+  const alphaTexture = await Assets.load(alphaSprite.href);
+
+  const viewConeAlphaSprite = new Sprite(alphaTexture);
   const sheet = new Spritesheet(playerTexture, spriteSheetJson);
   await sheet.parse();
   const playerDeadSprite = new Sprite(sheet.textures.playerhurt);
@@ -76,6 +90,21 @@ export async function loadPixi() {
   playerWalkSprite.play();
 
   const viewCone = new Graphics()
+    .setStrokeStyle({ width: 4, cap: "square", alpha: 0.3 })
+    .poly([
+      0,
+      0,
+      2000 * Math.cos(-FOV),
+      2000 * Math.sin(-FOV),
+      2000 * Math.cos(FOV),
+      2000 * Math.sin(FOV),
+    ])
+    .fill(new Color({ r: 255, g: 255, b: 255, a: 0.3 }))
+    .moveTo(0, 0)
+    .lineTo(2000, 0)
+    .stroke();
+
+  const viewConeAlphaMask = new Graphics()
     .setStrokeStyle({ width: 4, cap: "square" })
     .poly([
       0,
@@ -85,15 +114,18 @@ export async function loadPixi() {
       2000 * Math.cos(FOV),
       2000 * Math.sin(FOV),
     ])
-    .fill(new Color({ r: 255, g: 255, b: 255, a: 0.5 }))
-    .moveTo(2000 * Math.cos(-FOV), 2000 * Math.sin(-FOV))
-    .lineTo(0, 0)
-    .stroke()
-    .lineTo(2000 * Math.cos(FOV), 2000 * Math.sin(FOV))
-    .stroke()
-    .moveTo(0, 0)
-    .lineTo(2000, 0)
-    .stroke();
+    .fill();
+
+  const hm: Container = new Container();
+  hm.addChild(viewCone);
+  hm.addChild(viewConeAlphaSprite);
+  hm.addChild(viewConeAlphaMask);
+  viewConeAlphaSprite.anchor.x = 0;
+  viewConeAlphaSprite.anchor.y = 0;
+  viewConeAlphaSprite.rotation = -FOV;
+  viewConeAlphaSprite.mask = viewConeAlphaMask;
+  hm.alpha = 0.7;
+  viewConeAlphaSprite.alpha = 0.7;
 
   // Now initialize a pixi renderer
   const renderer = new PixiRenderer({
@@ -101,7 +133,7 @@ export async function loadPixi() {
     sprites: {
       playerDeadSprite,
       playerWalkSprite,
-      viewCone,
+      viewCone: hm,
     },
     canvas,
   });

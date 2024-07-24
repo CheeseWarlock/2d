@@ -119,9 +119,9 @@ class Game {
         centerToFocusPoint < -(Math.PI / 2) || centerToFocusPoint > Math.PI / 2;
 
       if (isLeft) {
-        this.viewOrigin = { x: this.player.x - 9, y: this.player.y - 11 };
+        this.viewOrigin = { x: this.player.x - 9, y: this.player.y - 9 };
       } else {
-        this.viewOrigin = { x: this.player.x + 9, y: this.player.y - 11 };
+        this.viewOrigin = { x: this.player.x + 9, y: this.player.y - 9 };
       }
       this.viewDirection = Math.atan2(
         this.focusPoint.y - this.viewOrigin!.y,

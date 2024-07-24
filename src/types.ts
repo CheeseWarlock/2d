@@ -1,4 +1,4 @@
-import { AnimatedSprite, Graphics, Sprite } from "pixi.js";
+import { AnimatedSprite, Container, Graphics, Sprite } from "pixi.js";
 
 export type Point = {
   x: number;
@@ -55,5 +55,5 @@ export type RendererAnimationEvents = {
 export type Sprites = {
   playerWalkSprite: AnimatedSprite;
   playerDeadSprite: Sprite;
-  viewCone: Graphics;
+  viewCone: Container;
 };

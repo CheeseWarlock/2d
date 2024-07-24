@@ -104,6 +104,10 @@ float getNoise(vec2 fragCoord)
 	return value;
 }
 
+bool isNG(vec4 color) {
+	return color.r != color.b || color.r != color.g || color.g != color.b;
+}
+
 vec4 convolute(vec2 uv, bool noisy)
 {
     vec4 color = vec4(0);
@@ -111,7 +115,7 @@ vec4 convolute(vec2 uv, bool noisy)
 		float pixelsInWindow = pow((float(size) * 2. + 1.), 2.);
 		vec4 currentColor = texture(uTexture, vTextureCoord);
 		
-		if (currentColor.r != currentColor.b || currentColor.r != currentColor.g || currentColor.g != currentColor.b) {
+		if (isNG(currentColor)) {
 			return currentColor;
 		} else {
 			float nearestColoredPixel = 10000.0;
@@ -124,7 +128,7 @@ vec4 convolute(vec2 uv, bool noisy)
 								vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
 								vec4 tryColor = texture(uTexture, vTextureCoord+offset);
 
-								if (tryColor.r != tryColor.b || tryColor.r != tryColor.g || tryColor.g != tryColor.b) {
+								if (isNG(tryColor)) {
 									nearestColoredPixel = min(nearestColoredPixel, (pow(float(x - size), 2.) + pow(float(y - size), 2.))); // squared distance
 									if (nearbys == 0) {
 										nearbyColor = tryColor;
