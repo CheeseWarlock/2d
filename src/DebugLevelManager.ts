@@ -32,6 +32,10 @@ export class DebugLevelManager {
       this.renderer.game.loadLevelFromData(d);
     };
 
+    container.onkeydown = (e) => {
+      e.stopPropagation();
+    };
+
     container.onmousedown = (e) => {
       e.stopPropagation();
     };

@@ -7,13 +7,15 @@ import World from "../World";
 import multiShapeLevel from "./Face";
 import canyonLevel from "./Face";
 import ILevelFormat from "./ILevelFormat";
-import introLevel from "./IntroLevel";
+import TeachesPhoto from "./TeachesPhoto";
 import newFace from "./NewFace.json";
 import jump from "./Jump.json";
 import Game from "../Game";
+import TeachesJump from "./TeachesJump.json";
 
 export const GAME_LEVELS: ILevelFormat[] = [
-  introLevel,
+  TeachesPhoto,
+  TeachesJump,
   newFace,
   jump,
   multiShapeLevel,
