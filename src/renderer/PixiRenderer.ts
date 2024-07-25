@@ -46,7 +46,7 @@ class PixiRenderer {
   sprites: Sprites;
   titleScreenFade: number = 1;
   initialClick: boolean = false;
-  renderedText?: Container;
+  renderedText?: Container[];
 
   constructor(options: {
     app: Application;
@@ -174,7 +174,7 @@ class PixiRenderer {
       style: {
         fill: "white",
         fontSize: "40px",
-        fontFamily: "orkneymedium",
+        fontFamily: "oxaniumlight",
       },
     });
     this.app.stage.addChild(clickToStartText);
@@ -182,7 +182,35 @@ class PixiRenderer {
     clickToStartText.x = 500;
     clickToStartText.y = 700;
     clickToStartText.zIndex = 1;
-    this.renderedText = clickToStartText;
+
+    const subtitleText = new Text({
+      text: "A Game of One-Dimensional Photography",
+      style: {
+        fill: "white",
+        fontSize: "26px",
+        fontFamily: "oxaniumlight",
+        padding: 5,
+      },
+    });
+    this.app.stage.addChild(subtitleText);
+    subtitleText.anchor = 0.5;
+    subtitleText.x = 500;
+    subtitleText.y = 280;
+    subtitleText.zIndex = 1;
+
+    const framingLines = new Graphics()
+      .moveTo(300, 254)
+      .lineTo(700, 254)
+      .moveTo(300, 298)
+      .lineTo(700, 298)
+      .setStrokeStyle({
+        width: 2,
+        color: "white",
+      })
+      .stroke();
+    framingLines.zIndex = 1;
+    this.app.stage.addChild(framingLines);
+    this.renderedText = [subtitleText, clickToStartText, framingLines];
   }
 
   update() {
@@ -223,7 +251,9 @@ class PixiRenderer {
       this.titleScreenFade -= 0.05;
       this.sprites.titleText.alpha = this.titleScreenFade;
       if (this.renderedText) {
-        this.renderedText.alpha = this.titleScreenFade;
+        this.renderedText.forEach(
+          (text) => (text.alpha = this.titleScreenFade)
+        );
       }
     }
 

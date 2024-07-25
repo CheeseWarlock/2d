@@ -13,7 +13,7 @@ import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import ILevelFormat from "./levels/ILevelFormat.js";
 
-const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.8;
+const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
 const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
@@ -150,6 +150,7 @@ class Game {
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
+      console.log(similarity, areZonesEqual);
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES

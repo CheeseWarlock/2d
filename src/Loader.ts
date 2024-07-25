@@ -38,7 +38,7 @@ export async function loadPixi() {
   const playerSprite = new URL("./images/player.png", import.meta.url);
   const alphaSprite = new URL("./images/alpha.png", import.meta.url);
   const titleText = new URL("./images/title.png", import.meta.url);
-  const gameFont = new URL("./images/orkneymedium.otf", import.meta.url);
+  const gameFont = new URL("./images/oxaniumlight.ttf", import.meta.url);
 
   const spriteSheetJson = {
     frames: {
