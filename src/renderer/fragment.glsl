@@ -184,7 +184,10 @@ vec4 convolute(vec2 uv, bool noisy)
 
 void main(void)
 {
-  finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
+	if (texture(uTexture, vTextureCoord).rgb == vec3(1., 1., 1.)) {
+		finalColor = vec4(1.,1.,1.,1.);
+	} else {
+		finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
 	finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
 	float dx = aaPosition.x - focusX;
 	float dy = aaPosition.y - focusY;
@@ -194,4 +197,6 @@ void main(void)
 		finalColor = vec4(minColor, minColor, minColor, 1.);
 		finalColor = (finalColor * (1. - black)) + vec4(0., 0., 0., 1.) * black;
 	}
+	}
+  
 }

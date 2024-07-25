@@ -1,4 +1,11 @@
-import { Application, Graphics, Container, FillGradient, Color } from "pixi.js";
+import {
+  Application,
+  Graphics,
+  Container,
+  FillGradient,
+  Color,
+  Text,
+} from "pixi.js";
 import Game from "../Game";
 import GameObject from "../gameObjects/IGameObject";
 import ColorGeometry from "../gameObjects/ColorGeometry";
@@ -37,6 +44,9 @@ class PixiRenderer {
   blackFocusDistance = 0;
   canvas: HTMLCanvasElement;
   sprites: Sprites;
+  titleScreenFade: number = 1;
+  initialClick: boolean = false;
+  renderedText?: Container;
 
   constructor(options: {
     app: Application;
@@ -83,7 +93,10 @@ class PixiRenderer {
     };
 
     document.onmousedown = () => {
-      this.game.controls.press(BUTTONS.CLICK);
+      if (this.initialClick) {
+        this.game.controls.press(BUTTONS.CLICK);
+      }
+      this.initialClick = true;
     };
 
     document.onmouseup = () => {
@@ -149,6 +162,27 @@ class PixiRenderer {
     this.app.ticker.add(() => {
       this.update();
     });
+
+    this.app.stage.addChild(this.sprites.titleText);
+    this.sprites.titleText.anchor = 0.5;
+    this.sprites.titleText.x = 500;
+    this.sprites.titleText.y = 200;
+    this.sprites.titleText.zIndex = 1;
+
+    const clickToStartText = new Text({
+      text: "Click to Start",
+      style: {
+        fill: "white",
+        fontSize: "40px",
+        fontFamily: "orkneymedium",
+      },
+    });
+    this.app.stage.addChild(clickToStartText);
+    clickToStartText.anchor = 0.5;
+    clickToStartText.x = 500;
+    clickToStartText.y = 700;
+    clickToStartText.zIndex = 1;
+    this.renderedText = clickToStartText;
   }
 
   update() {
@@ -185,6 +219,14 @@ class PixiRenderer {
       Math.max(0, 0.8 - this.timeSinceLastPhoto / 30, this.whiteMultiplier)
     );
     this.game.focusPoint = this.mousePosition;
+    if (this.initialClick) {
+      this.titleScreenFade -= 0.05;
+      this.sprites.titleText.alpha = this.titleScreenFade;
+      if (this.renderedText) {
+        this.renderedText.alpha = this.titleScreenFade;
+      }
+    }
+
     this.game.tick();
 
     if (this.game.player.isDead) {

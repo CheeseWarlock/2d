@@ -36,7 +36,7 @@ class CameraFrameRenderer {
       });
     }
 
-    this.context.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    this.context.strokeStyle = "rgba(255, 255, 255, 0.4)";
     this.context.lineWidth = 4;
     this.context.beginPath();
     this.context.moveTo(0, CAMERA_FRAME_HEIGHT / 2);

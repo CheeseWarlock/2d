@@ -7,11 +7,16 @@ import {
   Graphics,
   Sprite,
   Spritesheet,
+  Text,
   TextureStyle,
 } from "pixi.js";
 import PixiRenderer from "./renderer/PixiRenderer";
 import { FOV } from "./config";
 
+/**
+ * Loads Pixi scene and all required images for the game, as well as setting up
+ * some other graphics required for the game.
+ */
 export async function loadPixi() {
   // Create DOM elements
   const container = document.getElementById("game-world-container")!;
@@ -32,6 +37,8 @@ export async function loadPixi() {
   TextureStyle.defaultOptions.scaleMode = "nearest";
   const playerSprite = new URL("./images/player.png", import.meta.url);
   const alphaSprite = new URL("./images/alpha.png", import.meta.url);
+  const titleText = new URL("./images/title.png", import.meta.url);
+  const gameFont = new URL("./images/orkneymedium.otf", import.meta.url);
 
   const spriteSheetJson = {
     frames: {
@@ -64,14 +71,21 @@ export async function loadPixi() {
     },
   };
 
-  let playerTexture: any, alphaTexture: any;
+  let playerTexture: any,
+    alphaTexture: any,
+    titleTextTexture: any,
+    gameTextFont: any;
 
   await Promise.all([
     Assets.load(playerSprite.href),
     Assets.load(alphaSprite.href),
+    Assets.load(titleText.href),
+    Assets.load(gameFont.href),
   ]).then((promises) => {
     playerTexture = promises[0];
     alphaTexture = promises[1];
+    titleTextTexture = promises[2];
+    gameTextFont = promises[3];
   });
 
   const viewConeAlphaSprite = new Sprite(alphaTexture);
@@ -79,6 +93,7 @@ export async function loadPixi() {
   await sheet.parse();
   const playerDeadSprite = new Sprite(sheet.textures.playerhurt);
   const playerWalkSprite = new AnimatedSprite(sheet.animations.enemy);
+  const titleTextSprite = new Sprite(titleTextTexture);
 
   playerWalkSprite.animationSpeed = 0.1;
   playerWalkSprite.anchor.set(0.5);
@@ -88,7 +103,7 @@ export async function loadPixi() {
   playerWalkSprite.play();
 
   const viewCone = new Graphics()
-    .setStrokeStyle({ width: 4, cap: "square", alpha: 0.3 })
+    .setStrokeStyle({ width: 4, cap: "square", alpha: 0.35 })
     .poly([
       0,
       0,
@@ -132,6 +147,7 @@ export async function loadPixi() {
       playerDeadSprite,
       playerWalkSprite,
       viewCone: viewConeContainer,
+      titleText: titleTextSprite,
     },
     canvas,
   });
