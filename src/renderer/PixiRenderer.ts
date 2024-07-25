@@ -380,19 +380,24 @@ class PixiRenderer {
   }
 
   createStars() {
-    const NUM_STARS = 20;
+    const NUM_STARS = 32;
     let starsRemaining = NUM_STARS;
     while (starsRemaining > 0) {
       starsRemaining -= 1;
       const starX = Math.round(Math.random() * GAME_WIDTH);
       const starY = Math.round(Math.random() ** 2 * GAME_HEIGHT);
       const starSize = Math.random() * 3 + 3;
+      const starBrightness =
+        ((GAME_HEIGHT - starY) * 127) / GAME_HEIGHT + 128 - Math.random() * 50;
 
       const starRect = new Graphics()
         .rect(0, 0, starSize, starSize)
-        .fill("#eee");
+        .fill(`rgb(${starBrightness},${starBrightness},${starBrightness})`);
       starRect.x = starX;
       starRect.y = starY;
+      if (Math.random() > 0.6) {
+        starRect.rotation = Math.PI / 4;
+      }
       this.app!.stage.addChild(starRect);
     }
   }
