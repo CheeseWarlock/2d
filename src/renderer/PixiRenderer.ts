@@ -124,6 +124,11 @@ class PixiRenderer {
         this.game.gameIsActive = true;
       }, HANG_TIME);
     });
+    this.game.events.on("photoFailed", () => {
+      viewContainer.classList.remove("view-container-shake");
+      viewContainer.offsetHeight;
+      viewContainer.classList.add("view-container-shake");
+    });
     this.game.events.on("photoTaken", () => {
       this.timeSinceLastPhoto = 0;
     });
@@ -165,7 +170,9 @@ class PixiRenderer {
     }
     this.timeSinceLastPhoto += 1;
     this.timeSinceJump += 1;
-    glowFilter.time += 0.02;
+    if (this.game.gameIsActive) {
+      glowFilter.time += 0.02;
+    }
 
     this.sprites.viewCone.alpha = Math.max(
       0.5,
@@ -182,8 +189,8 @@ class PixiRenderer {
 
     if (this.game.player.isDead) {
       glowFilter.black += 0.02;
-      if (glowFilter.black > 0.4) {
-        glowFilter.black = 0.4;
+      if (glowFilter.black > 0.2) {
+        glowFilter.black = 0.2;
       }
       glowFilter.focusDistance -= 50;
       if (glowFilter.focusDistance < 100) {

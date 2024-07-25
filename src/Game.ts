@@ -21,6 +21,7 @@ class Game {
   events: EventDispatcher<{
     goalAchieved: void;
     photoTaken: void;
+    photoFailed: void;
     playerJumped: void;
     playerDied: void;
     levelCompleted: void;
@@ -142,7 +143,6 @@ class Game {
       this.gameIsActive = false;
     }
     if (this.takePhoto) {
-      this.events.publish("photoTaken");
       this.takePhoto = false;
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
@@ -154,6 +154,7 @@ class Game {
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
       ) {
+        this.events.publish("photoTaken");
         this.currentGoalIndex += 1;
         if (this.currentGoalIndex === this.goals.length) {
           this.events.publish("levelCompleted");
@@ -165,6 +166,8 @@ class Game {
         } else {
           this.events.publish("goalAchieved");
         }
+      } else {
+        this.events.publish("photoFailed");
       }
     }
   }

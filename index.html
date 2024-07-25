@@ -3,13 +3,21 @@
   <head>
     <title>Colors Game</title>
     <style type="text/css">
-      @keyframes action {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-40px); }
-}
+      @keyframes bounce {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-40px); }
+      }
+
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        33% { transform: translateX(-10px); }
+        100% { transform: translateX(20px); }
+      }
+
       body {
         background-color: #aaa;
         margin: 50px;
+        user-select: none;
       }
 
       canvas {
@@ -50,7 +58,11 @@
       }
 
       .camera-container-bounce {
-        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate action;
+        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate bounce;
+      }
+
+      .view-container-shake {
+        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate shake;
       }
 
       #debug-container {
