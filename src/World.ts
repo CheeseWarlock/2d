@@ -1,4 +1,5 @@
 import CameraFrame from "./CameraFrame.js";
+import { GAME_HEIGHT, GAME_WIDTH } from "./config.js";
 import Game from "./Game.js";
 import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import ColorGeometry from "./gameObjects/ColorGeometry.js";
@@ -65,45 +66,54 @@ export default class World {
 
     const viewConeLow = viewDirection - fov;
     const viewConeHigh = viewDirection + fov;
-    // console.log(viewConeLow / Math.PI, viewDirection / Math.PI, viewConeHigh / Math.PI);
 
-    // Find all the relevant lines from the quadtree
-    // For now, get the quadrants that are within the view cone
-    let ul = false,
-      ur = false,
-      ll = false,
-      lr = false;
-    if (viewConeLow < -(Math.PI / 2) || viewConeHigh > Math.PI) {
-      ul = true;
-    }
-    if (
-      rangesOverlap(
-        { start: viewConeLow, finish: viewConeHigh },
-        { start: -Math.PI / 2, finish: 0 }
-      )
-    ) {
-      ur = true;
-    }
-    if (
-      rangesOverlap(
-        { start: viewConeLow, finish: viewConeHigh },
-        { start: 0, finish: Math.PI / 2 }
-      )
-    ) {
-      lr = true;
-    }
-    if (viewConeHigh > Math.PI / 2 || viewConeLow < -Math.PI) {
-      ll = true;
-    }
-    const x1 = ul || ll ? 0 : origin.x;
-    const y1 = ul || ur ? 0 : origin.y;
-    const w =
-      (ul && ur) || (ll && lr) ? 1000 : ul || ll ? origin.x : 1000 - origin.x;
-    const h =
-      (ul && ll) || (ur && lr) ? 1000 : ul || ur ? origin.y : 1000 - origin.y;
-    const rectangles = this.quadtree.retrieve(
-      new Rectangle({ x: x1, y: y1, width: w, height: h })
-    );
+    const viewConeLowLine: [number, number, number, number] = [
+      origin.x,
+      origin.y,
+      origin.x + Math.cos(viewConeLow) * 2000,
+      origin.y + Math.sin(viewConeLow) * 2000,
+    ];
+    const viewConeHighLine: [number, number, number, number] = [
+      origin.x,
+      origin.y,
+      origin.x + Math.cos(viewConeHigh) * 2000,
+      origin.y + Math.sin(viewConeHigh) * 2000,
+    ];
+
+    const outerLines: [number, number, number, number][] = [
+      [0, 0, GAME_WIDTH, 0],
+      [0, 0, 0, GAME_HEIGHT],
+      [GAME_WIDTH, 0, GAME_WIDTH, GAME_HEIGHT],
+      [0, GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT],
+    ];
+
+    let lowIntersection = [origin.x, origin.y];
+    let highIntersection = [origin.x, origin.y];
+
+    outerLines.forEach((line) => {
+      const low = lineSegmentsIntersect(...line, ...viewConeLowLine);
+      if (low.direct) {
+        lowIntersection = low.point;
+      }
+      const high = lineSegmentsIntersect(...line, ...viewConeHighLine);
+      if (high.direct) {
+        highIntersection = high.point;
+      }
+    });
+
+    const minX = Math.min(origin.x, highIntersection[0], lowIntersection[0]);
+    const maxX = Math.max(origin.x, highIntersection[0], lowIntersection[0]);
+    const minY = Math.min(origin.y, highIntersection[1], lowIntersection[1]);
+    const maxY = Math.max(origin.y, highIntersection[1], lowIntersection[1]);
+
+    const retrievalRectangle = new Rectangle({
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    });
+
+    const rectangles = this.quadtree.retrieve(retrievalRectangle);
 
     const lineSegments = rectangles
       .map((rect) =>
@@ -277,7 +287,7 @@ export default class World {
           seg.seg.to.x,
           seg.seg.to.y
         );
-        if (collisionData.direct && collisionData.edgy) {
+        if (collisionData.direct && collisionData.isAtEdge) {
           // set collision type to the "worst"
           if (
             (seg.obj instanceof GroundGeometry && type !== "color") ||

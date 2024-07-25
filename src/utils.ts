@@ -19,6 +19,12 @@ export function intersects(
   }
 }
 
+/**
+ * Whether the line segments from (x,y)1 to (x,y)2 and (x,y)3 to (x,y)4 intersect.
+ * Returns whether the lines intersect directly on the segment,
+ * whether it's at the edge of at least one of the lines,
+ * and the point of intersection (whether or not it's within the segments).
+ */
 export function lineSegmentsIntersect(
   x1: number,
   y1: number,
@@ -36,10 +42,10 @@ export function lineSegmentsIntersect(
   var s = (-a_dy * (x1 - x3) + a_dx * (y1 - y3)) / (-b_dx * a_dy + a_dx * b_dy);
   var t = (+b_dx * (y1 - y3) - b_dy * (x1 - x3)) / (-b_dx * a_dy + a_dx * b_dy);
   const doSegmentsIntersect = s >= 0 && s <= 1 && t >= 0 && t <= 1;
-  const edgy = s > 0 && s < 1 && t > 0 && t < 1;
+  const isAtEdge = s > 0 && s < 1 && t > 0 && t < 1;
   return {
     direct: doSegmentsIntersect,
-    edgy,
+    isAtEdge,
     point: [x1 + t * a_dx, y1 + t * a_dy],
   };
 }
