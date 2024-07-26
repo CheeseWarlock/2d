@@ -61,8 +61,10 @@ class Game {
       if (this.gameIsActive) {
         this.takePhoto = true;
       } else {
-        this.restartCurrentLevel();
-        this.gameIsActive = true;
+        if (this.player.isDead) {
+          this.restartCurrentLevel();
+          this.gameIsActive = true;
+        }
       }
     });
     this.controls.on(BUTTONS.UP, () => {
