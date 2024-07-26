@@ -152,7 +152,7 @@ class Game {
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
-      console.log(similarity, areZonesEqual);
+      console.log(this.cameraFrame, similarity, areZonesEqual);
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES

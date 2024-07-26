@@ -12,11 +12,13 @@ import newFace from "./NewFace.json";
 import jump from "./Jump.json";
 import Game from "../Game";
 import TeachesJump from "./TeachesJump.json";
+import DodgeThings from "./DodgeThings.json";
 
 export const GAME_LEVELS: ILevelFormat[] = [
   TeachesPhoto,
   TeachesJump,
   jump,
+  DodgeThings,
   newFace,
   multiShapeLevel,
   canyonLevel,
