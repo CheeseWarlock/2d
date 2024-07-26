@@ -53,6 +53,7 @@ export default class World {
     viewDirection: number,
     fov: number
   ) {
+    const MAX_SIZE = GAME_HEIGHT + GAME_WIDTH;
     const cameraFrame = new CameraFrame();
     cameraFrame.segments = [];
     const segmentsToConsider: {
@@ -70,14 +71,14 @@ export default class World {
     const viewConeLowLine: [number, number, number, number] = [
       origin.x,
       origin.y,
-      origin.x + Math.cos(viewConeLow) * 2000,
-      origin.y + Math.sin(viewConeLow) * 2000,
+      origin.x + Math.cos(viewConeLow) * MAX_SIZE,
+      origin.y + Math.sin(viewConeLow) * MAX_SIZE,
     ];
     const viewConeHighLine: [number, number, number, number] = [
       origin.x,
       origin.y,
-      origin.x + Math.cos(viewConeHigh) * 2000,
-      origin.y + Math.sin(viewConeHigh) * 2000,
+      origin.x + Math.cos(viewConeHigh) * MAX_SIZE,
+      origin.y + Math.sin(viewConeHigh) * MAX_SIZE,
     ];
 
     const outerLines: [number, number, number, number][] = [
@@ -174,16 +175,16 @@ export default class World {
         shouldConsiderSegment = true;
         breakpoints.push(directionToLineEnd);
       } else if (
-        intersects(
+        lineSegmentsIntersect(
           x1,
           y1,
           x2,
           y2,
           origin.x,
           origin.y,
-          origin.x + Math.cos(viewDirection) * 1e6,
-          origin.y + Math.sin(viewDirection) * 1e6
-        )
+          origin.x + Math.cos(viewDirection) * MAX_SIZE,
+          origin.y + Math.sin(viewDirection) * MAX_SIZE
+        ).direct
       ) {
         shouldConsiderSegment = true;
       }
@@ -202,8 +203,8 @@ export default class World {
         const intersection = lineSegmentsIntersect(
           origin.x,
           origin.y,
-          origin.x + Math.cos(midpoint) * 1e6,
-          origin.y + Math.sin(midpoint) * 1e6,
+          origin.x + Math.cos(midpoint) * MAX_SIZE,
+          origin.y + Math.sin(midpoint) * MAX_SIZE,
           seg.x1,
           seg.y1,
           seg.x2,
