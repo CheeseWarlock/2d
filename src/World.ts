@@ -15,11 +15,11 @@ const rangesOverlap = (
 ) => (b.start < a.start ? b.finish > a.start : b.start < a.finish);
 
 export default class World {
-  size = { width: 1000, height: 1000 };
+  size = { width: GAME_WIDTH, height: GAME_HEIGHT };
   objects: GameObject[] = [];
   quadtree = new Quadtree<Rectangle<BaseGeometry>>({
-    width: 1000,
-    height: 1000,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
   });
   game: Game;
 
@@ -384,8 +384,8 @@ export default class World {
       new Rectangle<void>({
         x: 0,
         y: 0,
-        width: 1000,
-        height: 1000,
+        width: GAME_WIDTH,
+        height: GAME_HEIGHT,
       })
     );
   }

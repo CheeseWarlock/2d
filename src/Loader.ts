@@ -11,7 +11,7 @@ import {
   TextureStyle,
 } from "pixi.js";
 import PixiRenderer from "./renderer/PixiRenderer";
-import { FOV } from "./config";
+import { FOV, GAME_HEIGHT, GAME_WIDTH } from "./config";
 
 /**
  * Loads Pixi scene and all required images for the game, as well as setting up
@@ -21,14 +21,14 @@ export async function loadPixi() {
   // Create DOM elements
   const container = document.getElementById("game-world-container")!;
   const canvas = document.createElement("canvas");
-  canvas.width = 1000;
-  canvas.height = 1000;
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
   container.appendChild(canvas);
   const app = new Application();
   await app.init({
     antialias: true,
-    width: 1000,
-    height: 1000,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
     background: "#000",
     canvas,
   });

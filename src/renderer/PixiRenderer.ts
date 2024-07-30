@@ -60,12 +60,12 @@ class PixiRenderer {
       new DebugLevelManager(this);
     }
 
-    const backgroundGradient = new FillGradient(0, 0, 0, 1000);
+    const backgroundGradient = new FillGradient(0, 0, 0, GAME_HEIGHT);
     backgroundGradient.addColorStop(0, "#222");
     backgroundGradient.addColorStop(1, "#444");
 
     const background = new Graphics()
-      .rect(0, 0, 1000, 1000)
+      .rect(0, 0, GAME_WIDTH, GAME_HEIGHT)
       .fill(backgroundGradient);
 
     this.app.stage.addChild(background);
