@@ -16,15 +16,16 @@ import { GlowFilter } from "./GlowFilter";
 import { BUTTONS } from "../Controls";
 import { DebugLevelManager } from "../DebugLevelManager";
 import { EventDispatcher } from "../EventDispatcher";
-import { RendererAnimation, RendererAnimationEvents, Sprites } from "../types";
+import { RendererAnimationEvents, Sprites } from "../types";
 import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
+import { RendererAnimation } from "../Animation";
 
 const glowFilter = new GlowFilter();
 
 /**
- * Duration to pause after a successful photo.
+ * Nubmer of frames to pause after a successful photo.
  */
-const HANG_TIME = 250;
+const HANG_TIME = 15;
 
 class PixiRenderer {
   game: Game;
@@ -92,23 +93,25 @@ class PixiRenderer {
       if (this.initialClick) {
         this.game.controls.press(BUTTONS.CLICK);
       } else {
-        this.animations.push({
-          framesRemaining: 20,
-          tick: (framesRemaining) => {
-            this.sprites.titleText.alpha = framesRemaining * 0.05;
-            if (this.renderedText) {
-              this.renderedText.forEach(
-                (text) => (text.alpha = framesRemaining * 0.05)
-              );
-            }
-          },
-          onComplete: () => {
-            this.sprites.titleText.alpha = 0;
-            if (this.renderedText) {
-              this.renderedText.forEach((text) => (text.alpha = 0));
-            }
-          },
-        });
+        this.animations.push(
+          new RendererAnimation({
+            frames: 20,
+            onUpdate: (framesRemaining) => {
+              this.sprites.titleText.alpha = framesRemaining * 0.05;
+              if (this.renderedText) {
+                this.renderedText.forEach(
+                  (text) => (text.alpha = framesRemaining * 0.05)
+                );
+              }
+            },
+            onComplete: () => {
+              this.sprites.titleText.alpha = 0;
+              if (this.renderedText) {
+                this.renderedText.forEach((text) => (text.alpha = 0));
+              }
+            },
+          })
+        );
       }
       this.initialClick = true;
     };
@@ -147,9 +150,14 @@ class PixiRenderer {
       goalContainer.offsetHeight;
       goalContainer.classList.add("camera-container-bounce");
       this.game.gameIsActive = false;
-      setTimeout(() => {
-        this.game.gameIsActive = true;
-      }, HANG_TIME);
+      this.animations.push(
+        new RendererAnimation({
+          frames: HANG_TIME,
+          onComplete: () => {
+            this.game.gameIsActive = true;
+          },
+        })
+      );
     });
     this.game.events.on("photoFailed", () => {
       viewContainer.classList.remove("view-container-shake");
@@ -157,41 +165,48 @@ class PixiRenderer {
       viewContainer.classList.add("view-container-shake");
     });
     this.game.events.on("photoTaken", () => {
-      this.animations.push({
-        framesRemaining: 50,
-        tick: (framesRemaining) => {
-          this.sprites.viewCone.alpha = Math.max(
-            0.5,
-            0.5 + framesRemaining / 100
-          );
-          this.timeSinceLastPhoto = 50 - framesRemaining;
-        },
-        onComplete: () => {},
-      });
+      this.animations.push(
+        new RendererAnimation({
+          frames: 50,
+          onUpdate: (framesRemaining: number) => {
+            this.sprites.viewCone.alpha = Math.max(
+              0.5,
+              0.5 + framesRemaining / 100
+            );
+            this.timeSinceLastPhoto = 50 - framesRemaining;
+          },
+        })
+      );
     });
     this.game.events.on("levelCompleted", () => {
       goalContainer.classList.remove("camera-container-bounce");
       goalContainer.offsetHeight;
       goalContainer.classList.add("camera-container-bounce");
       // start fading out the screen
-      this.animations.push({
-        framesRemaining: 50,
-        tick: () => {
-          this.whiteMultiplier += 0.02;
-        },
-        onComplete: () => {
-          this.animationEvents.publish("levelCompleteAnimationMidTransition");
-          this.animations.push({
-            framesRemaining: 50,
-            tick: () => {
-              this.whiteMultiplier -= 0.02;
-            },
-            onComplete: () => {
-              this.animationEvents.publish("levelCompleteAnimationFinished");
-            },
-          });
-        },
-      });
+      this.animations.push(
+        new RendererAnimation({
+          frames: 50,
+          onUpdate: () => {
+            this.whiteMultiplier += 0.02;
+          },
+          onComplete: () => {
+            this.animationEvents.publish("levelCompleteAnimationMidTransition");
+            this.animations.push(
+              new RendererAnimation({
+                frames: 50,
+                onUpdate: () => {
+                  this.whiteMultiplier -= 0.02;
+                },
+                onComplete: () => {
+                  this.animationEvents.publish(
+                    "levelCompleteAnimationFinished"
+                  );
+                },
+              })
+            );
+          },
+        })
+      );
     });
     this.game.events.on("playerDied", () => {
       glowFilter.focusDistance = 1400;
@@ -256,15 +271,11 @@ class PixiRenderer {
 
   update() {
     // Handle animations
-    this.animations.forEach((anim, i) => {
-      anim.framesRemaining -= 1;
-      if (anim.framesRemaining) {
-        anim.tick(anim.framesRemaining);
-      } else {
-        anim.onComplete();
-        this.animations.splice(i, 1);
-      }
+    this.animations.forEach((anim) => {
+      anim.tick();
     });
+    this.animations = this.animations.filter((anim) => !anim.isComplete);
+
     // Color fades
     this.timeSinceJump += 1;
     if (this.game.gameIsActive) {
