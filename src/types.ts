@@ -58,3 +58,21 @@ export type Sprites = {
   viewCone: Container;
   titleText: Sprite;
 };
+
+/**
+ * An animation that the renderer is performing.
+ */
+export type RendererAnimation = {
+  /**
+   * The function called every update.
+   */
+  tick: (framesRemaining: number) => void;
+  /**
+   * The number of frames left. The last time the function is called, this will be 1.
+   */
+  framesRemaining: number;
+  /**
+   * The function called when
+   */
+  onComplete: () => void;
+};
