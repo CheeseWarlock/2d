@@ -86,7 +86,6 @@ export async function loadPixi() {
     alphaTexture = promises[1];
     titleTextTexture = promises[2];
     gameTextFont = promises[3];
-    console.log("Game font object", gameTextFont);
     gameTextFont.family = "oxaniumlight";
   });
 

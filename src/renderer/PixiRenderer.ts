@@ -387,7 +387,7 @@ class PixiRenderer {
             .fill(obj.color);
           newGraphics.x = obj.position.x + obj.transform.x;
           newGraphics.y = obj.position.y + obj.transform.y;
-          newGraphics.rotation = obj.rotation;
+          newGraphics.rotation = obj.currentRotation;
         } else if (obj instanceof GroundGeometry) {
           newGraphics = new Graphics()
             .poly(
@@ -405,7 +405,7 @@ class PixiRenderer {
         if (obj instanceof ColorGeometry) {
           existingGraphics.x = obj.position.x + obj.transform.x;
           existingGraphics.y = obj.position.y + obj.transform.y;
-          existingGraphics.rotation = obj.rotation;
+          existingGraphics.rotation = obj.currentRotation;
         }
       }
     });

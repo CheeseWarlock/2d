@@ -12,6 +12,7 @@ export type Motion = {
   };
   duration: number;
   delay: number;
+  rotations?: number;
 };
 
 export type GeometryProps = {

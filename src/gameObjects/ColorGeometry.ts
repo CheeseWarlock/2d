@@ -56,20 +56,26 @@ class ColorGeometry extends BaseGeometry {
     return segments;
   }
 
+  get currentRotation(): number {
+    const t = (this._time / this.motion.duration) * 1000 * Math.PI * 2;
+    const currentRotation = (this.motion?.rotations || 0) * t;
+    const rot = this.rotation + currentRotation;
+    return rot;
+  }
+
   get transformedPoints() {
     const points: Point[] = [];
+    const t = (this._time / this.motion.duration) * 1000 * Math.PI * 2;
+    const currentRotation = (this.motion?.rotations || 0) * t;
+    const rot = this.rotation + currentRotation;
     for (let i = 0; i != this.points.length; i++) {
       const nPos = {
         x: this.transform.x + this.position.x,
         y: this.transform.y + this.position.y,
       };
       const tPos = {
-        x:
-          this.points[i].x * Math.cos(this.rotation) -
-          this.points[i].y * Math.sin(this.rotation),
-        y:
-          this.points[i].y * Math.cos(this.rotation) +
-          this.points[i].x * Math.sin(this.rotation),
+        x: this.points[i].x * Math.cos(rot) - this.points[i].y * Math.sin(rot),
+        y: this.points[i].y * Math.cos(rot) + this.points[i].x * Math.sin(rot),
       };
       points.push({
         x: nPos.x + tPos.x,
