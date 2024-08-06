@@ -54,6 +54,7 @@ class Game {
   levelManager: LevelManager = new LevelManager(this);
   gameIsActive: boolean = true;
   animationEvents?: EventDispatcher<RendererAnimationEvents>;
+  colorObjectsSafe: boolean = true;
 
   constructor() {
     this.loadLevelByIndex(0);
@@ -173,6 +174,22 @@ class Game {
         this.events.publish("photoFailed");
       }
     }
+  }
+
+  pause() {
+    this.gameIsActive = false;
+  }
+
+  play() {
+    this.gameIsActive = true;
+  }
+
+  deactivateColors() {
+    this.colorObjectsSafe = true;
+  }
+
+  activateColors() {
+    this.colorObjectsSafe = false;
   }
 
   restartCurrentLevel() {

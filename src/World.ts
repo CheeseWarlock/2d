@@ -6,6 +6,7 @@ import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import GameObject from "./gameObjects/IGameObject.js";
+import { Point } from "./types.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import { Quadtree, Rectangle } from "@timohausmann/quadtree-ts";
 
@@ -277,30 +278,40 @@ export default class World {
       .flat();
 
     lines.forEach((line) => {
+      const testedSegments = new Set<{
+        seg: {
+          from: Point;
+          to: Point;
+        };
+        obj: BaseGeometry;
+      }>();
       lineSegments.forEach((seg) => {
-        const collisionData = lineSegmentsIntersect(
-          line[0],
-          line[1],
-          line[2],
-          line[3],
-          seg.seg.from.x,
-          seg.seg.from.y,
-          seg.seg.to.x,
-          seg.seg.to.y
-        );
-        if (collisionData.direct && collisionData.isAtEdge) {
-          // set collision type to the "worst"
-          if (
-            (seg.obj instanceof GroundGeometry && type !== "color") ||
-            ((seg.obj instanceof ColorGeometry ||
-              seg.obj instanceof ColorLineGeometry) &&
-              type !== "ground")
-          ) {
-            collisionFound = true;
-            collisionLines.push({
-              from: { x: seg.seg.from.x, y: seg.seg.from.y },
-              to: { x: seg.seg.to.x, y: seg.seg.to.y },
-            });
+        if (!testedSegments.has(seg)) {
+          testedSegments.add(seg);
+          const collisionData = lineSegmentsIntersect(
+            line[0],
+            line[1],
+            line[2],
+            line[3],
+            seg.seg.from.x,
+            seg.seg.from.y,
+            seg.seg.to.x,
+            seg.seg.to.y
+          );
+          if (collisionData.direct && collisionData.isAtEdge) {
+            // set collision type to the "worst"
+            if (
+              (seg.obj instanceof GroundGeometry && type !== "color") ||
+              ((seg.obj instanceof ColorGeometry ||
+                seg.obj instanceof ColorLineGeometry) &&
+                type !== "ground")
+            ) {
+              collisionFound = true;
+              collisionLines.push({
+                from: { x: seg.seg.from.x, y: seg.seg.from.y },
+                to: { x: seg.seg.to.x, y: seg.seg.to.y },
+              });
+            }
           }
         }
       });
