@@ -19,6 +19,8 @@ import { EventDispatcher } from "../EventDispatcher";
 import { RendererAnimationEvents, Sprites } from "../types";
 import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 import { RendererAnimation } from "../Animation";
+import SafetyToggler from "../gameObjects/SafetyToggler";
+import Player from "../gameObjects/Player";
 
 const glowFilter = new GlowFilter();
 
@@ -368,6 +370,7 @@ class PixiRenderer {
       }
     });
     this.game.visibleObjects.forEach((obj) => {
+      if (obj instanceof Player) return;
       if (!this.objectsToDraw.has(obj)) {
         let newGraphics;
         if (obj instanceof ColorGeometry) {
@@ -394,6 +397,10 @@ class PixiRenderer {
               obj.lineSegments.map((seg) => [seg.from.x, seg.from.y]).flat()
             )
             .fill(obj.color);
+        } else if (obj instanceof SafetyToggler) {
+          newGraphics = new Graphics()
+            .rect(obj.position.x - 10, obj.position.y - 10, 20, 20)
+            .fill("#000001");
         } else {
           newGraphics = new Graphics().circle(0, 0, 50).fill("black");
         }

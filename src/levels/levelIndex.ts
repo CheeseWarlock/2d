@@ -13,6 +13,7 @@ import jump from "./Jump.json";
 import Game from "../Game";
 import TeachesJump from "./TeachesJump.json";
 import DodgeThings from "./DodgeThings.json";
+import SafetyToggler from "../gameObjects/SafetyToggler";
 
 export const GAME_LEVELS: ILevelFormat[] = [
   TeachesPhoto,
@@ -65,6 +66,10 @@ export class LevelManager {
       world
     );
     world.objects.push(player);
+
+    const togge = new SafetyToggler();
+    world.objects.push(togge);
+    world.addGeometry(togge);
 
     const goals = levelData.goals.map((goal) => new CameraFrame(goal));
 

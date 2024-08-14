@@ -1,6 +1,7 @@
 import GameObject from "./IGameObject.js";
-import World from "../World.js";
+import World, { CollisionGroups } from "../World.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "../config.js";
+import SafetyToggler from "./SafetyToggler.js";
 
 /**
  * The vertical distance that the player will "stick" to a surface, per tick.
@@ -57,6 +58,21 @@ export default class Player implements GameObject {
     this.framesSinceJumpPressed = 0;
   }
 
+  handleToggleCollisionCheck() {
+    const togglesCollision = this.world.collisionTest(
+      this.x - HALF_BOUNDING_BOX_WIDTH,
+      this.y - HALF_BOUNDING_BOX_HEIGHT,
+      this.x + HALF_BOUNDING_BOX_WIDTH,
+      this.y + HALF_BOUNDING_BOX_HEIGHT,
+      0,
+      CollisionGroups.toggle
+    );
+    if (togglesCollision.collisionFound) {
+      this.world.game.events.publish("playerTouchedToggle");
+      this.world.game.deactivateColors();
+    }
+  }
+
   handleDeathChecks() {
     if (this.y >= GAME_HEIGHT) {
       this.isDead = true;
@@ -69,13 +85,15 @@ export default class Player implements GameObject {
       this.x + HALF_BOUNDING_BOX_WIDTH,
       this.y + HALF_BOUNDING_BOX_HEIGHT,
       0,
-      "color"
+      CollisionGroups.color
     );
     this.isDead = currentPositionCollisionTest.collisionFound;
   }
 
   handleJumpCheck() {
-    const colorsSafe = this.world.game.colorObjectsSafe ? "any" : "ground";
+    const colorsSafe = this.world.game.colorObjectsSafe
+      ? CollisionGroups.solid
+      : CollisionGroups.ground;
     this.framesSinceJumpPressed += 1;
     const collisionTest = this.world.collisionTest(
       this.x - 9,
@@ -104,7 +122,9 @@ export default class Player implements GameObject {
 
   handleLateralMovementChecks() {
     // are colors safe?
-    const colorsSafe = this.world.game.colorObjectsSafe ? "any" : "ground";
+    const colorsSafe = this.world.game.colorObjectsSafe
+      ? CollisionGroups.solid
+      : CollisionGroups.ground;
     this.isWalking = false;
     if (this.moveLeft && this.x > HALF_BOUNDING_BOX_WIDTH) {
       if (this.gravityVelocity > 0) {
@@ -234,7 +254,9 @@ export default class Player implements GameObject {
   }
 
   applyGravity() {
-    const colorsSafe = this.world.game.colorObjectsSafe ? "any" : "ground";
+    const colorsSafe = this.world.game.colorObjectsSafe
+      ? CollisionGroups.solid
+      : CollisionGroups.ground;
     this.gravityVelocity += GRAVITY_ACCELERATION;
     if (this.gravityVelocity > TERMINAL_VELOCITY)
       this.gravityVelocity = TERMINAL_VELOCITY;
@@ -272,6 +294,7 @@ export default class Player implements GameObject {
 
   tick() {
     this.handleDeathChecks();
+    this.handleToggleCollisionCheck();
     this.handleLateralMovementChecks();
     this.handleJumpCheck();
     this.applyGravity();

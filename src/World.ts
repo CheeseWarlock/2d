@@ -6,6 +6,7 @@ import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
 import GroundGeometry from "./gameObjects/GroundGeometry.js";
 import GameObject from "./gameObjects/IGameObject.js";
+import SafetyToggler from "./gameObjects/SafetyToggler.js";
 import { Point } from "./types.js";
 import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
 import { Quadtree, Rectangle } from "@timohausmann/quadtree-ts";
@@ -14,6 +15,19 @@ const rangesOverlap = (
   a: { start: number; finish: number },
   b: { start: number; finish: number }
 ) => (b.start < a.start ? b.finish > a.start : b.start < a.finish);
+
+export enum CollisionGroups {
+  /** ground objects only */
+  ground,
+  /** color objects only */
+  color,
+  /** anything solid- ground and color */
+  solid,
+  /** toggle objects */
+  toggle,
+  /** anything at all */
+  any,
+}
 
 export default class World {
   size = { width: GAME_WIDTH, height: GAME_HEIGHT };
@@ -246,7 +260,7 @@ export default class World {
     x2: number,
     y2: number,
     distance: number = 0,
-    type: "ground" | "color" | "any" = "any"
+    type: CollisionGroups
   ): {
     collisionFound: boolean;
     maxSafe: number;
@@ -299,12 +313,16 @@ export default class World {
             seg.seg.to.y
           );
           if (collisionData.direct && collisionData.isAtEdge) {
-            // set collision type to the "worst"
             if (
-              (seg.obj instanceof GroundGeometry && type !== "color") ||
+              (seg.obj instanceof SafetyToggler &&
+                type === CollisionGroups.toggle) ||
+              (seg.obj instanceof GroundGeometry &&
+                (type === CollisionGroups.ground ||
+                  type === CollisionGroups.solid)) ||
               ((seg.obj instanceof ColorGeometry ||
                 seg.obj instanceof ColorLineGeometry) &&
-                type !== "ground")
+                (type === CollisionGroups.color ||
+                  type === CollisionGroups.solid))
             ) {
               collisionFound = true;
               collisionLines.push({
@@ -401,7 +419,11 @@ export default class World {
     );
   }
 
-  update() {
+  update(motionsPaused: boolean = false) {
+    if (motionsPaused) {
+      this.game.player.tick();
+      return;
+    }
     this.objects.forEach((obj) => obj.tick());
     this.quadtree.clear();
     this.objects.forEach((obj) => {

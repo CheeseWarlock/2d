@@ -12,6 +12,7 @@ import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import ILevelFormat from "./levels/ILevelFormat.js";
+import GameObject from "./gameObjects/IGameObject.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
@@ -26,6 +27,7 @@ class Game {
     playerDied: void;
     levelCompleted: void;
     levelRestarted: void;
+    playerTouchedToggle: void;
   }> = new EventDispatcher();
 
   /**
@@ -33,7 +35,10 @@ class Game {
    */
   currentLevelData?: string;
 
-  visibleObjects: BaseGeometry[] = [];
+  /**
+   * The visible objects in the scene, minus the player.
+   */
+  visibleObjects: GameObject[] = [];
   /**
    * The focus position (i.e. of the cursor)
    */
@@ -54,7 +59,8 @@ class Game {
   levelManager: LevelManager = new LevelManager(this);
   gameIsActive: boolean = true;
   animationEvents?: EventDispatcher<RendererAnimationEvents>;
-  colorObjectsSafe: boolean = true;
+  colorObjectsSafe: boolean = false;
+  timeUntilColorObjectsUnsafe = 0;
 
   constructor() {
     this.loadLevelByIndex(0);
@@ -91,7 +97,7 @@ class Game {
     this.player = data.player;
     this.goals = data.goals;
     this.world = data.world;
-    this.visibleObjects = [...this.world.geometryObjects];
+    this.visibleObjects = [...this.world.objects];
   }
 
   loadLevelFromData(data: {
@@ -109,13 +115,17 @@ class Game {
     if (!this.gameIsActive) {
       return;
     }
+    this.timeUntilColorObjectsUnsafe -= 1;
+    if (this.timeUntilColorObjectsUnsafe === 0) {
+      this.activateColors();
+    }
     this.player.moveLeft =
       this.controls.buttonsDown.has(BUTTONS.LEFT) &&
       !this.controls.buttonsDown.has(BUTTONS.RIGHT);
     this.player.moveRight =
       this.controls.buttonsDown.has(BUTTONS.RIGHT) &&
       !this.controls.buttonsDown.has(BUTTONS.LEFT);
-    this.world.update();
+    this.world.update(this.colorObjectsSafe);
     if (this.focusPoint) {
       const centerToFocusPoint = Math.atan2(
         this.focusPoint.y - this.player.y,
@@ -185,10 +195,13 @@ class Game {
   }
 
   deactivateColors() {
+    console.log("deac");
     this.colorObjectsSafe = true;
+    this.timeUntilColorObjectsUnsafe = 400;
   }
 
   activateColors() {
+    console.log("av)");
     this.colorObjectsSafe = false;
   }
 
