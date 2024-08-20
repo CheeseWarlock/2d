@@ -2,36 +2,39 @@ import { Point } from "../types";
 import BaseGeometry from "./BaseGeometry";
 import GameObject from "./IGameObject";
 
+const HITBOX_SIZE = 10;
 export default class SafetyToggler extends BaseGeometry {
   visible = false;
-  points: Point[] = [
-    {
-      x: 490,
-      y: 590,
-    },
-    {
-      x: 510,
-      y: 590,
-    },
-    {
-      x: 510,
-      y: 610,
-    },
-    {
-      x: 490,
-      y: 610,
-    },
-  ];
+  position: Point;
+
+  constructor(pos: Point) {
+    super();
+    this.position = pos;
+  }
 
   tick() {
     // maybe make it move a bit?
   }
 
-  get position() {
-    return {
-      x: 500,
-      y: 600,
-    };
+  get points() {
+    return [
+      {
+        x: this.position.x - HITBOX_SIZE,
+        y: this.position.y - HITBOX_SIZE,
+      },
+      {
+        x: this.position.x + HITBOX_SIZE,
+        y: this.position.y - HITBOX_SIZE,
+      },
+      {
+        x: this.position.x + HITBOX_SIZE,
+        y: this.position.y + HITBOX_SIZE,
+      },
+      {
+        x: this.position.x - HITBOX_SIZE,
+        y: this.position.y + HITBOX_SIZE,
+      },
+    ];
   }
 
   get lineSegments() {

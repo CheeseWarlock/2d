@@ -170,5 +170,6 @@
   "playerPosition": {
     "x": 150,
     "y": 640
-  }
+  },
+  "timerPositions": []
 }

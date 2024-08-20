@@ -227,5 +227,6 @@
   "playerPosition": {
     "x": 100,
     "y": 680
-  }
+  },
+  "timerPositions": []
 }

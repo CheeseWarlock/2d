@@ -76,4 +76,5 @@ export default {
   ground: groundGeometries,
   goals,
   playerPosition: { x: 135, y: 780 },
+  timerPositions: [],
 } as ILevelFormat;

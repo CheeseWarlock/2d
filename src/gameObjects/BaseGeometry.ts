@@ -1,8 +1,17 @@
 import { Point } from "../types.js";
 import GameObject from "./IGameObject.js";
 
+/**
+ * An object with some kind of physical properties in the scene.
+ */
 class BaseGeometry implements GameObject {
-  points: Point[] = [];
+  private _points: Point[] = [];
+  public get points(): Point[] {
+    return this._points;
+  }
+  public set points(value: Point[]) {
+    this._points = value;
+  }
 
   constructor() {}
 

@@ -14,4 +14,5 @@ export default interface ILevelFormat {
   lines: LineGeometryProps[];
   playerPosition: { x: number; y: number };
   goals: CameraFrameProps[];
+  timerPositions: { x: number; y: number }[];
 }

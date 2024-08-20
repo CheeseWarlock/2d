@@ -67,11 +67,13 @@ export class LevelManager {
     );
     world.objects.push(player);
 
-    const togge = new SafetyToggler();
-    world.objects.push(togge);
-    world.addGeometry(togge);
-
     const goals = levelData.goals.map((goal) => new CameraFrame(goal));
+
+    levelData.timerPositions.forEach((pos) => {
+      const timer = new SafetyToggler(pos);
+      world.objects.push(timer);
+      world.addGeometry(timer);
+    });
 
     return {
       world,
