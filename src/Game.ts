@@ -29,7 +29,7 @@ class Game {
     playerDied: void;
     levelCompleted: void;
     levelRestarted: void;
-    playerTouchedToggle: void;
+    playerTouchedToggle: { x: number; y: number };
   }> = new EventDispatcher();
 
   /**

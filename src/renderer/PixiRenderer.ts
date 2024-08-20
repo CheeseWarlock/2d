@@ -22,6 +22,7 @@ import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
+import { ShockwaveFilter } from "pixi-filters";
 
 const glowFilter = new GlowFilter();
 
@@ -47,6 +48,7 @@ class PixiRenderer {
   initialClick: boolean = false;
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
+  shockwaveFilter: ShockwaveFilter;
 
   constructor(options: {
     app: Application;
@@ -80,7 +82,19 @@ class PixiRenderer {
     this.viewRenderer = new CameraFrameRenderer(viewContainer);
     this.goalRenderer = new CameraFrameRenderer(goalContainer);
 
-    this.app.stage.filters = [glowFilter];
+    this.shockwaveFilter = new ShockwaveFilter({
+      center: {
+        x: 500,
+        y: 500,
+      },
+      speed: 1300,
+      amplitude: 12,
+      wavelength: 250,
+      brightness: 1.15,
+      radius: 2000,
+    });
+
+    this.app.stage.filters = [glowFilter, this.shockwaveFilter];
 
     document.onmousemove = (ev) => {
       const canvasX = this.canvas.getBoundingClientRect().left;
@@ -217,6 +231,11 @@ class PixiRenderer {
     this.game.events.on("playerJumped", () => {
       this.timeSinceJump = 0;
     });
+    this.game.events.on("playerTouchedToggle", (pos) => {
+      this.shockwaveFilter.time = 0;
+      this.shockwaveFilter.centerX = pos.x;
+      this.shockwaveFilter.centerY = pos.y;
+    });
 
     this.app.ticker.add(() => {
       this.update();
@@ -273,6 +292,7 @@ class PixiRenderer {
   }
 
   update() {
+    this.shockwaveFilter.time += 0.01;
     // Handle animations
     this.animations.forEach((anim) => {
       anim.tick();

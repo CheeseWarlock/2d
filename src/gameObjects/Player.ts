@@ -68,8 +68,13 @@ export default class Player implements GameObject {
       CollisionGroups.toggle
     );
     if (togglesCollision.collisionFound) {
-      this.world.game.events.publish("playerTouchedToggle");
-      this.world.game.deactivateColors();
+      if (!this.world.game.colorObjectsSafe) {
+        this.world.game.events.publish("playerTouchedToggle", {
+          x: this.world.game.player.x,
+          y: this.world.game.player.y,
+        });
+        this.world.game.deactivateColors();
+      }
     }
   }
 
