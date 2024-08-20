@@ -132,6 +132,7 @@ export default class World {
     const rectangles = this.quadtree.retrieve(retrievalRectangle);
 
     const lineSegments = rectangles
+      .filter((rect) => rect.data!.visible)
       .map((rect) =>
         rect.data!.lineSegments.map((seg) => ({
           seg: seg,
@@ -396,27 +397,6 @@ export default class World {
       collisionFound,
       maxSafe,
     };
-  }
-
-  /*
-  How far can a line move in a direction before colliding?
-   */
-  distanceToCollision(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    direction: number = Math.PI / 2
-  ) {
-    // get all candidate line segments
-    const segments = this.quadtree.retrieve(
-      new Rectangle<void>({
-        x: 0,
-        y: 0,
-        width: GAME_WIDTH,
-        height: GAME_HEIGHT,
-      })
-    );
   }
 
   update(motionsPaused: boolean = false) {

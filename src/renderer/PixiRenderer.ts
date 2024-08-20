@@ -5,6 +5,7 @@ import {
   FillGradient,
   Color,
   Text,
+  Sprite,
 } from "pixi.js";
 import Game from "../Game";
 import GameObject from "../gameObjects/IGameObject";
@@ -398,9 +399,9 @@ class PixiRenderer {
             )
             .fill(obj.color);
         } else if (obj instanceof SafetyToggler) {
-          newGraphics = new Graphics()
-            .rect(obj.position.x - 10, obj.position.y - 10, 20, 20)
-            .fill("#000001");
+          newGraphics = this.sprites.createTimerSprite();
+          newGraphics.position.x = obj.position.x;
+          newGraphics.position.y = obj.position.y;
         } else {
           newGraphics = new Graphics().circle(0, 0, 50).fill("black");
         }

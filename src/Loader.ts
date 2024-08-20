@@ -35,10 +35,11 @@ export async function loadPixi() {
 
   // Load sprites
   TextureStyle.defaultOptions.scaleMode = "nearest";
-  const playerSprite = new URL("./images/player.png", import.meta.url);
-  const alphaSprite = new URL("./images/alpha.png", import.meta.url);
-  const titleText = new URL("./images/title.png", import.meta.url);
-  const gameFont = new URL("./images/oxaniumlight.ttf", import.meta.url);
+  const playerSpriteURL = new URL("./images/player.png", import.meta.url);
+  const alphaSpriteURL = new URL("./images/alpha.png", import.meta.url);
+  const titleTextURL = new URL("./images/title.png", import.meta.url);
+  const timerSpriteURL = new URL("./images/timer.png", import.meta.url);
+  const gameFontURL = new URL("./images/oxaniumlight.ttf", import.meta.url);
 
   const spriteSheetJson = {
     frames: {
@@ -64,7 +65,7 @@ export async function loadPixi() {
     },
 
     meta: {
-      image: playerSprite.href,
+      image: playerSpriteURL.href,
       format: "RGBA8888",
       size: { w: 30, h: 20 },
       scale: "0.5",
@@ -74,19 +75,22 @@ export async function loadPixi() {
   let playerTexture: any,
     alphaTexture: any,
     titleTextTexture: any,
-    gameTextFont: any;
+    gameTextFont: any,
+    timerTexture: any;
 
   await Promise.all([
-    Assets.load(playerSprite.href),
-    Assets.load(alphaSprite.href),
-    Assets.load(titleText.href),
-    Assets.load(gameFont.href),
+    Assets.load(playerSpriteURL.href),
+    Assets.load(alphaSpriteURL.href),
+    Assets.load(titleTextURL.href),
+    Assets.load(gameFontURL.href),
+    Assets.load(timerSpriteURL.href),
   ]).then((promises) => {
     playerTexture = promises[0];
     alphaTexture = promises[1];
     titleTextTexture = promises[2];
     gameTextFont = promises[3];
     gameTextFont.family = "oxaniumlight";
+    timerTexture = promises[4];
   });
 
   const viewConeAlphaSprite = new Sprite(alphaTexture);
@@ -95,6 +99,7 @@ export async function loadPixi() {
   const playerDeadSprite = new Sprite(sheet.textures.playerhurt);
   const playerWalkSprite = new AnimatedSprite(sheet.animations.enemy);
   const titleTextSprite = new Sprite(titleTextTexture);
+  const timerSprite = new Sprite(timerTexture);
 
   playerWalkSprite.animationSpeed = 0.1;
   playerWalkSprite.anchor.set(0.5);
@@ -140,6 +145,8 @@ export async function loadPixi() {
   viewConeAlphaSprite.mask = viewConeAlphaMask;
   viewConeContainer.alpha = 0.7;
   viewConeAlphaSprite.alpha = 0.7;
+  timerSprite.anchor = 0.5;
+  timerSprite.scale = 2;
 
   // Now initialize a pixi renderer
   const renderer = new PixiRenderer({
@@ -149,6 +156,12 @@ export async function loadPixi() {
       playerWalkSprite,
       viewCone: viewConeContainer,
       titleText: titleTextSprite,
+      createTimerSprite: () => {
+        const sprite = new Sprite(timerTexture);
+        sprite.anchor = 0.5;
+        sprite.scale = 2;
+        return sprite;
+      },
     },
     canvas,
   });

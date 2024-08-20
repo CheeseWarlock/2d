@@ -58,4 +58,5 @@ export type Sprites = {
   playerDeadSprite: Sprite;
   viewCone: Container;
   titleText: Sprite;
+  createTimerSprite: () => Sprite;
 };

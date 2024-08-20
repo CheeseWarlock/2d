@@ -3,6 +3,7 @@ import BaseGeometry from "./BaseGeometry";
 import GameObject from "./IGameObject";
 
 export default class SafetyToggler extends BaseGeometry {
+  visible = false;
   points: Point[] = [
     {
       x: 490,

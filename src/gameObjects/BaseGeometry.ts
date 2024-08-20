@@ -10,6 +10,8 @@ class BaseGeometry implements GameObject {
 
   tick() {}
 
+  visible: boolean = true;
+
   get lineSegments() {
     if (this.points.length < 2) return [];
     if (this.points.length === 2)

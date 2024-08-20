@@ -18,6 +18,8 @@ const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
 const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
+const TIME_STOP_DURATION = 400;
+
 class Game {
   events: EventDispatcher<{
     goalAchieved: void;
@@ -163,7 +165,6 @@ class Game {
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
-      console.log(this.cameraFrame, similarity, areZonesEqual);
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
@@ -195,13 +196,11 @@ class Game {
   }
 
   deactivateColors() {
-    console.log("deac");
     this.colorObjectsSafe = true;
-    this.timeUntilColorObjectsUnsafe = 400;
+    this.timeUntilColorObjectsUnsafe = TIME_STOP_DURATION;
   }
 
   activateColors() {
-    console.log("av)");
     this.colorObjectsSafe = false;
   }
 
