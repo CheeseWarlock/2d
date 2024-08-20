@@ -100,6 +100,8 @@ class Game {
     this.goals = data.goals;
     this.world = data.world;
     this.visibleObjects = [...this.world.objects];
+    this.timeUntilColorObjectsUnsafe = 0;
+    this.activateColors();
   }
 
   loadLevelFromData(data: {
@@ -111,6 +113,8 @@ class Game {
     this.goals = data.goals;
     this.world = data.world;
     this.visibleObjects = [...this.world.geometryObjects];
+    this.timeUntilColorObjectsUnsafe = 0;
+    this.activateColors();
   }
 
   tick() {
