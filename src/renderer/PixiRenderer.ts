@@ -23,6 +23,7 @@ import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
+import { CustomBloomFilter } from "./CustomBloomFilter";
 
 const glowFilter = new GlowFilter();
 
@@ -49,6 +50,7 @@ class PixiRenderer {
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
   shockwaveFilter: ShockwaveFilter;
+  customBloomFilter: CustomBloomFilter;
 
   constructor(options: {
     app: Application;
@@ -94,7 +96,15 @@ class PixiRenderer {
       radius: 2000,
     });
 
-    this.app.stage.filters = [glowFilter, this.shockwaveFilter];
+    this.shockwaveFilter.time = 1000;
+
+    this.customBloomFilter = new CustomBloomFilter();
+
+    this.app.stage.filters = [
+      glowFilter,
+      this.shockwaveFilter,
+      this.customBloomFilter,
+    ];
 
     document.onmousemove = (ev) => {
       const canvasX = this.canvas.getBoundingClientRect().left;
@@ -306,7 +316,7 @@ class PixiRenderer {
     }
 
     // set the white fade to the max of fade for any reason
-    glowFilter.white = Math.min(
+    this.customBloomFilter.white = Math.min(
       1,
       Math.max(0, 0.8 - this.timeSinceLastPhoto / 30, this.whiteMultiplier)
     );

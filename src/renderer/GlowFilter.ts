@@ -21,14 +21,16 @@ export class GlowFilter extends Filter {
     focusX: number;
     focusY: number;
     focusDistance: number;
+    grayscaleRadius: number;
   };
 
   public time: number;
-  public white: number = 0.5;
+  public white: number = 0;
   public black: number = 0;
   public focusX: number = 0;
   public focusY: number = 0;
   public focusDistance: number = 0;
+  public grayscaleRadius: number = 0;
 
   constructor() {
     const glProgram = GlProgram.from({
@@ -47,6 +49,7 @@ export class GlowFilter extends Filter {
           focusX: { value: 0, type: "f32" },
           focusY: { value: 0, type: "f32" },
           focusDistance: { value: 0, type: "f32" },
+          grayscaleRadius: { value: 0, type: "f32" },
         },
       },
     });
@@ -66,6 +69,7 @@ export class GlowFilter extends Filter {
     this.uniforms.focusX = this.focusX;
     this.uniforms.focusY = this.focusY;
     this.uniforms.focusDistance = this.focusDistance;
+    this.uniforms.grayscaleRadius = this.grayscaleRadius;
     filterManager.applyFilter(this, input, output, clearMode);
   }
 }

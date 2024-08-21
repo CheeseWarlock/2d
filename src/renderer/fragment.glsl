@@ -145,9 +145,7 @@ vec4 convolute(vec2 uv, bool noisy)
 		float pixelsInWindow = pow((float(size) * 2. + 1.), 2.);
 		vec4 currentColor = texture(uTexture, vTextureCoord);
 		
-		if (isNG(currentColor)) {
-			return currentColor;
-		} else {
+		if (!isNG(currentColor)) {
 			float nearestColoredPixel = 10000.0;
 			vec4 nearbyColor = currentColor;
 			int nearbys = 0;
@@ -177,9 +175,29 @@ vec4 convolute(vec2 uv, bool noisy)
 			float noiseProportion = getNoise(uv);
 			float proximityProportion = pow(1. - clamp(distance / 12., 0., 1.), 2.) * noiseProportion * 0.75;
 			// return vec4(proximityProportion, proximityProportion, proximityProportion, 1.);
-			color = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
-    	return color;
+			currentColor = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
 		}
+
+		return currentColor;
+}
+
+vec4 otherConvolute(vec2 uv) {
+	int size = 5;
+	vec4 outC = vec4(0., 0., 0., 0.);
+	for (int x = 0; x < (size * 2 + 1); x++)
+	{
+		for (int y = 0; y < (size * 2 + 1); y++)
+		{
+			vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
+			vec4 tryColor = texture(uTexture, vTextureCoord+offset);
+
+			outC += tryColor;
+		}
+	}
+	float amount = 1.;
+	vec4 base = texture(uTexture, vTextureCoord);
+	outC = outC / 121.;
+	return (outC * amount) + (base * (1. - amount));
 }
 
 void main(void)
@@ -188,15 +206,14 @@ void main(void)
 		finalColor = vec4(1.,1.,1.,1.);
 	} else {
 		finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
-	finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
-	float dx = aaPosition.x - focusX;
-	float dy = aaPosition.y - focusY;
-	float dist = pow((dx * dx) + (dy * dy), 0.5);
-	if (dist > focusDistance && black > 0.) {
-		float minColor = min(finalColor.x, min(finalColor.y, finalColor.z));
-		finalColor = vec4(minColor, minColor, minColor, 1.);
-		finalColor = (finalColor * (1. - black)) + vec4(0., 0., 0., 1.) * black;
+		finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
+		float dx = aaPosition.x - focusX;
+		float dy = aaPosition.y - focusY;
+		float dist = pow((dx * dx) + (dy * dy), 0.5);
+		if (dist > focusDistance && black > 0.) {
+			float minColor = min(finalColor.x, min(finalColor.y, finalColor.z));
+			finalColor = vec4(minColor, minColor, minColor, 1.);
+			finalColor = (finalColor * (1. - black)) + vec4(0., 0., 0., 1.) * black;
+		}
 	}
-	}
-  
 }
