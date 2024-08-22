@@ -318,8 +318,9 @@ class PixiRenderer {
     // set the white fade to the max of fade for any reason
     this.customBloomFilter.white = Math.min(
       1,
-      Math.max(0, 0.8 - this.timeSinceLastPhoto / 30, this.whiteMultiplier)
+      Math.max(0, 0.8 - this.timeSinceLastPhoto / 30)
     );
+    glowFilter.screenFade = Math.min(1, Math.max(0, this.whiteMultiplier));
     this.game.focusPoint = this.mousePosition;
 
     this.game.tick();

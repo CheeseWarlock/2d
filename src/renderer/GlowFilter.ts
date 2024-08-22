@@ -16,7 +16,7 @@ import {
 export class GlowFilter extends Filter {
   public uniforms: {
     uTime: number;
-    white: number;
+    screenFade: number;
     black: number;
     focusX: number;
     focusY: number;
@@ -25,7 +25,7 @@ export class GlowFilter extends Filter {
   };
 
   public time: number;
-  public white: number = 0;
+  public screenFade: number = 0;
   public black: number = 0;
   public focusX: number = 0;
   public focusY: number = 0;
@@ -44,7 +44,7 @@ export class GlowFilter extends Filter {
       resources: {
         glowUniforms: {
           uTime: { value: 0, type: "f32" },
-          white: { value: 0.5, type: "f32" },
+          screenFade: { value: 0, type: "f32" },
           black: { value: 0, type: "f32" },
           focusX: { value: 0, type: "f32" },
           focusY: { value: 0, type: "f32" },
@@ -64,7 +64,7 @@ export class GlowFilter extends Filter {
     clearMode: boolean
   ): void {
     this.uniforms.uTime = this.time;
-    this.uniforms.white = this.white;
+    this.uniforms.screenFade = this.screenFade;
     this.uniforms.black = this.black;
     this.uniforms.focusX = this.focusX;
     this.uniforms.focusY = this.focusY;

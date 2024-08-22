@@ -7,7 +7,7 @@ in vec4 outputFrame;
 in vec4 aaInputSize;
 
 uniform float uTime;
-uniform float white;
+uniform float screenFade;
 uniform float black;
 uniform float focusX;
 uniform float focusY;
@@ -203,10 +203,10 @@ vec4 otherConvolute(vec2 uv) {
 void main(void)
 {
 	if (texture(uTexture, vTextureCoord).rgb == vec3(1., 1., 1.)) {
-		finalColor = vec4(1.,1.,1.,1.);
+		finalColor = (vec4(1.) * (1. - screenFade)) + vec4(0.2) * screenFade;
 	} else {
 		finalColor = convolute(vec2(aaPosition.x, aaPosition.y), true);
-		finalColor = (finalColor * (1. - white)) + vec4(1.) * white;
+		finalColor = (finalColor * (1. - screenFade)) + vec4(0.2) * screenFade;
 		float dx = aaPosition.x - focusX;
 		float dy = aaPosition.y - focusY;
 		float dist = pow((dx * dx) + (dy * dy), 0.5);
