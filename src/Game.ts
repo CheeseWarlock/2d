@@ -13,6 +13,7 @@ import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import ILevelFormat from "./levels/ILevelFormat.js";
 import GameObject from "./gameObjects/IGameObject.js";
+import { DEBUG_MODE } from "./config.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
@@ -80,10 +81,12 @@ class Game {
       this.player.acceptJumpPress();
     });
     this.controls.on(BUTTONS.BACK, () => {
+      if (!DEBUG_MODE) return;
       if (this.levelManager.currentLevelIndex === 0) return;
       this.loadLevelByIndex(this.levelManager.currentLevelIndex - 1);
     });
     this.controls.on(BUTTONS.FORWARD, () => {
+      if (!DEBUG_MODE) return;
       this.loadLevelByIndex(this.levelManager.currentLevelIndex + 1);
     });
   }
