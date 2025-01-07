@@ -5,6 +5,8 @@ export enum BUTTONS {
   RIGHT,
   UP,
   CLICK,
+  BACK,
+  FORWARD,
 }
 
 type ControlEvents = {
@@ -12,6 +14,8 @@ type ControlEvents = {
   [BUTTONS.RIGHT]: void;
   [BUTTONS.UP]: void;
   [BUTTONS.CLICK]?: { x: number; y: number };
+  [BUTTONS.BACK]: void;
+  [BUTTONS.FORWARD]: void;
 };
 
 export class Controls extends EventDispatcher<ControlEvents> {

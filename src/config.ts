@@ -13,4 +13,4 @@ export const FOV = 0.25;
 /**
  * Whether to use debug mode- controls whether level editor is visible, etc.
  */
-export const DEBUG_MODE = false;
+export const DEBUG_MODE = true;

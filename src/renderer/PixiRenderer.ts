@@ -154,6 +154,10 @@ class PixiRenderer {
         this.game.controls.press(BUTTONS.LEFT);
       } else if (ev.key === "d" || ev.key === "ArrowRight") {
         this.game.controls.press(BUTTONS.RIGHT);
+      } else if (ev.key === "1") {
+        this.game.controls.press(BUTTONS.BACK);
+      } else if (ev.key === "2") {
+        this.game.controls.press(BUTTONS.FORWARD);
       }
     };
 
