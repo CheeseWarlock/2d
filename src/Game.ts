@@ -79,6 +79,13 @@ class Game {
     this.controls.on(BUTTONS.UP, () => {
       this.player.acceptJumpPress();
     });
+    this.controls.on(BUTTONS.BACK, () => {
+      if (this.levelManager.currentLevelIndex === 0) return;
+      this.loadLevelByIndex(this.levelManager.currentLevelIndex - 1);
+    });
+    this.controls.on(BUTTONS.FORWARD, () => {
+      this.loadLevelByIndex(this.levelManager.currentLevelIndex + 1);
+    });
   }
 
   setupAnimationCallbacks(

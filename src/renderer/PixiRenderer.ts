@@ -148,27 +148,11 @@ class PixiRenderer {
     };
 
     document.body.onkeydown = (ev) => {
-      if (ev.key === "w" || ev.key === "ArrowUp") {
-        this.game.controls.press(BUTTONS.UP);
-      } else if (ev.key === "a" || ev.key === "ArrowLeft") {
-        this.game.controls.press(BUTTONS.LEFT);
-      } else if (ev.key === "d" || ev.key === "ArrowRight") {
-        this.game.controls.press(BUTTONS.RIGHT);
-      } else if (ev.key === "1") {
-        this.game.controls.press(BUTTONS.BACK);
-      } else if (ev.key === "2") {
-        this.game.controls.press(BUTTONS.FORWARD);
-      }
+      this.game.controls.pressFromKey(ev.key);
     };
 
     document.body.onkeyup = (ev) => {
-      if (ev.key === "w" || ev.key === "ArrowUp") {
-        this.game.controls.unpress(BUTTONS.UP);
-      } else if (ev.key === "a" || ev.key === "ArrowLeft") {
-        this.game.controls.unpress(BUTTONS.LEFT);
-      } else if (ev.key === "d" || ev.key === "ArrowRight") {
-        this.game.controls.unpress(BUTTONS.RIGHT);
-      }
+      this.game.controls.unpressFromKey(ev.key);
     };
     this.app.stage.addChild(this.sprites.playerWalkSprite);
     this.app.stage.addChild(this.sprites.viewCone);
