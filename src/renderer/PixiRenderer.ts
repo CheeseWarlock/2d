@@ -24,6 +24,7 @@ import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./CustomBloomFilter";
+import { AudioManager } from "../AudioManager";
 
 const glowFilter = new GlowFilter();
 
@@ -51,6 +52,7 @@ class PixiRenderer {
   animations: RendererAnimation[] = [];
   shockwaveFilter: ShockwaveFilter;
   customBloomFilter: CustomBloomFilter;
+  audioManager: AudioManager;
 
   constructor(options: {
     app: Application;
@@ -66,6 +68,7 @@ class PixiRenderer {
     if (DEBUG_MODE) {
       new DebugLevelManager(this);
     }
+    this.audioManager = new AudioManager();
 
     const backgroundGradient = new FillGradient(0, 0, 0, GAME_HEIGHT);
     backgroundGradient.addColorStop(0, "#222");
@@ -120,6 +123,7 @@ class PixiRenderer {
       if (this.initialClick) {
         this.game.controls.press(BUTTONS.CLICK);
       } else {
+        this.audioManager.play();
         this.animations.push(
           new RendererAnimation({
             frames: 20,
