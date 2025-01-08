@@ -11,7 +11,12 @@ const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
 class CameraFrameRenderer {
   context: CanvasRenderingContext2D;
 
-  constructor(targetElement: HTMLElement) {
+  constructor(targetElement: HTMLElement, title: string) {
+    const header = document.createElement("span");
+    header.className = "header-text";
+    header.innerText = title;
+    targetElement.appendChild(header);
+
     const photoCanvas = document.createElement("canvas");
     photoCanvas.width = CAMERA_FRAME_WIDTH;
     photoCanvas.height = CAMERA_FRAME_HEIGHT;

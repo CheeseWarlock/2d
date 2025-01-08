@@ -84,8 +84,8 @@ class PixiRenderer {
 
     const viewContainer = document.getElementById("view-camera-container")!;
     const goalContainer = document.getElementById("goal-camera-container")!;
-    this.viewRenderer = new CameraFrameRenderer(viewContainer);
-    this.goalRenderer = new CameraFrameRenderer(goalContainer);
+    this.viewRenderer = new CameraFrameRenderer(viewContainer, "View");
+    this.goalRenderer = new CameraFrameRenderer(goalContainer, "Goal");
 
     this.shockwaveFilter = new ShockwaveFilter({
       center: {

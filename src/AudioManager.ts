@@ -2,7 +2,7 @@ import backgroundMusic from "./assets/switchback2.mp3";
 import cameraSound from "./assets/camera1.wav";
 import cameraRejectedSound from "./assets/camera2.wav";
 
-const AUDIO_ENABLED = true;
+const AUDIO_ENABLED = false;
 
 export enum SOUND_EFFECTS {
   /**
