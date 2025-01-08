@@ -24,7 +24,7 @@ import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./CustomBloomFilter";
-import { AudioManager } from "../AudioManager";
+import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
 
 const glowFilter = new GlowFilter();
 
@@ -123,7 +123,8 @@ class PixiRenderer {
       if (this.initialClick) {
         this.game.controls.press(BUTTONS.CLICK);
       } else {
-        this.audioManager.play();
+        this.audioManager.setup();
+        this.audioManager.playSoundEffect(SOUND_EFFECTS.BACKGROUND_MUSIC, true);
         this.animations.push(
           new RendererAnimation({
             frames: 20,
@@ -179,11 +180,13 @@ class PixiRenderer {
       );
     });
     this.game.events.on("photoFailed", () => {
+      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_REJECTED);
       viewContainer.classList.remove("view-container-shake");
       viewContainer.offsetHeight;
       viewContainer.classList.add("view-container-shake");
     });
     this.game.events.on("photoTaken", () => {
+      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
       this.animations.push(
         new RendererAnimation({
           frames: 50,

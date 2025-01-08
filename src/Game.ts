@@ -14,7 +14,6 @@ import { BUTTONS, Controls } from "./Controls.js";
 import ILevelFormat from "./levels/ILevelFormat.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { DEBUG_MODE } from "./config.js";
-import { AudioManager } from "./AudioManager.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 

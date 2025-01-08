@@ -51,7 +51,6 @@ export class Controls extends EventDispatcher<ControlEvents> {
   cursorPosition?: { x: number; y: number };
 
   pressFromKey = (key: string) => {
-    console.log(key);
     PRESSABLE_BUTTONS.forEach((button) => {
       if (CONTROLS_MAP[button].indexOf(key) > -1) {
         this.press(button);
