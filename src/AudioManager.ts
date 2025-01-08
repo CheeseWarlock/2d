@@ -1,6 +1,6 @@
-import backgroundMusic from "./images/switchback2.mp3";
-import cameraSound from "./images/camera1.wav";
-import cameraRejectedSound from "./images/camera2.wav";
+import backgroundMusic from "./assets/switchback2.mp3";
+import cameraSound from "./assets/camera1.wav";
+import cameraRejectedSound from "./assets/camera2.wav";
 
 const AUDIO_ENABLED = true;
 

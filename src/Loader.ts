@@ -12,6 +12,11 @@ import {
 } from "pixi.js";
 import PixiRenderer from "./renderer/PixiRenderer";
 import { FOV, GAME_HEIGHT, GAME_WIDTH } from "./config";
+import playerSprite from "./assets/player.png";
+import alphaSprite from "./assets/alpha.png";
+import titleText from "./assets/title.png";
+import timerSpriteImage from "./assets/timer.png";
+import gameFont from "./assets/oxaniumlight.ttf";
 
 /**
  * Loads Pixi scene and all required images for the game, as well as setting up
@@ -35,11 +40,6 @@ export async function loadPixi() {
 
   // Load sprites
   TextureStyle.defaultOptions.scaleMode = "nearest";
-  const playerSpriteURL = new URL("./images/player.png", import.meta.url);
-  const alphaSpriteURL = new URL("./images/alpha.png", import.meta.url);
-  const titleTextURL = new URL("./images/title.png", import.meta.url);
-  const timerSpriteURL = new URL("./images/timer.png", import.meta.url);
-  const gameFontURL = new URL("./images/oxaniumlight.ttf", import.meta.url);
 
   const spriteSheetJson = {
     frames: {
@@ -65,7 +65,7 @@ export async function loadPixi() {
     },
 
     meta: {
-      image: playerSpriteURL.href,
+      image: playerSprite,
       format: "RGBA8888",
       size: { w: 30, h: 20 },
       scale: "0.5",
@@ -79,11 +79,11 @@ export async function loadPixi() {
     timerTexture: any;
 
   await Promise.all([
-    Assets.load(playerSpriteURL.href),
-    Assets.load(alphaSpriteURL.href),
-    Assets.load(titleTextURL.href),
-    Assets.load(gameFontURL.href),
-    Assets.load(timerSpriteURL.href),
+    Assets.load(playerSprite),
+    Assets.load(alphaSprite),
+    Assets.load(titleText),
+    Assets.load(gameFont),
+    Assets.load(timerSpriteImage),
   ]).then((promises) => {
     playerTexture = promises[0];
     alphaTexture = promises[1];
