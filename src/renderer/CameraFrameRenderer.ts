@@ -10,8 +10,10 @@ const CLEAR_COLOR_FOR_CAMERA_FRAMES = "#444";
  */
 class CameraFrameRenderer {
   context: CanvasRenderingContext2D;
+  element: HTMLElement;
 
   constructor(targetElement: HTMLElement, title: string) {
+    this.element = targetElement;
     const header = document.createElement("span");
     header.className = "header-text";
     header.innerText = title;

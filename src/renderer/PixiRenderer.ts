@@ -13,7 +13,7 @@ import ColorGeometry from "../gameObjects/ColorGeometry";
 import GroundGeometry from "../gameObjects/GroundGeometry";
 import CameraFrameRenderer from "./CameraFrameRenderer";
 import BaseGeometry from "../gameObjects/BaseGeometry";
-import { GlowFilter } from "./GlowFilter";
+import { GlowFilter } from "./filters/GlowFilter";
 import { BUTTONS } from "../Controls";
 import { DebugLevelManager } from "../DebugLevelManager";
 import { EventDispatcher } from "../EventDispatcher";
@@ -23,16 +23,17 @@ import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
-import { CustomBloomFilter } from "./CustomBloomFilter";
+import { CustomBloomFilter } from "./filters/CustomBloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
 
-const glowFilter = new GlowFilter();
-
 /**
- * Nubmer of frames to pause after a successful photo.
+ * Number of frames to pause after a successful photo.
  */
 const HANG_TIME = 15;
 
+/**
+ * The core of rendering the game window.
+ */
 class PixiRenderer {
   game: Game;
   objectsToDraw: Map<GameObject, Container> = new Map();
@@ -40,31 +41,29 @@ class PixiRenderer {
   viewRenderer: CameraFrameRenderer;
   goalRenderer: CameraFrameRenderer;
   app: Application;
-  timeSinceLastPhoto: number = 100;
-  timeSinceJump: number = 100;
+  visualEffectTimers = {
+    lastPhoto: 100,
+    jump: 100,
+  };
   animationEvents: EventDispatcher<RendererAnimationEvents> =
     new EventDispatcher();
   whiteMultiplier = 0;
-  canvas: HTMLCanvasElement;
   sprites: Sprites;
   initialClick: boolean = false;
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
+  glowFilter: GlowFilter;
   shockwaveFilter: ShockwaveFilter;
   customBloomFilter: CustomBloomFilter;
   audioManager: AudioManager;
 
-  constructor(options: {
-    app: Application;
-    sprites: Sprites;
-    canvas: HTMLCanvasElement;
-  }) {
-    this.canvas = options.canvas;
+  constructor(options: { app: Application; sprites: Sprites }) {
     this.app = options.app;
     this.sprites = options.sprites;
 
     this.game = new Game();
-    this.game.setupAnimationCallbacks(this.animationEvents);
+    this.setupGame();
+
     if (DEBUG_MODE) {
       new DebugLevelManager(this);
     }
@@ -98,25 +97,114 @@ class PixiRenderer {
       brightness: 1.15,
       radius: 2000,
     });
-
-    this.shockwaveFilter.time = 1000;
-
     this.customBloomFilter = new CustomBloomFilter();
+    this.glowFilter = new GlowFilter();
 
     this.app.stage.filters = [
-      glowFilter,
+      this.glowFilter,
       this.shockwaveFilter,
       this.customBloomFilter,
     ];
 
+    this.setupInteractionEvents();
+    this.app.stage.addChild(this.sprites.playerWalkSprite);
+    this.app.stage.addChild(this.sprites.viewCone);
+
+    this.app.ticker.add(() => {
+      this.update();
+    });
+
+    this.buildInitialText();
+  }
+
+  setupGame() {
+    this.game.setupAnimationCallbacks(this.animationEvents);
+    this.game.events.on("goalAchieved", () => {
+      this.goalRenderer.element.classList.remove("camera-container-bounce");
+      this.goalRenderer.element.offsetHeight;
+      this.goalRenderer.element.classList.add("camera-container-bounce");
+      this.game.gameIsActive = false;
+      this.animations.push(
+        new RendererAnimation({
+          frames: HANG_TIME,
+          onComplete: () => {
+            this.game.gameIsActive = true;
+          },
+        })
+      );
+    });
+    this.game.events.on("photoFailed", () => {
+      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_REJECTED);
+      this.viewRenderer.element.classList.remove("view-container-shake");
+      this.viewRenderer.element.offsetHeight;
+      this.viewRenderer.element.classList.add("view-container-shake");
+    });
+    this.game.events.on("photoTaken", () => {
+      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
+      this.animations.push(
+        new RendererAnimation({
+          frames: 50,
+          onUpdate: (framesRemaining: number) => {
+            this.sprites.viewCone.alpha = Math.max(
+              0.5,
+              0.5 + framesRemaining / 100
+            );
+            this.visualEffectTimers.lastPhoto = 50 - framesRemaining;
+          },
+        })
+      );
+    });
+    this.game.events.on("levelCompleted", () => {
+      this.goalRenderer.element.classList.remove("camera-container-bounce");
+      this.goalRenderer.element.offsetHeight;
+      this.goalRenderer.element.classList.add("camera-container-bounce");
+      // start fading out the screen
+      this.animations.push(
+        new RendererAnimation({
+          frames: 50,
+          onUpdate: () => {
+            this.whiteMultiplier += 0.02;
+          },
+          onComplete: () => {
+            this.animationEvents.publish("levelCompleteAnimationMidTransition");
+            this.animations.push(
+              new RendererAnimation({
+                frames: 50,
+                onUpdate: () => {
+                  this.whiteMultiplier -= 0.02;
+                },
+                onComplete: () => {
+                  this.animationEvents.publish(
+                    "levelCompleteAnimationFinished"
+                  );
+                },
+              })
+            );
+          },
+        })
+      );
+    });
+    this.game.events.on("playerDied", () => {
+      this.glowFilter.focusDistance = 1400;
+    });
+    this.game.events.on("playerJumped", () => {
+      this.visualEffectTimers.jump = 0;
+    });
+    this.game.events.on("playerTouchedToggle", (pos) => {
+      this.shockwaveFilter.centerX = pos.x;
+      this.shockwaveFilter.centerY = pos.y;
+    });
+  }
+
+  setupInteractionEvents() {
     document.onmousemove = (ev) => {
-      const canvasX = this.canvas.getBoundingClientRect().left;
-      const canvasY = this.canvas.getBoundingClientRect().top;
-      if (!this.mousePosition) {
-        this.mousePosition = { x: 0, y: 0 };
-      }
-      this.mousePosition.x = ev.clientX - canvasX;
-      this.mousePosition.y = ev.clientY - canvasY;
+      const canvasX = this.app.canvas.getBoundingClientRect().left;
+      const canvasY = this.app.canvas.getBoundingClientRect().top;
+
+      this.mousePosition = {
+        x: ev.clientX - canvasX,
+        y: ev.clientY - canvasY,
+      };
     };
 
     document.onmousedown = () => {
@@ -159,92 +247,9 @@ class PixiRenderer {
     document.body.onkeyup = (ev) => {
       this.game.controls.unpressFromKey(ev.key);
     };
-    this.app.stage.addChild(this.sprites.playerWalkSprite);
-    this.app.stage.addChild(this.sprites.viewCone);
-    this.sprites.viewCone.x = 10;
-    this.sprites.viewCone.y = 300;
-    this.sprites.viewCone.alpha = 0.5;
-    this.sprites.viewCone.zIndex = 1;
-    this.game.events.on("goalAchieved", () => {
-      goalContainer.classList.remove("camera-container-bounce");
-      goalContainer.offsetHeight;
-      goalContainer.classList.add("camera-container-bounce");
-      this.game.gameIsActive = false;
-      this.animations.push(
-        new RendererAnimation({
-          frames: HANG_TIME,
-          onComplete: () => {
-            this.game.gameIsActive = true;
-          },
-        })
-      );
-    });
-    this.game.events.on("photoFailed", () => {
-      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_REJECTED);
-      viewContainer.classList.remove("view-container-shake");
-      viewContainer.offsetHeight;
-      viewContainer.classList.add("view-container-shake");
-    });
-    this.game.events.on("photoTaken", () => {
-      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
-      this.animations.push(
-        new RendererAnimation({
-          frames: 50,
-          onUpdate: (framesRemaining: number) => {
-            this.sprites.viewCone.alpha = Math.max(
-              0.5,
-              0.5 + framesRemaining / 100
-            );
-            this.timeSinceLastPhoto = 50 - framesRemaining;
-          },
-        })
-      );
-    });
-    this.game.events.on("levelCompleted", () => {
-      goalContainer.classList.remove("camera-container-bounce");
-      goalContainer.offsetHeight;
-      goalContainer.classList.add("camera-container-bounce");
-      // start fading out the screen
-      this.animations.push(
-        new RendererAnimation({
-          frames: 50,
-          onUpdate: () => {
-            this.whiteMultiplier += 0.02;
-          },
-          onComplete: () => {
-            this.animationEvents.publish("levelCompleteAnimationMidTransition");
-            this.animations.push(
-              new RendererAnimation({
-                frames: 50,
-                onUpdate: () => {
-                  this.whiteMultiplier -= 0.02;
-                },
-                onComplete: () => {
-                  this.animationEvents.publish(
-                    "levelCompleteAnimationFinished"
-                  );
-                },
-              })
-            );
-          },
-        })
-      );
-    });
-    this.game.events.on("playerDied", () => {
-      glowFilter.focusDistance = 1400;
-    });
-    this.game.events.on("playerJumped", () => {
-      this.timeSinceJump = 0;
-    });
-    this.game.events.on("playerTouchedToggle", (pos) => {
-      this.shockwaveFilter.centerX = pos.x;
-      this.shockwaveFilter.centerY = pos.y;
-    });
+  }
 
-    this.app.ticker.add(() => {
-      this.update();
-    });
-
+  buildInitialText() {
     this.app.stage.addChild(this.sprites.titleText);
     this.sprites.titleText.anchor = 0.5;
     this.sprites.titleText.x = 500;
@@ -315,17 +320,17 @@ class PixiRenderer {
     this.animations = this.animations.filter((anim) => !anim.isComplete);
 
     // Color fades
-    this.timeSinceJump += 1;
+    this.visualEffectTimers.jump += 1;
     if (this.game.gameIsActive) {
-      glowFilter.time += 0.02;
+      this.glowFilter.time += 0.02;
     }
 
     // set the white fade to the max of fade for any reason
     this.customBloomFilter.white = Math.min(
       1,
-      Math.max(0, 1 - this.timeSinceLastPhoto / 50)
+      Math.max(0, 1 - this.visualEffectTimers.lastPhoto / 50)
     );
-    glowFilter.screenFade = Math.min(
+    this.glowFilter.screenFade = Math.min(
       1,
       Math.max(0, this.whiteMultiplier * 4 - 3)
     );
@@ -334,16 +339,16 @@ class PixiRenderer {
     this.game.tick();
 
     if (this.game.player.isDead) {
-      glowFilter.black += 0.02;
-      if (glowFilter.black > 0.2) {
-        glowFilter.black = 0.2;
+      this.glowFilter.black += 0.02;
+      if (this.glowFilter.black > 0.2) {
+        this.glowFilter.black = 0.2;
       }
-      glowFilter.focusDistance -= 50;
-      if (glowFilter.focusDistance < 100) {
-        glowFilter.focusDistance = 100;
+      this.glowFilter.focusDistance -= 50;
+      if (this.glowFilter.focusDistance < 100) {
+        this.glowFilter.focusDistance = 100;
       }
-      glowFilter.focusX = this.game.player.x;
-      glowFilter.focusY = this.game.player.y;
+      this.glowFilter.focusX = this.game.player.x;
+      this.glowFilter.focusY = this.game.player.y;
       this.sprites.viewCone.visible = false;
       this.app?.stage.removeChild(this.sprites.playerWalkSprite);
       this.app?.stage.addChild(this.sprites.playerDeadSprite);
@@ -355,10 +360,10 @@ class PixiRenderer {
       this.sprites.playerDeadSprite.x = this.game.player.x;
       this.sprites.playerDeadSprite.y = this.game.player.y;
     } else {
-      glowFilter.black = 0;
+      this.glowFilter.black = 0;
       this.app?.stage.removeChild(this.sprites.playerDeadSprite);
       this.app?.stage.addChild(this.sprites.playerWalkSprite);
-      if (this.timeSinceJump < 20) {
+      if (this.visualEffectTimers.jump < 20) {
         this.sprites.playerWalkSprite.currentFrame = 1;
       }
 
@@ -373,7 +378,7 @@ class PixiRenderer {
         }
         this.sprites.playerWalkSprite.play();
       } else {
-        if (this.timeSinceJump > 20) {
+        if (this.visualEffectTimers.jump > 20) {
           this.sprites.playerWalkSprite.currentFrame = 0;
         }
 

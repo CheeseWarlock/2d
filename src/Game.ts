@@ -1,17 +1,12 @@
 import Player from "./gameObjects/Player.js";
 import CameraFrame, { Segment } from "./CameraFrame.js";
-import BaseGeometry from "./gameObjects/BaseGeometry.js";
 import { limitNearVerticalDirection } from "./utils.js";
 import World from "./World.js";
-import GroundGeometry from "./gameObjects/GroundGeometry.js";
-import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
-import ColorGeometry from "./gameObjects/ColorGeometry.js";
 import { Point, RendererAnimationEvents } from "./types.js";
 
 import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
-import ILevelFormat from "./levels/ILevelFormat.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { DEBUG_MODE } from "./config.js";
 
@@ -21,6 +16,12 @@ const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
 export const TIME_STOP_DURATION = 400;
 
+/**
+ * The top-level object for managing game state.
+ * Can operate independently of a renderer.
+ * Note that to do so, something else will have to listen to `levelCompleted`
+ * and fire a `levelCompleteAnimationMidTransition`
+ */
 class Game {
   events: EventDispatcher<{
     goalAchieved: void;

@@ -143,7 +143,8 @@ export async function loadPixi() {
   viewConeAlphaSprite.anchor.y = 0;
   viewConeAlphaSprite.rotation = -FOV;
   viewConeAlphaSprite.mask = viewConeAlphaMask;
-  viewConeContainer.alpha = 0.7;
+  viewConeContainer.alpha = 0.5;
+  viewConeContainer.zIndex = 1;
   viewConeAlphaSprite.alpha = 0.7;
   timerSprite.anchor = 0.5;
   timerSprite.scale = 2;
@@ -163,6 +164,5 @@ export async function loadPixi() {
         return sprite;
       },
     },
-    canvas,
   });
 }
