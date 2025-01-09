@@ -19,7 +19,7 @@ const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
 const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
-const TIME_STOP_DURATION = 400;
+export const TIME_STOP_DURATION = 400;
 
 class Game {
   events: EventDispatcher<{

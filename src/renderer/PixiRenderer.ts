@@ -7,7 +7,7 @@ import {
   Text,
   Sprite,
 } from "pixi.js";
-import Game from "../Game";
+import Game, { TIME_STOP_DURATION } from "../Game";
 import GameObject from "../gameObjects/IGameObject";
 import ColorGeometry from "../gameObjects/ColorGeometry";
 import GroundGeometry from "../gameObjects/GroundGeometry";
@@ -237,7 +237,6 @@ class PixiRenderer {
       this.timeSinceJump = 0;
     });
     this.game.events.on("playerTouchedToggle", (pos) => {
-      this.shockwaveFilter.time = 0;
       this.shockwaveFilter.centerX = pos.x;
       this.shockwaveFilter.centerY = pos.y;
     });
@@ -297,7 +296,18 @@ class PixiRenderer {
   }
 
   update() {
-    this.shockwaveFilter.time += 0.01;
+    if (this.game.timeUntilColorObjectsUnsafe > 0) {
+      console.log(this.game.timeUntilColorObjectsUnsafe);
+    }
+    if (this.game.timeUntilColorObjectsUnsafe > TIME_STOP_DURATION / 2) {
+      this.shockwaveFilter.time =
+        (TIME_STOP_DURATION - this.game.timeUntilColorObjectsUnsafe) / 100 -
+        0.1;
+    } else {
+      this.shockwaveFilter.time =
+        this.game.timeUntilColorObjectsUnsafe / 100 - 0.1;
+    }
+
     // Handle animations
     this.animations.forEach((anim) => {
       anim.tick();
