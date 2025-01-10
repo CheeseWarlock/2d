@@ -14,3 +14,7 @@ export const FOV = 0.25;
  * Whether to use debug mode- controls whether level editor is visible, etc.
  */
 export const DEBUG_MODE = true;
+/**
+ * Whether to use audio.
+ */
+export const AUDIO_ENABLED = true;

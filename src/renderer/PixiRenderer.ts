@@ -139,8 +139,7 @@ class PixiRenderer {
       this.viewRenderer.element.offsetHeight;
       this.viewRenderer.element.classList.add("view-container-shake");
     });
-    this.game.events.on("photoTaken", () => {
-      this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
+    this.game.events.on("photoTaken", (ev) => {
       this.animations.push(
         new RendererAnimation({
           frames: 50,
@@ -153,36 +152,41 @@ class PixiRenderer {
           },
         })
       );
-    });
-    this.game.events.on("levelCompleted", () => {
-      this.goalRenderer.element.classList.remove("camera-container-bounce");
-      this.goalRenderer.element.offsetHeight;
-      this.goalRenderer.element.classList.add("camera-container-bounce");
-      // start fading out the screen
-      this.animations.push(
-        new RendererAnimation({
-          frames: 50,
-          onUpdate: () => {
-            this.whiteMultiplier += 0.02;
-          },
-          onComplete: () => {
-            this.animationEvents.publish("levelCompleteAnimationMidTransition");
-            this.animations.push(
-              new RendererAnimation({
-                frames: 50,
-                onUpdate: () => {
-                  this.whiteMultiplier -= 0.02;
-                },
-                onComplete: () => {
-                  this.animationEvents.publish(
-                    "levelCompleteAnimationFinished"
-                  );
-                },
-              })
-            );
-          },
-        })
-      );
+      if (ev.photosRemaining) {
+        this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
+      } else {
+        this.audioManager.playSoundEffect(SOUND_EFFECTS.LEVEL_CHANGE);
+        this.goalRenderer.element.classList.remove("camera-container-bounce");
+        this.goalRenderer.element.offsetHeight;
+        this.goalRenderer.element.classList.add("camera-container-bounce");
+        // start fading out the screen
+        this.animations.push(
+          new RendererAnimation({
+            frames: 50,
+            onUpdate: () => {
+              this.whiteMultiplier += 0.02;
+            },
+            onComplete: () => {
+              this.animationEvents.publish(
+                "levelCompleteAnimationMidTransition"
+              );
+              this.animations.push(
+                new RendererAnimation({
+                  frames: 50,
+                  onUpdate: () => {
+                    this.whiteMultiplier -= 0.02;
+                  },
+                  onComplete: () => {
+                    this.animationEvents.publish(
+                      "levelCompleteAnimationFinished"
+                    );
+                  },
+                })
+              );
+            },
+          })
+        );
+      }
     });
     this.game.events.on("playerDied", () => {
       this.glowFilter.focusDistance = 1400;

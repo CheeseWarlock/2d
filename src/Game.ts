@@ -25,11 +25,10 @@ export const TIME_STOP_DURATION = 400;
 class Game {
   events: EventDispatcher<{
     goalAchieved: void;
-    photoTaken: void;
+    photoTaken: { photosRemaining: boolean };
     photoFailed: void;
     playerJumped: void;
     playerDied: void;
-    levelCompleted: void;
     levelRestarted: void;
     playerTouchedToggle: { x: number; y: number };
   }> = new EventDispatcher();
@@ -184,10 +183,11 @@ class Game {
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES
       ) {
-        this.events.publish("photoTaken");
         this.currentGoalIndex += 1;
+        this.events.publish("photoTaken", {
+          photosRemaining: this.currentGoalIndex !== this.goals.length,
+        });
         if (this.currentGoalIndex === this.goals.length) {
-          this.events.publish("levelCompleted");
           if (this.animationEvents) {
             this.gameIsActive = false;
           } else {

@@ -1,8 +1,8 @@
 import backgroundMusic from "./assets/switchback2.mp3";
 import cameraSound from "./assets/camera1.wav";
 import cameraRejectedSound from "./assets/camera2.wav";
-
-const AUDIO_ENABLED = false;
+import levelChangeSound from "./assets/camera1win.wav";
+import { AUDIO_ENABLED } from "./config";
 
 export enum SOUND_EFFECTS {
   /**
@@ -17,12 +17,17 @@ export enum SOUND_EFFECTS {
    * A short buzzer sound
    */
   CAMERA_REJECTED = "camera-rejected",
+  /**
+   * A wind sound
+   */
+  LEVEL_CHANGE = "level-change",
 }
 
 const SOUND_FILES: Record<SOUND_EFFECTS, string> = {
   [SOUND_EFFECTS.BACKGROUND_MUSIC]: backgroundMusic,
   [SOUND_EFFECTS.CAMERA_SHUTTER]: cameraSound,
   [SOUND_EFFECTS.CAMERA_REJECTED]: cameraRejectedSound,
+  [SOUND_EFFECTS.LEVEL_CHANGE]: levelChangeSound,
 };
 
 /**
