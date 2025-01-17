@@ -31,6 +31,7 @@ class Game {
     playerDied: void;
     levelRestarted: void;
     playerTouchedToggle: { x: number; y: number };
+    levelChanged: void;
   }> = new EventDispatcher();
 
   /**
@@ -83,11 +84,13 @@ class Game {
     this.controls.on(BUTTONS.BACK, () => {
       if (!DEBUG_MODE) return;
       if (this.levelManager.currentLevelIndex === 0) return;
-      this.loadLevelByIndex(this.levelManager.currentLevelIndex - 1);
+      this.goToPreviousLevel();
     });
     this.controls.on(BUTTONS.FORWARD, () => {
       if (!DEBUG_MODE) return;
-      this.loadLevelByIndex(this.levelManager.currentLevelIndex + 1);
+      if (this.levelManager.currentLevelIndex === GAME_LEVELS.length - 1)
+        return;
+      this.goToNextLevel();
     });
   }
 
@@ -112,6 +115,7 @@ class Game {
     this.visibleObjects = [...this.world.objects];
     this.timeUntilColorObjectsUnsafe = 0;
     this.activateColors();
+    this.events.publish("levelChanged");
   }
 
   loadLevelFromData(data: {
@@ -230,8 +234,17 @@ class Game {
     this.currentGoalIndex = 0;
   }
 
+  goToPreviousLevel() {
+    this.levelManager.currentLevelIndex -= 1;
+    this.loadLevelByIndex(this.levelManager.currentLevelIndex);
+    this.currentGoalIndex = 0;
+  }
+
   goToNextLevel() {
     this.levelManager.currentLevelIndex += 1;
+    if (this.levelManager.currentLevelIndex === GAME_LEVELS.length - 1) {
+      console.log("Loaded last lavel");
+    }
     this.loadLevelByIndex(this.levelManager.currentLevelIndex);
     this.currentGoalIndex = 0;
   }

@@ -14,6 +14,7 @@ import Game from "../Game";
 import TeachesJump from "./TeachesJump.json";
 import DodgeThings from "./DodgeThings.json";
 import SafetyToggler from "../gameObjects/SafetyToggler";
+import EndingScreen from "./EndingScreen";
 
 export const GAME_LEVELS: ILevelFormat[] = [
   TeachesPhoto,
@@ -23,6 +24,7 @@ export const GAME_LEVELS: ILevelFormat[] = [
   newFace,
   multiShapeLevel,
   canyonLevel,
+  EndingScreen,
 ];
 
 export class LevelManager {

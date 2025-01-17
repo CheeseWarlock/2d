@@ -118,6 +118,7 @@ const levelData: ILevelFormat = {
   ground: groundGeometries,
   goals,
   playerPosition: { x: 200, y: 640 },
+  timerPositions: [],
 };
 
 export default levelData;

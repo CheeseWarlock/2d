@@ -25,6 +25,7 @@ import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./filters/CustomBloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
+import { GAME_LEVELS } from "../levels/levelIndex";
 
 /**
  * Number of frames to pause after a successful photo.
@@ -198,6 +199,11 @@ class PixiRenderer {
       this.shockwaveFilter.centerX = pos.x;
       this.shockwaveFilter.centerY = pos.y;
     });
+    this.game.events.on("levelChanged", () => {
+      if (this.game.levelManager.currentLevelIndex === GAME_LEVELS.length - 1) {
+        this.buildEndingText();
+      }
+    });
   }
 
   setupInteractionEvents() {
@@ -302,6 +308,23 @@ class PixiRenderer {
     framingLines.zIndex = 1;
     this.app.stage.addChild(framingLines);
     this.renderedText = [subtitleText, clickToStartText, framingLines];
+  }
+
+  buildEndingText() {
+    const text = new Text({
+      text: "More Levels Coming Soon",
+      style: {
+        fill: "white",
+        fontSize: "40px",
+        fontFamily: "oxaniumlight",
+      },
+    });
+    text.anchor = 0.5;
+    text.x = 500;
+    text.y = 300;
+    text.zIndex = 1;
+    this.app.stage.addChild(text);
+    this.renderedText = [text];
   }
 
   update() {
