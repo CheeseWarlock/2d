@@ -59,4 +59,5 @@ export type Sprites = {
   viewCone: Container;
   titleText: Sprite;
   createTimerSprite: () => Sprite;
+  font: FontFace;
 };

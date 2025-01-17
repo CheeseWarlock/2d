@@ -82,14 +82,16 @@ export async function loadPixi() {
     Assets.load(playerSprite),
     Assets.load(alphaSprite),
     Assets.load(titleText),
-    Assets.load(gameFont),
+    Assets.load({
+      src: gameFont,
+      loadParser: "loadWebFont",
+    }),
     Assets.load(timerSpriteImage),
   ]).then((promises) => {
     playerTexture = promises[0];
     alphaTexture = promises[1];
     titleTextTexture = promises[2];
     gameTextFont = promises[3];
-    gameTextFont.family = "oxaniumlight";
     timerTexture = promises[4];
   });
 
@@ -163,6 +165,7 @@ export async function loadPixi() {
         sprite.scale = 2;
         return sprite;
       },
+      font: gameTextFont,
     },
   });
 }

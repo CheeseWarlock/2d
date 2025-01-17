@@ -8,7 +8,7 @@ import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import GameObject from "./gameObjects/IGameObject.js";
-import { DEBUG_MODE } from "./config.js";
+import { DEBUG_MODE, FOV } from "./config.js";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
 
@@ -54,7 +54,6 @@ class Game {
   viewDirection?: number;
   world: World = new World(this);
   player: Player = new Player(0, 0, this.world);
-  fov: number = 0.25;
   controls = new Controls();
   cameraFrame: CameraFrame = new CameraFrame();
   goals: CameraFrame[] = [];
@@ -165,7 +164,7 @@ class Game {
       );
       this.viewDirection = limitNearVerticalDirection(
         this.viewDirection,
-        this.fov * 1.25,
+        FOV * 1.25,
         isLeft ? "left" : "right"
       );
     }
@@ -242,9 +241,6 @@ class Game {
 
   goToNextLevel() {
     this.levelManager.currentLevelIndex += 1;
-    if (this.levelManager.currentLevelIndex === GAME_LEVELS.length - 1) {
-      console.log("Loaded last lavel");
-    }
     this.loadLevelByIndex(this.levelManager.currentLevelIndex);
     this.currentGoalIndex = 0;
   }
@@ -254,7 +250,7 @@ class Game {
     const cameraFrame = this.world.calculatePhotoContent(
       { x: this.viewOrigin!.x, y: this.viewOrigin!.y },
       this.viewDirection,
-      this.fov
+      FOV
     );
     cameraFrame.simplify();
     this.cameraFrame = cameraFrame;

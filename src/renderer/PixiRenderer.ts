@@ -271,7 +271,7 @@ class PixiRenderer {
       style: {
         fill: "white",
         fontSize: "40px",
-        fontFamily: "oxaniumlight",
+        fontFamily: this.sprites.font.family,
       },
     });
     this.app.stage.addChild(clickToStartText);
@@ -285,7 +285,7 @@ class PixiRenderer {
       style: {
         fill: "white",
         fontSize: "26px",
-        fontFamily: "oxaniumlight",
+        fontFamily: this.sprites.font.family,
         padding: 5,
       },
     });
@@ -316,7 +316,7 @@ class PixiRenderer {
       style: {
         fill: "white",
         fontSize: "40px",
-        fontFamily: "oxaniumlight",
+        fontFamily: this.sprites.font.family,
       },
     });
     text.anchor = 0.5;
