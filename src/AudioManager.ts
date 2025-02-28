@@ -40,12 +40,14 @@ export class AudioManager {
   constructor() {
     this.audioElements = {};
 
-    Object.keys(SOUND_FILES).forEach((key) => {
-      const audioElement = document.createElement("audio");
-      document.body.appendChild(audioElement);
-      audioElement.src = SOUND_FILES[key as SOUND_EFFECTS];
-      this.audioElements[key as SOUND_EFFECTS] = audioElement;
-    });
+    if (AUDIO_ENABLED) {
+      Object.keys(SOUND_FILES).forEach((key) => {
+        const audioElement = document.createElement("audio");
+        document.body.appendChild(audioElement);
+        audioElement.src = SOUND_FILES[key as SOUND_EFFECTS];
+        this.audioElements[key as SOUND_EFFECTS] = audioElement;
+      });
+    }
   }
 
   /**

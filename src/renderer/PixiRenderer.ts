@@ -25,7 +25,6 @@ import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./filters/CustomBloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
-import { GAME_LEVELS } from "../levels/levelIndex";
 
 /**
  * Number of frames to pause after a successful photo.
@@ -200,7 +199,10 @@ class PixiRenderer {
       this.shockwaveFilter.centerY = pos.y;
     });
     this.game.events.on("levelChanged", () => {
-      if (this.game.levelManager.currentLevelIndex === GAME_LEVELS.length - 1) {
+      if (
+        this.game.levelManager.currentLevelIndex ===
+        this.game.levelManager.levelCount - 1
+      ) {
         this.buildEndingText();
       }
     });
@@ -328,9 +330,6 @@ class PixiRenderer {
   }
 
   update() {
-    if (this.game.timeUntilColorObjectsUnsafe > 0) {
-      console.log(this.game.timeUntilColorObjectsUnsafe);
-    }
     if (this.game.timeUntilColorObjectsUnsafe > TIME_STOP_DURATION / 2) {
       this.shockwaveFilter.time =
         (TIME_STOP_DURATION - this.game.timeUntilColorObjectsUnsafe) / 100 -

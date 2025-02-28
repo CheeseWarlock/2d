@@ -1,31 +1,21 @@
-import CameraFrame from "../CameraFrame";
-import ColorGeometry from "../gameObjects/ColorGeometry";
-import ColorLineGeometry from "../gameObjects/ColorLineGeometry";
-import GroundGeometry from "../gameObjects/GroundGeometry";
-import Player from "../gameObjects/Player";
-import World from "../World";
-import multiShapeLevel from "./Face";
-import canyonLevel from "./Face";
-import ILevelFormat from "./ILevelFormat";
-import TeachesPhoto from "./TeachesPhoto";
-import newFace from "./NewFace.json";
-import jump from "./Jump.json";
-import Game from "../Game";
-import TeachesJump from "./TeachesJump.json";
-import DodgeThings from "./DodgeThings.json";
-import SafetyToggler from "../gameObjects/SafetyToggler";
-import EndingScreen from "./EndingScreen";
-
-export const GAME_LEVELS: ILevelFormat[] = [
-  TeachesPhoto,
-  TeachesJump,
-  jump,
-  DodgeThings,
-  newFace,
-  multiShapeLevel,
-  canyonLevel,
-  EndingScreen,
-];
+import CameraFrame from "./CameraFrame";
+import ColorGeometry from "./gameObjects/ColorGeometry";
+import ColorLineGeometry from "./gameObjects/ColorLineGeometry";
+import GroundGeometry from "./gameObjects/GroundGeometry";
+import Player from "./gameObjects/Player";
+import World from "./World";
+import multiShapeLevel from "./levels/Face";
+import canyonLevel from "./levels/Face";
+import ILevelFormat from "./levels/ILevelFormat";
+import TeachesPhoto from "./levels/TeachesPhoto";
+import newFace from "./levels/NewFace.json";
+import jump from "./levels/Jump.json";
+import Game from "./Game";
+import TeachesJump from "./levels/TeachesJump.json";
+import DodgeThings from "./levels/DodgeThings.json";
+import SafetyToggler from "./gameObjects/SafetyToggler";
+import EndingScreen from "./levels/EndingScreen";
+import { GAME_LEVELS } from "./LevelIndex";
 
 export class LevelManager {
   currentLevelIndex: number = 0;
@@ -36,6 +26,14 @@ export class LevelManager {
   }
   get currentLevel() {
     return this.loadLevel(GAME_LEVELS[this.currentLevelIndex]);
+  }
+
+  get levelCount() {
+    return GAME_LEVELS.length;
+  }
+
+  getLevelData(index: number) {
+    return GAME_LEVELS[index];
   }
 
   loadLevel = (levelData: ILevelFormat) => {

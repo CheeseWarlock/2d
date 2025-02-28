@@ -4,7 +4,7 @@ import { limitNearVerticalDirection } from "./utils.js";
 import World from "./World.js";
 import { Point, RendererAnimationEvents } from "./types.js";
 
-import { GAME_LEVELS, LevelManager } from "./levels/levelIndex.js";
+import { LevelManager } from "./LevelManager.js";
 import { EventDispatcher } from "./EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import GameObject from "./gameObjects/IGameObject.js";
@@ -87,7 +87,7 @@ class Game {
     });
     this.controls.on(BUTTONS.FORWARD, () => {
       if (!DEBUG_MODE) return;
-      if (this.levelManager.currentLevelIndex === GAME_LEVELS.length - 1)
+      if (this.levelManager.currentLevelIndex === this.levelManager.levelCount)
         return;
       this.goToNextLevel();
     });
@@ -106,7 +106,9 @@ class Game {
   loadLevelByIndex(index: number) {
     this.levelManager.currentLevelIndex = index;
 
-    const data = this.levelManager.loadLevel(GAME_LEVELS[index]);
+    const data = this.levelManager.loadLevel(
+      this.levelManager.getLevelData(index)
+    );
 
     this.player = data.player;
     this.goals = data.goals;
