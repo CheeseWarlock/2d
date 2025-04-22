@@ -12,7 +12,9 @@ type KeysWithNoPayload<T> = {
  * For example, `new EventDispatcher<{ EVENT_A: void; EVENT_B: number; }>`
  * If `void` is the payload, no second parameter can be passed to `publish` for that event.
  */
-export class EventDispatcher<Events extends Record<string, any>> {
+export class EventDispatcher<
+  Events extends Record<string, any> = Record<string, any>
+> {
   _listeners: Map<keyof Events, Function[]> = new Map();
 
   /**

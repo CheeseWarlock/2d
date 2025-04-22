@@ -25,6 +25,8 @@ import Player from "../gameObjects/Player";
 import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./filters/CustomBloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
+import OverlayManager from "../overlayObjects/OverlayManager";
+import Button from "../overlayObjects/Button";
 
 /**
  * Number of frames to pause after a successful photo.
@@ -56,6 +58,8 @@ class PixiRenderer {
   shockwaveFilter: ShockwaveFilter;
   customBloomFilter: CustomBloomFilter;
   audioManager: AudioManager;
+  overlayManager: OverlayManager = new OverlayManager();
+  renderedOverlayItems: Map<Button, Container> = new Map();
 
   constructor(options: { app: Application; sprites: Sprites }) {
     this.app = options.app;
@@ -220,6 +224,22 @@ class PixiRenderer {
     };
 
     document.onmousedown = () => {
+      // check zones of overlay items
+      let foundOverlayItem: Button | null = null;
+      this.overlayManager.buttons.forEach((button) => {
+        if (!this.mousePosition) return;
+        if (
+          this.mousePosition.x > button.centerX - button.width / 2 &&
+          this.mousePosition.x < button.centerX + button.width / 2 &&
+          this.mousePosition.y > button.centerY - button.height / 2 &&
+          this.mousePosition.y < button.centerY + button.height / 2
+        ) {
+          foundOverlayItem = button;
+        }
+      });
+      if (foundOverlayItem) {
+        (foundOverlayItem as Button).publish("click");
+      }
       if (this.initialClick) {
         this.game.controls.press(BUTTONS.CLICK);
       } else {
@@ -485,6 +505,44 @@ class PixiRenderer {
           existingGraphics.y = obj.position.y + obj.transform.y;
           existingGraphics.rotation = obj.currentRotation;
         }
+      }
+    });
+
+    this.drawOverlay();
+  }
+
+  drawOverlay() {
+    this.overlayManager.buttons.forEach((button) => {
+      if (!this.renderedOverlayItems.has(button)) {
+        console.log("made one");
+        const bgGfx = new Graphics()
+          .roundRect(
+            button.centerX - button.width / 2,
+            button.centerY - button.height / 2,
+            button.width,
+            button.height,
+            8
+          )
+          .setFillStyle("#ddd")
+          .fill();
+        const text = new Text({
+          text: button.title,
+          style: {
+            fill: "#fff",
+            fontSize: "40px",
+            fontFamily: this.sprites.font.family,
+          },
+        });
+        text.anchor = 0.5;
+        text.x = button.centerX;
+        text.y = button.centerY;
+        text.zIndex = 1;
+        const container = new Container();
+        container.addChild(bgGfx);
+        container.addChild(text);
+        container.zIndex = 10;
+        this.app.stage.addChild(container);
+        this.renderedOverlayItems.set(button, container);
       }
     });
   }
