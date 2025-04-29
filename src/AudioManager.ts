@@ -34,21 +34,9 @@ const SOUND_FILES: Record<SOUND_EFFECTS, string> = {
  * Loads and manages audio files.
  */
 export class AudioManager {
-  audioElements: Partial<Record<SOUND_EFFECTS, HTMLAudioElement>>;
+  audioElements: Partial<Record<SOUND_EFFECTS, HTMLAudioElement>> = {};
   audioContext?: AudioContext;
-
-  constructor() {
-    this.audioElements = {};
-
-    if (AUDIO_ENABLED) {
-      Object.keys(SOUND_FILES).forEach((key) => {
-        const audioElement = document.createElement("audio");
-        document.body.appendChild(audioElement);
-        audioElement.src = SOUND_FILES[key as SOUND_EFFECTS];
-        this.audioElements[key as SOUND_EFFECTS] = audioElement;
-      });
-    }
-  }
+  userAudioEnabled = AUDIO_ENABLED;
 
   /**
    * Set up audio context to play sounds.
@@ -56,21 +44,28 @@ export class AudioManager {
    * Can only be called after the user has interacted with the game.
    */
   setup() {
-    if (!AUDIO_ENABLED) return;
-    const audioContext = new AudioContext();
-    this.audioContext = audioContext;
-    Object.keys(SOUND_FILES).forEach((key) => {
-      const audioElement = this.audioElements[key as SOUND_EFFECTS]!;
-      const track = audioContext.createMediaElementSource(audioElement);
-      track.connect(audioContext.destination);
-    });
+    if (this.userAudioEnabled) {
+      Object.keys(SOUND_FILES).forEach((key) => {
+        const audioElement = document.createElement("audio");
+        document.body.appendChild(audioElement);
+        audioElement.src = SOUND_FILES[key as SOUND_EFFECTS];
+        this.audioElements[key as SOUND_EFFECTS] = audioElement;
+      });
+      const audioContext = new AudioContext();
+      this.audioContext = audioContext;
+      Object.keys(SOUND_FILES).forEach((key) => {
+        const audioElement = this.audioElements[key as SOUND_EFFECTS]!;
+        const track = audioContext.createMediaElementSource(audioElement);
+        track.connect(audioContext.destination);
+      });
+    }
   }
 
   /**
    * Play a sound, restarting it if it's already playing.
    */
   playSoundEffect(sound: SOUND_EFFECTS, loop: boolean = false) {
-    if (!AUDIO_ENABLED) return;
+    if (!this.userAudioEnabled) return;
     if (!this.audioContext) return;
     const audioElement = this.audioElements[sound];
     if (!audioElement) return;

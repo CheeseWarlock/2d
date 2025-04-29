@@ -51,15 +51,16 @@ class PixiRenderer {
     new EventDispatcher();
   whiteMultiplier = 0;
   sprites: Sprites;
-  initialClick: boolean = false;
+  startScreenClosed: boolean = false;
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
   glowFilter: GlowFilter;
   shockwaveFilter: ShockwaveFilter;
   customBloomFilter: CustomBloomFilter;
-  audioManager: AudioManager;
+  audioManager: AudioManager = new AudioManager();
   overlayManager: OverlayManager = new OverlayManager();
   renderedOverlayItems: Map<Button, Container> = new Map();
+  audioButton?: Button;
 
   constructor(options: { app: Application; sprites: Sprites }) {
     this.app = options.app;
@@ -71,7 +72,6 @@ class PixiRenderer {
     if (DEBUG_MODE) {
       new DebugLevelManager(this);
     }
-    this.audioManager = new AudioManager();
 
     const backgroundGradient = new FillGradient(0, 0, 0, GAME_HEIGHT);
     backgroundGradient.addColorStop(0, "#222");
@@ -210,6 +210,25 @@ class PixiRenderer {
         this.buildEndingText();
       }
     });
+    this.createAudioButtons();
+  }
+
+  createAudioButtons() {
+    if (this.audioButton) {
+      this.overlayManager.buttons.delete(this.audioButton);
+    }
+    const newAudioButton = new Button(
+      `Audio: O${this.audioManager.userAudioEnabled ? "n" : "ff"}`,
+      {
+        centerY: 800,
+      }
+    );
+    this.overlayManager.buttons.add(newAudioButton);
+    newAudioButton.on("click", () => {
+      this.audioManager.userAudioEnabled = !this.audioManager.userAudioEnabled;
+      this.createAudioButtons();
+    });
+    this.audioButton = newAudioButton;
   }
 
   setupInteractionEvents() {
@@ -239,11 +258,15 @@ class PixiRenderer {
       });
       if (foundOverlayItem) {
         (foundOverlayItem as Button).publish("click");
+        return;
       }
-      if (this.initialClick) {
+      if (this.startScreenClosed) {
         this.game.controls.press(BUTTONS.CLICK);
       } else {
-        this.audioManager.setup();
+        if (this.audioManager.userAudioEnabled) {
+          this.audioManager.setup();
+        }
+        this.overlayManager.buttons.clear();
         this.audioManager.playSoundEffect(SOUND_EFFECTS.BACKGROUND_MUSIC, true);
         this.animations.push(
           new RendererAnimation({
@@ -265,7 +288,7 @@ class PixiRenderer {
           })
         );
       }
-      this.initialClick = true;
+      this.startScreenClosed = true;
     };
 
     document.onmouseup = () => {
@@ -289,11 +312,12 @@ class PixiRenderer {
     this.sprites.titleText.zIndex = 1;
 
     const clickToStartText = new Text({
-      text: "Click to Start",
+      text: "Mouse + Arrow Keys / WASD\nClick to Start",
       style: {
         fill: "white",
-        fontSize: "40px",
+        fontSize: "26px",
         fontFamily: this.sprites.font.family,
+        align: "center",
       },
     });
     this.app.stage.addChild(clickToStartText);
@@ -514,7 +538,6 @@ class PixiRenderer {
   drawOverlay() {
     this.overlayManager.buttons.forEach((button) => {
       if (!this.renderedOverlayItems.has(button)) {
-        console.log("made one");
         const bgGfx = new Graphics()
           .roundRect(
             button.centerX - button.width / 2,
@@ -523,13 +546,13 @@ class PixiRenderer {
             button.height,
             8
           )
-          .setFillStyle("#ddd")
-          .fill();
+          .setStrokeStyle({ width: 2, color: "#ddd" })
+          .stroke();
         const text = new Text({
           text: button.title,
           style: {
             fill: "#fff",
-            fontSize: "40px",
+            fontSize: "26px",
             fontFamily: this.sprites.font.family,
           },
         });
@@ -543,6 +566,14 @@ class PixiRenderer {
         container.zIndex = 10;
         this.app.stage.addChild(container);
         this.renderedOverlayItems.set(button, container);
+      }
+    });
+
+    // Remove the overlayitems that are no longer in buttons
+    this.renderedOverlayItems.forEach((container, button) => {
+      if (!this.overlayManager.buttons.has(button)) {
+        this.renderedOverlayItems.delete(button);
+        this.app.stage.removeChild(container);
       }
     });
   }
