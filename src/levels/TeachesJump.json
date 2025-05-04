@@ -137,10 +137,5 @@
     "x": 70,
     "y": 480
   },
-  "timerPositions": [
-    {
-      "x": 500,
-      "y": 650
-    }
-  ]
+  "timerPositions": []
 }
