@@ -12,7 +12,7 @@ export type Motion = {
   };
   duration: number;
   delay: number;
-  rotations?: number;
+  rotations: number;
 };
 
 export type GeometryProps = {
@@ -37,8 +37,20 @@ export type ColorGeometryProps = {
   rotation?: number;
   points: Point[];
   color: string;
-  motion?: Motion;
+  motion?: Partial<Motion>;
 };
+
+/**
+ * A JSON format defining level data.
+ */
+export default interface ILevelFormat {
+  ground: GeometryProps[];
+  colors: ColorGeometryProps[];
+  lines: LineGeometryProps[];
+  playerPosition: { x: number; y: number };
+  goals: CameraFrameProps[];
+  timerPositions: { x: number; y: number }[];
+}
 
 export type CameraFrameProps = CameraFrameElementProps[];
 

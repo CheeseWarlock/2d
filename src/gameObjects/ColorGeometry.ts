@@ -1,21 +1,24 @@
 import { Motion, Point } from "../types.js";
+import applyDefaults from "../utils/applyDefaults.js";
 import BaseGeometry from "./BaseGeometry.js";
 
+const DEFAULT_MOTION: Motion = {
+  offset: {
+    x: 0,
+    y: 10,
+  },
+  duration: 3000,
+  delay: 0,
+  rotations: 0,
+};
+
 class ColorGeometry extends BaseGeometry {
-  points: Point[] = [];
   color: string = "black";
   transform: Point = {
     x: 0,
     y: 0,
   };
-  motion: Motion = {
-    offset: {
-      x: 0,
-      y: 10,
-    },
-    duration: 3000,
-    delay: 0,
-  };
+  motion: Motion;
   _time: number;
   rotation: number = 0;
   position = { x: 0, y: 0 };
@@ -23,14 +26,14 @@ class ColorGeometry extends BaseGeometry {
   constructor(
     points: Point[],
     color: string,
-    motion?: Motion,
+    motion?: Partial<Motion>,
     rotation?: number,
     position?: Point
   ) {
     super();
     this.points = points;
     this.color = color;
-    if (motion) this.motion = motion;
+    this.motion = applyDefaults(DEFAULT_MOTION, motion);
     if (rotation) this.rotation = rotation;
     if (position) this.position = position;
     this._time = -this.motion.delay / 1000;

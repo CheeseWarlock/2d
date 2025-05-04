@@ -1,4 +1,4 @@
-import { EventDispatcher } from "../EventDispatcher";
+import { EventDispatcher } from "../utils/EventDispatcher";
 
 type ButtonEvents = {
   click: void;

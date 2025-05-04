@@ -16,7 +16,7 @@ import BaseGeometry from "../gameObjects/BaseGeometry";
 import { GlowFilter } from "./filters/GlowFilter";
 import { BUTTONS } from "../Controls";
 import { DebugLevelManager } from "../DebugLevelManager";
-import { EventDispatcher } from "../EventDispatcher";
+import { EventDispatcher } from "../utils/EventDispatcher";
 import { RendererAnimationEvents, Sprites } from "../types";
 import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 import { RendererAnimation } from "../Animation";

@@ -1,4 +1,4 @@
-import { EventDispatcher } from "./EventDispatcher";
+import { EventDispatcher } from "./utils/EventDispatcher";
 
 /**
  * Buttons from the perspective of game logic.

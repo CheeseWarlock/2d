@@ -1,6 +1,6 @@
 import multiShapeLevel from "./levels/Face";
 import canyonLevel from "./levels/Face";
-import ILevelFormat from "./levels/ILevelFormat";
+import ILevelFormat from "./types";
 import TeachesPhoto from "./levels/TeachesPhoto";
 import newFace from "./levels/NewFace.json";
 import jump from "./levels/Jump.json";

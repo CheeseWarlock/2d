@@ -5,7 +5,7 @@ import World from "./World.js";
 import { Point, RendererAnimationEvents } from "./types.js";
 
 import { LevelManager } from "./LevelManager.js";
-import { EventDispatcher } from "./EventDispatcher.js";
+import { EventDispatcher } from "./utils/EventDispatcher.js";
 import { BUTTONS, Controls } from "./Controls.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { DEBUG_MODE, FOV } from "./config.js";
