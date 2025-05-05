@@ -4,17 +4,9 @@ import ColorLineGeometry from "./gameObjects/ColorLineGeometry";
 import GroundGeometry from "./gameObjects/GroundGeometry";
 import Player from "./gameObjects/Player";
 import World from "./World";
-import multiShapeLevel from "./levels/Face";
-import canyonLevel from "./levels/Face";
-import ILevelFormat from "./levels/ILevelFormat";
-import TeachesPhoto from "./levels/TeachesPhoto";
-import newFace from "./levels/NewFace.json";
-import jump from "./levels/Jump.json";
+import ILevelFormat from "./types";
 import Game from "./Game";
-import TeachesJump from "./levels/TeachesJump.json";
-import DodgeThings from "./levels/DodgeThings.json";
 import SafetyToggler from "./gameObjects/SafetyToggler";
-import EndingScreen from "./levels/EndingScreen";
 import { GAME_LEVELS } from "./LevelIndex";
 
 export class LevelManager {

@@ -1,4 +1,4 @@
-import ILevelFormat from "./ILevelFormat.js";
+import ILevelFormat from "../types";
 import {
   CameraFrameProps,
   ColorGeometryProps,

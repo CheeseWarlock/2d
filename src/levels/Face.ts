@@ -1,4 +1,4 @@
-import ILevelFormat from "./ILevelFormat";
+import ILevelFormat from "../types";
 import { ColorGeometryProps, GeometryProps, LineGeometryProps } from "../types";
 
 const goals = [

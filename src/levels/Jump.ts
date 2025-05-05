@@ -1,4 +1,4 @@
-import ILevelFormat from "./ILevelFormat";
+import ILevelFormat from "../types";
 import { ColorGeometryProps, GeometryProps, LineGeometryProps } from "../types";
 
 const goals = [
@@ -87,6 +87,7 @@ const levelData: ILevelFormat = {
   ground: groundGeometries,
   goals,
   playerPosition: { x: 50, y: 610 },
+  timerPositions: [],
 };
 
 export default levelData;

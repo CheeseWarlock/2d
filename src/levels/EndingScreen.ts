@@ -1,4 +1,4 @@
-import ILevelFormat from "./ILevelFormat";
+import ILevelFormat from "../types";
 
 const levelData: ILevelFormat = {
   lines: [],
