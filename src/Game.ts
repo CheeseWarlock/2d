@@ -10,7 +10,7 @@ import { BUTTONS, Controls } from "./Controls.js";
 import GameObject from "./gameObjects/IGameObject.js";
 import { DEBUG_MODE, FOV } from "./config.js";
 
-const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.85;
+const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.825;
 
 const SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES = 0.9;
 
@@ -181,12 +181,13 @@ class Game {
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
-      if (DEBUG_MODE) {
-        console.log(this.cameraFrame);
-      }
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
+
+      if (DEBUG_MODE) {
+        console.log(this.cameraFrame, areZonesEqual, similarity);
+      }
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||
         similarity >= SIMILARITY_THRESHOLD_WITH_DIFFERENT_ZONES

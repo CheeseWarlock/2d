@@ -313,7 +313,10 @@ export default class World {
             seg.seg.to.x,
             seg.seg.to.y
           );
-          if (collisionData.direct && collisionData.isAtEdge) {
+          if (
+            collisionData.direct &&
+            (collisionData.isAtEdge || seg.obj instanceof SafetyToggler)
+          ) {
             if (
               (seg.obj instanceof SafetyToggler &&
                 type === CollisionGroups.toggle) ||
@@ -408,16 +411,24 @@ export default class World {
     this.quadtree.clear();
     this.objects.forEach((obj) => {
       if (obj instanceof BaseGeometry) {
-        obj.lineSegments.forEach((seg) =>
-          this.quadtree.insert(
-            new Rectangle({
-              data: obj,
-              x: seg.from.x,
-              y: seg.from.y,
-              width: seg.to.x - seg.from.x,
-              height: seg.to.y - seg.to.y,
-            })
-          )
+        let minX = Infinity;
+        let minY = Infinity;
+        let maxX = -Infinity;
+        let maxY = -Infinity;
+        obj.lineSegments.forEach((seg) => {
+          minX = Math.min(minX, seg.from.x, seg.to.x);
+          minY = Math.min(minY, seg.from.y, seg.to.y);
+          maxX = Math.max(maxX, seg.from.x, seg.to.x);
+          maxY = Math.max(maxY, seg.from.y, seg.to.y);
+        });
+        this.quadtree.insert(
+          new Rectangle({
+            data: obj,
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY,
+          })
         );
       }
     });
