@@ -201,6 +201,10 @@ class PixiRenderer {
     this.game.events.on("playerTouchedToggle", (pos) => {
       this.shockwaveFilter.center.x = pos.x;
       this.shockwaveFilter.center.y = pos.y;
+      this.audioManager.playSoundEffect(SOUND_EFFECTS.TIME_STOP);
+      setTimeout(() => {
+        this.audioManager.playSoundEffect(SOUND_EFFECTS.TIME_START);
+      }, 6000);
     });
     this.game.events.on("levelChanged", () => {
       if (

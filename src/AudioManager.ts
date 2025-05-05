@@ -2,6 +2,8 @@ import backgroundMusic from "./assets/switchback2.mp3";
 import cameraSound from "./assets/camera1.wav";
 import cameraRejectedSound from "./assets/camera2.wav";
 import levelChangeSound from "./assets/camera1win.wav";
+import timeStopSound from "./assets/timedown.wav";
+import timeStartSound from "./assets/timeup.wav";
 import { AUDIO_ENABLED } from "./config";
 
 export enum SOUND_EFFECTS {
@@ -21,6 +23,14 @@ export enum SOUND_EFFECTS {
    * A wind sound
    */
   LEVEL_CHANGE = "level-change",
+  /**
+   * A time-slowing sound
+   */
+  TIME_STOP = "time-stop",
+  /**
+   * A time-restarting sound
+   */
+  TIME_START = "time-start",
 }
 
 const SOUND_FILES: Record<SOUND_EFFECTS, string> = {
@@ -28,6 +38,8 @@ const SOUND_FILES: Record<SOUND_EFFECTS, string> = {
   [SOUND_EFFECTS.CAMERA_SHUTTER]: cameraSound,
   [SOUND_EFFECTS.CAMERA_REJECTED]: cameraRejectedSound,
   [SOUND_EFFECTS.LEVEL_CHANGE]: levelChangeSound,
+  [SOUND_EFFECTS.TIME_STOP]: timeStopSound,
+  [SOUND_EFFECTS.TIME_START]: timeStartSound,
 };
 
 /**
