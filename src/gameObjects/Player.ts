@@ -184,24 +184,6 @@ export default class Player implements GameObject {
             this.gravityVelocity === 0
               ? collisionTestFullHeight.maxSafe
               : ANGULAR_STICKINESS;
-        } else {
-          const collisionTestHalfHeight = this.world.collisionTest(
-            this.x - HALF_BOUNDING_BOX_WIDTH - HSPEED,
-            this.y - HALF_BOUNDING_BOX_HEIGHT,
-            this.x + HALF_BOUNDING_BOX_WIDTH - HSPEED,
-            this.y + HALF_BOUNDING_BOX_HEIGHT,
-            ANGULAR_STICKINESS,
-            colorsSafe
-          );
-          if (collisionTestHalfHeight.maxSafe > 0) {
-            this.isWalking = true;
-            this.x -= HSPEED;
-            this.y +=
-              collisionTestHalfHeight.maxSafe < ANGULAR_STICKINESS &&
-              this.gravityVelocity === 0
-                ? collisionTestHalfHeight.maxSafe
-                : ANGULAR_STICKINESS;
-          }
         }
       }
     } else if (
@@ -249,26 +231,6 @@ export default class Player implements GameObject {
               this.gravityVelocity === 0
                 ? collisionTestFullHeight.maxSafe
                 : ANGULAR_STICKINESS;
-          }
-        } else {
-          const collisionTestHalfHeight = this.world.collisionTest(
-            this.x - HALF_BOUNDING_BOX_WIDTH + HSPEED,
-            this.y - HALF_BOUNDING_BOX_HEIGHT,
-            this.x + HALF_BOUNDING_BOX_WIDTH + HSPEED,
-            this.y + HALF_BOUNDING_BOX_HEIGHT,
-            ANGULAR_STICKINESS,
-            colorsSafe
-          );
-          if (collisionTestHalfHeight.maxSafe > 0) {
-            this.isWalking = true;
-            this.x += HSPEED;
-            if (!this.jump) {
-              this.y +=
-                collisionTestHalfHeight.maxSafe < ANGULAR_STICKINESS &&
-                this.gravityVelocity === 0
-                  ? collisionTestHalfHeight.maxSafe
-                  : ANGULAR_STICKINESS;
-            }
           }
         }
       }

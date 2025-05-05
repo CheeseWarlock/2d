@@ -181,6 +181,9 @@ class Game {
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
+      if (DEBUG_MODE) {
+        console.log(this.cameraFrame);
+      }
       const areZonesEqual = this.cameraFrame.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
