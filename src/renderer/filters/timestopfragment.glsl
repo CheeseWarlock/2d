@@ -15,18 +15,19 @@ uniform float uWave;
 uniform vec4 uInputSize;
 uniform vec4 uInputClamp;
 
-const float PI = 3.14159;
-
 void main() {
   vec2 coord = vTextureCoord;
 
+  // modified center pos for white band
+  vec2 modCenter = vec2(0.02 * round(coord.x / 0.02), 0.02 * round(coord.y / 0.02));
+
   // Calculate distance from the center
-  float dist = distance(coord, uCenter / 1000.) * 7. + 1.;
+  float dist = distance(modCenter, uCenter / 1000.) * 5. + 1.;
   
   // The amount, make it wrap for now
-  float proportion = clamp(1. - abs(dist - uTime), 0., 1.);
+  float proportion = 0.25 * round(4. * clamp(1. - abs(dist - uTime), 0., 1.));
 
-  vec2 pixeled = vec2(0.012 * round(coord.x / 0.012), 0.012 * round(coord.y / 0.012));
+  vec2 pixeled = vec2(0.02 * round(coord.x / 0.02), 0.02 * round(coord.y / 0.02));
   vec4 pixeledColor = texture(uTexture, pixeled) * .8 + vec4(1.) * .2;
   vec4 standardColor = texture(uTexture, coord);
 

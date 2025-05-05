@@ -72,10 +72,10 @@ export default class Player implements GameObject {
         const timerObject = this.world.objects.filter(
           (o) => o instanceof SafetyToggler
         )[0]!;
-        console.log(timerObject.position);
+        console.log(timerObject);
         this.world.game.events.publish("playerTouchedToggle", {
-          x: timerObject.position.x,
-          y: timerObject.position.y,
+          x: timerObject.position.x - 10,
+          y: timerObject.position.y - 10,
         });
         this.world.game.deactivateColors();
       }
