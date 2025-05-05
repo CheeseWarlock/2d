@@ -40,7 +40,14 @@ export default class Player implements GameObject {
   gravityVelocity: number;
   moveLeft: boolean = false;
   moveRight: boolean = false;
+  /**
+   * Whether the player is currently in a jump.
+   */
   jump: boolean = false;
+  /**
+   * Whether there's a jump queued
+   */
+  jumpQueued: boolean = false;
   isDead: boolean = false;
   isWalking: boolean = false;
   framesSinceGround: number = COYOTE_TIME_FRAMES;
@@ -51,10 +58,11 @@ export default class Player implements GameObject {
     this.x = x;
     this.y = y;
     this.gravityVelocity = 0;
+    this.jump = false;
   }
 
   acceptJumpPress() {
-    this.jump = true;
+    this.jumpQueued = true;
     this.framesSinceJumpPressed = 0;
   }
 
@@ -72,7 +80,6 @@ export default class Player implements GameObject {
         const timerObject = this.world.objects.filter(
           (o) => o instanceof SafetyToggler
         )[0]!;
-        console.log(timerObject);
         this.world.game.events.publish("playerTouchedToggle", {
           x: timerObject.position.x - 10,
           y: timerObject.position.y - 10,
@@ -118,11 +125,12 @@ export default class Player implements GameObject {
       this.framesSinceGround += 1;
     }
 
-    if (this.jump || this.framesSinceJumpPressed < JUMP_ANTICIPATION) {
-      this.jump = false;
+    if (this.jumpQueued || this.framesSinceJumpPressed < JUMP_ANTICIPATION) {
+      this.jumpQueued = false;
       if (this.framesSinceGround < COYOTE_TIME_FRAMES) {
         this.framesSinceJumpPressed = JUMP_ANTICIPATION;
         this.gravityVelocity = -7;
+        this.jump = true;
         this.world.game.events.publish("playerJumped");
         this.framesSinceGround = COYOTE_TIME_FRAMES;
       }
@@ -233,12 +241,15 @@ export default class Player implements GameObject {
           );
           this.isWalking = true;
           this.x += HSPEED;
-          this.y -= ANGULAR_STICKINESS;
-          this.y +=
-            collisionTestFullHeight.maxSafe < ANGULAR_STICKINESS * 2 &&
-            this.gravityVelocity === 0
-              ? collisionTestFullHeight.maxSafe
-              : ANGULAR_STICKINESS;
+
+          if (!this.jump) {
+            this.y -= ANGULAR_STICKINESS;
+            this.y +=
+              collisionTestFullHeight.maxSafe < ANGULAR_STICKINESS * 2 &&
+              this.gravityVelocity === 0
+                ? collisionTestFullHeight.maxSafe
+                : ANGULAR_STICKINESS;
+          }
         } else {
           const collisionTestHalfHeight = this.world.collisionTest(
             this.x - HALF_BOUNDING_BOX_WIDTH + HSPEED,
@@ -251,11 +262,13 @@ export default class Player implements GameObject {
           if (collisionTestHalfHeight.maxSafe > 0) {
             this.isWalking = true;
             this.x += HSPEED;
-            this.y +=
-              collisionTestHalfHeight.maxSafe < ANGULAR_STICKINESS &&
-              this.gravityVelocity === 0
-                ? collisionTestHalfHeight.maxSafe
-                : ANGULAR_STICKINESS;
+            if (!this.jump) {
+              this.y +=
+                collisionTestHalfHeight.maxSafe < ANGULAR_STICKINESS &&
+                this.gravityVelocity === 0
+                  ? collisionTestHalfHeight.maxSafe
+                  : ANGULAR_STICKINESS;
+            }
           }
         }
       }
@@ -294,6 +307,7 @@ export default class Player implements GameObject {
 
       if (collisionTest.collisionFound) {
         this.gravityVelocity = 0;
+        this.jump = false;
         this.y += collisionTest.maxSafe;
       }
     }
