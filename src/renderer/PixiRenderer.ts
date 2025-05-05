@@ -22,11 +22,11 @@ import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
-import { ShockwaveFilter } from "pixi-filters";
 import { CustomBloomFilter } from "./filters/CustomBloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
 import OverlayManager from "../overlayObjects/OverlayManager";
 import Button from "../overlayObjects/Button";
+import TimeStopFilter from "./filters/TimeStopFilter";
 
 /**
  * Number of frames to pause after a successful photo.
@@ -55,7 +55,7 @@ class PixiRenderer {
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
   glowFilter: GlowFilter;
-  shockwaveFilter: ShockwaveFilter;
+  shockwaveFilter: TimeStopFilter;
   customBloomFilter: CustomBloomFilter;
   audioManager: AudioManager = new AudioManager();
   overlayManager: OverlayManager = new OverlayManager();
@@ -90,12 +90,12 @@ class PixiRenderer {
     this.viewRenderer = new CameraFrameRenderer(viewContainer, "View");
     this.goalRenderer = new CameraFrameRenderer(goalContainer, "Goal");
 
-    this.shockwaveFilter = new ShockwaveFilter({
+    this.shockwaveFilter = new TimeStopFilter({
       center: {
-        x: 500,
-        y: 500,
+        x: 0.5,
+        y: 0.5,
       },
-      speed: 1300,
+      speed: 1,
       amplitude: 12,
       wavelength: 250,
       brightness: 1.15,
@@ -199,8 +199,8 @@ class PixiRenderer {
       this.visualEffectTimers.jump = 0;
     });
     this.game.events.on("playerTouchedToggle", (pos) => {
-      this.shockwaveFilter.centerX = pos.x;
-      this.shockwaveFilter.centerY = pos.y;
+      this.shockwaveFilter.center.x = pos.x;
+      this.shockwaveFilter.center.y = pos.y;
     });
     this.game.events.on("levelChanged", () => {
       if (
@@ -376,12 +376,12 @@ class PixiRenderer {
   update() {
     if (this.game.timeUntilColorObjectsUnsafe > TIME_STOP_DURATION / 2) {
       this.shockwaveFilter.time =
-        (TIME_STOP_DURATION - this.game.timeUntilColorObjectsUnsafe) / 100 -
-        0.1;
+        (TIME_STOP_DURATION - this.game.timeUntilColorObjectsUnsafe) / 10 - 0.1;
     } else {
       this.shockwaveFilter.time =
-        this.game.timeUntilColorObjectsUnsafe / 100 - 0.1;
+        this.game.timeUntilColorObjectsUnsafe / 10 - 0.1;
     }
+    // this.shockwaveFilter.time += 0.1;
 
     // Handle animations
     this.animations.forEach((anim) => {

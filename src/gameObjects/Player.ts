@@ -69,9 +69,13 @@ export default class Player implements GameObject {
     );
     if (togglesCollision.collisionFound) {
       if (!this.world.game.colorObjectsSafe) {
+        const timerObject = this.world.objects.filter(
+          (o) => o instanceof SafetyToggler
+        )[0]!;
+        console.log(timerObject.position);
         this.world.game.events.publish("playerTouchedToggle", {
-          x: this.world.game.player.x,
-          y: this.world.game.player.y,
+          x: timerObject.position.x,
+          y: timerObject.position.y,
         });
         this.world.game.deactivateColors();
       }
