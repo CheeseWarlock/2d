@@ -7,9 +7,11 @@ import jump from "./levels/Jump.json";
 import TeachesJump from "./levels/TeachesJump.json";
 import DodgeThings from "./levels/DodgeThings.json";
 import EndingScreen from "./levels/EndingScreen";
+import ShowsRotation from "./levels/ShowsRotation";
 
 export const GAME_LEVELS: ILevelFormat[] = [
   TeachesPhoto,
+  ShowsRotation,
   TeachesJump,
   jump,
   DodgeThings,
