@@ -116,6 +116,9 @@ class Game {
     this.visibleObjects = [...this.world.objects];
     this.timeUntilColorObjectsUnsafe = 0;
     this.activateColors();
+    for (let i = 0; i !== 100; i++) {
+      this.player.tick();
+    }
     this.events.publish("levelChanged");
   }
 
@@ -130,6 +133,9 @@ class Game {
     this.visibleObjects = [...this.world.geometryObjects];
     this.timeUntilColorObjectsUnsafe = 0;
     this.activateColors();
+    for (let i = 0; i !== 100; i++) {
+      this.player.tick();
+    }
   }
 
   tick() {
