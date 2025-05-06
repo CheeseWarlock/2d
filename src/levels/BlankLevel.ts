@@ -6,7 +6,25 @@ import {
   LineGeometryProps,
 } from "../types.js";
 
-const groundGeometries: GeometryProps[] = [];
+const groundGeometries: GeometryProps[] = [
+  {
+    points: [
+      {
+        x: 0,
+        y: 700,
+      },
+      {
+        x: 1000,
+        y: 700,
+      },
+      {
+        x: 1000,
+        y: 1000,
+      },
+      { x: 0, y: 1000 },
+    ],
+  },
+];
 
 const colorLines: LineGeometryProps[] = [];
 
@@ -28,4 +46,5 @@ export default {
   ground: groundGeometries,
   goals,
   playerPosition: { x: 500, y: 500 },
+  timerPositions: [],
 } as ILevelFormat;
