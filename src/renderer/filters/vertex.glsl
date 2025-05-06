@@ -1,15 +1,14 @@
 #version 300 es
 
 in vec2 aPosition;
-out vec2 vTextureCoord;
-out vec2 aaPosition;
 
-uniform vec4 uInputSize;
+uniform highp vec4 uInputSize;
 uniform vec4 uOutputFrame;
 uniform vec4 uOutputTexture;
 
 out vec4 outputFrame;
-out vec4 aaInputSize;
+out vec2 vTextureCoord;
+out vec2 aaPosition;
 
 vec4 filterVertexPosition(void)
 {
@@ -32,5 +31,4 @@ void main(void)
     aaPosition = aPosition * uOutputFrame.zw + uOutputFrame.xy;
     vTextureCoord = filterTextureCoord();
     outputFrame = uOutputFrame;
-    aaInputSize = uInputSize;
 }

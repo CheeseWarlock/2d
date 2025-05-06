@@ -5,7 +5,7 @@ import {
   RenderSurface,
   Texture,
 } from "pixi.js";
-import fragment from "./timestopfragment.glsl";
+import fragment from "./time-stop-fragment.glsl";
 import vertex from "./vertex.glsl";
 
 class TimeStopFilter extends Filter {
@@ -46,7 +46,7 @@ class TimeStopFilter extends Filter {
     super({
       glProgram,
       resources: {
-        shockwaveUniforms: {
+        timeStopUniforms: {
           uTime: { value: 0, type: "f32" },
           uCenter: { value: options.center, type: "vec2<f32>" },
           uSpeed: { value: options.speed, type: "f32" },
@@ -54,7 +54,7 @@ class TimeStopFilter extends Filter {
         },
       },
     });
-    this.uniforms = this.resources.shockwaveUniforms.uniforms;
+    this.uniforms = this.resources.timeStopUniforms.uniforms;
   }
 
   public override apply(

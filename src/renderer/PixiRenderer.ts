@@ -22,7 +22,7 @@ import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
 import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
-import { CustomBloomFilter } from "./filters/CustomBloomFilter";
+import { BloomFilter } from "./filters/BloomFilter";
 import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
 import OverlayManager from "../overlayObjects/OverlayManager";
 import Button from "../overlayObjects/Button";
@@ -55,8 +55,8 @@ class PixiRenderer {
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
   glowFilter: GlowFilter;
-  shockwaveFilter: TimeStopFilter;
-  customBloomFilter: CustomBloomFilter;
+  timeStopFilter: TimeStopFilter;
+  bloomFilter: BloomFilter;
   audioManager: AudioManager = new AudioManager();
   overlayManager: OverlayManager = new OverlayManager();
   renderedOverlayItems: Map<Button, Container> = new Map();
@@ -90,7 +90,7 @@ class PixiRenderer {
     this.viewRenderer = new CameraFrameRenderer(viewContainer, "View");
     this.goalRenderer = new CameraFrameRenderer(goalContainer, "Goal");
 
-    this.shockwaveFilter = new TimeStopFilter({
+    this.timeStopFilter = new TimeStopFilter({
       center: {
         x: 0.5,
         y: 0.5,
@@ -101,13 +101,13 @@ class PixiRenderer {
       brightness: 1.15,
       radius: 2000,
     });
-    this.customBloomFilter = new CustomBloomFilter();
+    this.bloomFilter = new BloomFilter();
     this.glowFilter = new GlowFilter();
 
     this.app.stage.filters = [
       this.glowFilter,
-      this.shockwaveFilter,
-      this.customBloomFilter,
+      this.timeStopFilter,
+      this.bloomFilter,
     ];
 
     this.setupInteractionEvents();
@@ -199,8 +199,8 @@ class PixiRenderer {
       this.visualEffectTimers.jump = 0;
     });
     this.game.events.on("playerTouchedToggle", (pos) => {
-      this.shockwaveFilter.center.x = pos.x;
-      this.shockwaveFilter.center.y = pos.y;
+      this.timeStopFilter.center.x = pos.x;
+      this.timeStopFilter.center.y = pos.y;
       this.audioManager.playSoundEffect(SOUND_EFFECTS.TIME_STOP);
       setTimeout(() => {
         this.audioManager.playSoundEffect(SOUND_EFFECTS.TIME_START);
@@ -379,13 +379,13 @@ class PixiRenderer {
 
   update() {
     if (this.game.timeUntilColorObjectsUnsafe > TIME_STOP_DURATION / 2) {
-      this.shockwaveFilter.time =
+      this.timeStopFilter.time =
         (TIME_STOP_DURATION - this.game.timeUntilColorObjectsUnsafe) / 10 - 0.1;
     } else {
-      this.shockwaveFilter.time =
+      this.timeStopFilter.time =
         this.game.timeUntilColorObjectsUnsafe / 10 - 0.1;
     }
-    // this.shockwaveFilter.time += 0.1;
+    // this.timeStopFilter.time += 0.1;
 
     // Handle animations
     this.animations.forEach((anim) => {
@@ -400,7 +400,7 @@ class PixiRenderer {
     }
 
     // set the white fade to the max of fade for any reason
-    this.customBloomFilter.white = Math.min(
+    this.bloomFilter.white = Math.min(
       1,
       Math.max(0, 1 - this.visualEffectTimers.lastPhoto / 50)
     );

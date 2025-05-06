@@ -13,7 +13,7 @@ import {
  * A filter which adds a glow effect to all non-greyscale colors.
  * To animate it, update the time property.
  */
-export class CustomBloomFilter extends Filter {
+export class BloomFilter extends Filter {
   public uniforms: {
     white: number;
   };

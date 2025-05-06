@@ -4,7 +4,7 @@ in vec2 vTextureCoord;
 out vec4 finalColor;
 in vec2 aaPosition;
 in vec4 outputFrame;
-in vec4 aaInputSize;
+uniform highp vec4 uInputSize;
 
 uniform float uTime;
 uniform float screenFade;
@@ -122,7 +122,7 @@ float simplex3d_fractal(vec3 m) {
 
 float getNoise(vec2 fragCoord)
 {
-	vec2 p = fragCoord.xy/aaInputSize.x;
+	vec2 p = fragCoord.xy/uInputSize.x;
 	vec3 p3 = vec3(p, uTime*0.025);
 	
 	float value;
@@ -153,7 +153,7 @@ vec4 convolute(vec2 uv, bool noisy)
 				{
 						for (int y = 0; y < (size * 2 + 1); y++)
 						{
-								vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
+								vec2 offset = vec2(float(x - size), float(y - size)) / uInputSize.xy * 2.0;
 								vec4 tryColor = texture(uTexture, vTextureCoord+offset);
 
 								if (isNG(tryColor)) {
@@ -179,25 +179,6 @@ vec4 convolute(vec2 uv, bool noisy)
 		}
 
 		return currentColor;
-}
-
-vec4 otherConvolute(vec2 uv) {
-	int size = 5;
-	vec4 outC = vec4(0., 0., 0., 0.);
-	for (int x = 0; x < (size * 2 + 1); x++)
-	{
-		for (int y = 0; y < (size * 2 + 1); y++)
-		{
-			vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
-			vec4 tryColor = texture(uTexture, vTextureCoord+offset);
-
-			outC += tryColor;
-		}
-	}
-	float amount = 1.;
-	vec4 base = texture(uTexture, vTextureCoord);
-	outC = outC / 121.;
-	return (outC * amount) + (base * (1. - amount));
 }
 
 void main(void)

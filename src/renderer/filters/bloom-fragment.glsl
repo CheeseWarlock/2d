@@ -1,14 +1,14 @@
 #version 300 es
 
-in vec2 vTextureCoord;
-out vec4 finalColor;
-in vec2 aaPosition;
-in vec4 outputFrame;
-in vec4 aaInputSize;
-
 uniform float white;
 uniform sampler2D uTexture;
-uniform float uTolerance;
+uniform highp vec4 uInputSize;
+
+in vec2 vTextureCoord;
+in vec2 aaPosition;
+in vec4 outputFrame;
+
+out vec4 finalColor;
 
 vec4 otherConvolute(vec2 uv, float amount) {
 	int size = 5;
@@ -17,7 +17,7 @@ vec4 otherConvolute(vec2 uv, float amount) {
 	{
 		for (int y = 0; y < (size * 2 + 1); y++)
 		{
-			vec2 offset = vec2(float(x - size), float(y - size)) / aaInputSize.xy * 2.0;
+			vec2 offset = vec2(float(x - size), float(y - size)) / uInputSize.xy * 2.0;
 			vec4 tryColor = texture(uTexture, vTextureCoord+offset);
 
 			outC += tryColor;

@@ -1,19 +1,14 @@
 #version 300 es
 
-in vec2 vTextureCoord;
-out vec4 finalColor;
-in vec2 aaPosition;
-in vec4 outputFrame;
-in vec4 aaInputSize;
-
 uniform sampler2D uTexture;
 uniform vec2 uCenter;
 uniform float uTime;
-uniform float uSpeed;
-uniform float uWave;
+uniform highp vec4 uInputSize;
 
-uniform vec4 uInputSize;
-uniform vec4 uInputClamp;
+in vec2 vTextureCoord;
+in vec4 outputFrame;
+
+out vec4 finalColor;
 
 void main() {
   vec2 coord = vTextureCoord;

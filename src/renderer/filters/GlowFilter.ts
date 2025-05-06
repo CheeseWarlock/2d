@@ -1,4 +1,4 @@
-import fragmentShader from "./fragment.glsl";
+import fragmentShader from "./glow-fragment.glsl";
 import basicVertexShader from "./vertex.glsl";
 
 import {
