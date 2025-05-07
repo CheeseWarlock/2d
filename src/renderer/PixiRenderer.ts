@@ -11,7 +11,7 @@ import Game, { TIME_STOP_DURATION } from "../Game";
 import GameObject from "../gameObjects/IGameObject";
 import ColorGeometry from "../gameObjects/ColorGeometry";
 import GroundGeometry from "../gameObjects/GroundGeometry";
-import CameraFrameRenderer from "./CameraFrameRenderer";
+import FilterCameraFrameRenderer from "./FilterCameraFrameRenderer";
 import BaseGeometry from "../gameObjects/BaseGeometry";
 import { GlowFilter } from "./filters/GlowFilter";
 import { BUTTONS } from "../Controls";
@@ -40,8 +40,8 @@ class PixiRenderer {
   game: Game;
   objectsToDraw: Map<GameObject, Container> = new Map();
   mousePosition?: { x: number; y: number };
-  viewRenderer: CameraFrameRenderer;
-  goalRenderer: CameraFrameRenderer;
+  viewRenderer: FilterCameraFrameRenderer;
+  goalRenderer: FilterCameraFrameRenderer;
   app: Application;
   visualEffectTimers = {
     lastPhoto: 100,
@@ -87,8 +87,8 @@ class PixiRenderer {
 
     const viewContainer = document.getElementById("view-camera-container")!;
     const goalContainer = document.getElementById("goal-camera-container")!;
-    this.viewRenderer = new CameraFrameRenderer(viewContainer, "View");
-    this.goalRenderer = new CameraFrameRenderer(goalContainer, "Goal");
+    this.viewRenderer = new FilterCameraFrameRenderer(viewContainer, "View");
+    this.goalRenderer = new FilterCameraFrameRenderer(goalContainer, "Goal");
 
     this.timeStopFilter = new TimeStopFilter({
       center: {
