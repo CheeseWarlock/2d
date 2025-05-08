@@ -67,6 +67,8 @@ class PixiRenderer {
   overlayManager: OverlayManager = new OverlayManager();
   renderedOverlayItems: Map<Button, Container> = new Map();
   audioButton?: Button;
+  greyscaleButton?: Button;
+  greyscaleEnabled: boolean = COLORBLIND_MODE;
 
   constructor(options: { app: Application; sprites: Sprites }) {
     this.app = options.app;
@@ -93,8 +95,16 @@ class PixiRenderer {
 
     const viewContainer = document.getElementById("view-camera-container")!;
     const goalContainer = document.getElementById("goal-camera-container")!;
-    this.viewRenderer = new FilterCameraFrameRenderer(viewContainer, "View");
-    this.goalRenderer = new FilterCameraFrameRenderer(goalContainer, "Goal");
+    this.viewRenderer = new FilterCameraFrameRenderer(
+      viewContainer,
+      "View",
+      COLORBLIND_MODE
+    );
+    this.goalRenderer = new FilterCameraFrameRenderer(
+      goalContainer,
+      "Goal",
+      COLORBLIND_MODE
+    );
 
     this.timeStopFilter = new TimeStopFilter({
       center: {
@@ -225,6 +235,7 @@ class PixiRenderer {
       }
     });
     this.createAudioButtons();
+    this.createGreyscaleButton();
   }
 
   createAudioButtons() {
@@ -234,7 +245,10 @@ class PixiRenderer {
     const newAudioButton = new Button(
       `Audio: O${this.audioManager.userAudioEnabled ? "n" : "ff"}`,
       {
+        centerX: 350,
         centerY: 800,
+        width: 270,
+        height: 80,
       }
     );
     this.overlayManager.buttons.add(newAudioButton);
@@ -243,6 +257,54 @@ class PixiRenderer {
       this.createAudioButtons();
     });
     this.audioButton = newAudioButton;
+  }
+
+  createGreyscaleButton() {
+    if (this.greyscaleButton) {
+      this.overlayManager.buttons.delete(this.greyscaleButton);
+    }
+    const newGreyscaleButton = new Button(
+      `Colorblind Mode: O${this.greyscaleEnabled ? "n" : "ff"}`,
+      {
+        centerX: 650,
+        centerY: 800,
+        width: 270,
+        height: 80,
+      }
+    );
+    this.overlayManager.buttons.add(newGreyscaleButton);
+    newGreyscaleButton.on("click", () => {
+      this.greyscaleEnabled = !this.greyscaleEnabled;
+      if (this.greyscaleEnabled) {
+        this.glowFilter = new ColorblindFilter();
+      } else {
+        this.glowFilter = new GlowFilter();
+      }
+
+      this.app.stage.filters = [
+        this.glowFilter,
+        this.timeStopFilter,
+        this.bloomFilter,
+      ];
+      const viewContainer = document.getElementById("view-camera-container")!;
+      const goalContainer = document.getElementById("goal-camera-container")!;
+      viewContainer.removeChild(viewContainer.childNodes[0]);
+      viewContainer.removeChild(viewContainer.childNodes[0]);
+      goalContainer.removeChild(goalContainer.childNodes[0]);
+      goalContainer.removeChild(goalContainer.childNodes[0]);
+      this.viewRenderer = new FilterCameraFrameRenderer(
+        viewContainer,
+        "View",
+        this.greyscaleEnabled
+      );
+      this.goalRenderer = new FilterCameraFrameRenderer(
+        goalContainer,
+        "Goal",
+        this.greyscaleEnabled
+      );
+      this.createGreyscaleButton();
+    });
+    this.greyscaleButton = newGreyscaleButton;
   }
 
   setupInteractionEvents() {

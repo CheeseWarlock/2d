@@ -108,9 +108,15 @@ class FilterCameraFrameRenderer {
   element: HTMLElement;
   gl?: WebGLRenderingContext;
   program?: WebGLProgram;
+  colorblindMode: boolean;
 
-  constructor(targetElement: HTMLElement, title: string) {
+  constructor(
+    targetElement: HTMLElement,
+    title: string,
+    colorblindMode: boolean
+  ) {
     this.element = targetElement;
+    this.colorblindMode = colorblindMode;
     const header = document.createElement("span");
     header.className = "header-text";
     header.innerText = title;
@@ -128,12 +134,12 @@ class FilterCameraFrameRenderer {
     const vertexShader = createShader(
       gl,
       gl.VERTEX_SHADER,
-      COLORBLIND_MODE ? COLORBLIND_MODE_VERTEX_SHADER : VERTEX_SHADER
+      colorblindMode ? COLORBLIND_MODE_VERTEX_SHADER : VERTEX_SHADER
     );
     const fragmentShader = createShader(
       gl,
       gl.FRAGMENT_SHADER,
-      COLORBLIND_MODE ? COLORLIND_MODE_FRAGMENT_SHADER : FRAGMENT_SHADER
+      colorblindMode ? COLORLIND_MODE_FRAGMENT_SHADER : FRAGMENT_SHADER
     );
 
     if (!vertexShader || !fragmentShader) return;
@@ -195,7 +201,7 @@ class FilterCameraFrameRenderer {
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     });
 
-    gl.uniform4f(colorUniformLocation, 1, 1, 1, COLORBLIND_MODE ? 1 : 0.4);
+    gl.uniform4f(colorUniformLocation, 1, 1, 1, this.colorblindMode ? 1 : 0.4);
     makeZone(gl, 0.4975, 0.5025);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
