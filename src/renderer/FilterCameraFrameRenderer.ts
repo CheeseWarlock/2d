@@ -1,35 +1,63 @@
 import CameraFrame from "../CameraFrame";
+import { COLORBLIND_MODE } from "../config";
 
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
 
-const VERTEX_SHADER = `
+const COLORBLIND_MODE_VERTEX_SHADER = `
   attribute vec4 a_position;
   varying vec4 position;
 
   // all shaders have a main function
   void main() {
     gl_Position = a_position;
-    position = a_position;
+    position = a_position * vec4(1, -1, 1, 1);
   }`;
 
-const FRAGMENT_SHADER = `
+const COLORLIND_MODE_FRAGMENT_SHADER = `
   precision mediump float;
   uniform vec4 uColor;
   varying vec4 position;
 
-  bool isNG(vec4 color) {
-    return color.r != color.b || color.r != color.g || color.g != color.b;
+  bool isGreyscale(vec4 color) {
+    return color.r == color.b && color.r == color.g && color.g == color.b;
   }
 
   void main() {
-    float width = 60.;
-    float height = 900.;
-    float pixelX = position.x * width / 2.;
-    float pixelY = position.y * height / 2.;
-    float aaa = mod(pixelX, 20.) / 40.;
-		float bbb = mod(pixelY, 20.) / 40.;
-    gl_FragColor = vec4(aaa+bbb, aaa+bbb, aaa+bbb, 1.);
+    if (isGreyscale(uColor)) {
+      gl_FragColor = uColor;
+    } else {
+      float width = 60.;
+      float height = 900.;
+      float pixelX = position.x * width / 2.;
+      float pixelY = position.y * height / 2.;
+      float aaa = mod(pixelX, 20.) / 40.;
+      float bbb = mod(pixelY, 20.) / 40.;
+      gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
+    }
+    
+  }`;
+
+const VERTEX_SHADER = `// an attribute will receive data from a buffer
+  attribute vec4 a_position;
+
+  // all shaders have a main function
+  void main() {
+
+    // gl_Position is a special variable a vertex shader
+    // is responsible for setting
+    gl_Position = a_position;
+  }`;
+
+const FRAGMENT_SHADER = `// fragment shaders don't have a default precision so we need
+  // to pick one. mediump is a good default
+  precision mediump float;
+  uniform vec4 uColor;
+
+  void main() {
+    // gl_FragColor is a special variable a fragment shader
+    // is responsible for setting
+    gl_FragColor = uColor;
   }`;
 
 function createShader(gl: WebGLRenderingContext, type: number, source: string) {
@@ -97,11 +125,15 @@ class FilterCameraFrameRenderer {
     if (!gl) return;
     this.gl = gl;
 
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
+    const vertexShader = createShader(
+      gl,
+      gl.VERTEX_SHADER,
+      COLORBLIND_MODE ? COLORBLIND_MODE_VERTEX_SHADER : VERTEX_SHADER
+    );
     const fragmentShader = createShader(
       gl,
       gl.FRAGMENT_SHADER,
-      FRAGMENT_SHADER
+      COLORBLIND_MODE ? COLORLIND_MODE_FRAGMENT_SHADER : FRAGMENT_SHADER
     );
 
     if (!vertexShader || !fragmentShader) return;
@@ -163,7 +195,7 @@ class FilterCameraFrameRenderer {
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     });
 
-    gl.uniform4f(colorUniformLocation, 1, 1, 1, 0.4);
+    gl.uniform4f(colorUniformLocation, 1, 1, 1, COLORBLIND_MODE ? 1 : 0.4);
     makeZone(gl, 0.4975, 0.5025);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }

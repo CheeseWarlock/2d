@@ -18,3 +18,7 @@ export const DEBUG_MODE = import.meta.env.VITE_DEBUG_MODE === "true";
  * Whether to use audio.
  */
 export const AUDIO_ENABLED = import.meta.env.VITE_AUDIO_ENABLED === "true";
+/**
+ * Whether to use (eventually start in) colorblind mode.
+ */
+export const COLORBLIND_MODE = false;

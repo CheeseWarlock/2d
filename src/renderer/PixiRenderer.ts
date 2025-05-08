@@ -18,7 +18,12 @@ import { BUTTONS } from "../Controls";
 import { DebugLevelManager } from "../DebugLevelManager";
 import { EventDispatcher } from "../utils/EventDispatcher";
 import { RendererAnimationEvents, Sprites } from "../types";
-import { GAME_WIDTH, GAME_HEIGHT, DEBUG_MODE } from "../config";
+import {
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  DEBUG_MODE,
+  COLORBLIND_MODE,
+} from "../config";
 import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
 import Player from "../gameObjects/Player";
@@ -27,6 +32,7 @@ import { AudioManager, SOUND_EFFECTS } from "../AudioManager";
 import OverlayManager from "../overlayObjects/OverlayManager";
 import Button from "../overlayObjects/Button";
 import TimeStopFilter from "./filters/TimeStopFilter";
+import { ColorblindFilter } from "./filters/ColorblindFilter";
 
 /**
  * Number of frames to pause after a successful photo.
@@ -54,7 +60,7 @@ class PixiRenderer {
   startScreenClosed: boolean = false;
   renderedText?: Container[];
   animations: RendererAnimation[] = [];
-  glowFilter: GlowFilter;
+  glowFilter: GlowFilter | ColorblindFilter;
   timeStopFilter: TimeStopFilter;
   bloomFilter: BloomFilter;
   audioManager: AudioManager = new AudioManager();
@@ -102,7 +108,11 @@ class PixiRenderer {
       radius: 2000,
     });
     this.bloomFilter = new BloomFilter();
-    this.glowFilter = new GlowFilter();
+    if (COLORBLIND_MODE) {
+      this.glowFilter = new ColorblindFilter();
+    } else {
+      this.glowFilter = new GlowFilter();
+    }
 
     this.app.stage.filters = [
       this.glowFilter,
