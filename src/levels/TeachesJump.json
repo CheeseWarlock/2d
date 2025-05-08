@@ -21,7 +21,7 @@
         }
       ],
       "origin": { "x": 710, "y": 200 },
-      "color": "#ff3060",
+      "color": "#F9547B",
       "rotation": 0.3,
       "motion": {
         "offset": {
@@ -49,7 +49,7 @@
       ],
       "origin": { "x": 670, "y": 500 },
       "rotation": -0.8,
-      "color": "#7799ff",
+      "color": "#8FD1F7",
       "motion": {
         "offset": {
           "x": 0,
@@ -110,26 +110,26 @@
       {
         "start": 0,
         "end": 1,
-        "color": "#ff3060"
+        "color": "#F9547B"
       }
     ],
     [
       {
         "start": 0,
         "end": 1,
-        "color": "#7799ff"
+        "color": "#8FD1F7"
       }
     ],
     [
       {
         "start": 0,
         "end": 0.5,
-        "color": "#ff3060"
+        "color": "#F9547B"
       },
       {
         "start": 0.5,
         "end": 1,
-        "color": "#7799ff"
+        "color": "#8FD1F7"
       }
     ]
   ],

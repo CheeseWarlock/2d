@@ -33,9 +33,10 @@ export class ColorblindFilter extends Filter {
   public grayscaleRadius: number = 0;
 
   constructor() {
+    const replaced = fragmentShader.replace("__COLOR1__", "1., 0., 0.");
     const glProgram = GlProgram.from({
       vertex: basicVertexShader,
-      fragment: fragmentShader,
+      fragment: replaced,
       name: "glow-filter",
     });
 

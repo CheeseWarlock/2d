@@ -87,25 +87,6 @@ const colorGeometries: ColorGeometryProps[] = [
       duration: 26000,
     },
   },
-  {
-    color: "#ff5733",
-    points: [
-      { x: 50, y: 0 },
-      { x: 35.36, y: 35.36 },
-      { x: 0, y: 50 },
-      { x: -35.36, y: 35.36 },
-      { x: -50, y: 0 },
-      { x: -35.36, y: -35.36 },
-      { x: 0, y: -50 },
-      { x: 35.36, y: -35.36 },
-    ],
-    rotation: 0,
-    origin: { x: 0, y: 0 },
-    motion: {
-      rotations: 0,
-      duration: 0,
-    },
-  },
 ];
 
 const goals: CameraFrameProps[] = [

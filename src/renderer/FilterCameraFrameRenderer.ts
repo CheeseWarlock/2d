@@ -24,18 +24,12 @@ const COLORLIND_MODE_FRAGMENT_SHADER = `
   }
 
   void main() {
-    if (isGreyscale(uColor)) {
-      gl_FragColor = uColor;
-    } else {
-      float width = 60.;
-      float height = 900.;
-      float pixelX = position.x * width / 2.;
-      float pixelY = position.y * height / 2.;
-      float aaa = mod(pixelX, 20.) / 40.;
-      float bbb = mod(pixelY, 20.) / 40.;
-      gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
-    }
-    
+    // if (isGreyscale(uColor)) {
+    //   gl_FragColor = vec4(1., 1., 0., 1.);
+    // } else {
+    //   gl_FragColor = vec4(1., 0., 1., 1.);
+    // }
+    gl_FragColor = uColor;
   }`;
 
 const VERTEX_SHADER = `// an attribute will receive data from a buffer

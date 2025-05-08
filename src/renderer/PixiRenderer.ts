@@ -385,7 +385,7 @@ class PixiRenderer {
     this.sprites.titleText.anchor = 0.5;
     this.sprites.titleText.x = 500;
     this.sprites.titleText.y = 200;
-    this.sprites.titleText.zIndex = 1;
+    this.sprites.titleText.zIndex = 3;
 
     const clickToStartText = new Text({
       text: "Mouse + Arrow Keys / WASD\nClick to Start",
@@ -415,7 +415,7 @@ class PixiRenderer {
     subtitleText.anchor = 0.5;
     subtitleText.x = 500;
     subtitleText.y = 280;
-    subtitleText.zIndex = 1;
+    subtitleText.zIndex = 3;
 
     const framingLines = new Graphics()
       .moveTo(300, 254)
@@ -427,7 +427,7 @@ class PixiRenderer {
         color: "white",
       })
       .stroke();
-    framingLines.zIndex = 1;
+    framingLines.zIndex = 3;
     this.app.stage.addChild(framingLines);
     this.renderedText = [subtitleText, clickToStartText, framingLines];
   }
@@ -595,6 +595,7 @@ class PixiRenderer {
         } else {
           newGraphics = new Graphics().circle(0, 0, 50).fill("black");
         }
+        newGraphics.zIndex = 2;
 
         this.objectsToDraw.set(obj, newGraphics);
         this.app.stage.addChild(newGraphics);
