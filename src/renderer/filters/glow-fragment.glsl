@@ -145,37 +145,10 @@ vec4 convolute(vec2 uv, bool noisy)
 		float pixelsInWindow = pow((float(size) * 2. + 1.), 2.);
 		vec4 currentColor = texture(uTexture, vTextureCoord);
 		
-		if (!isNG(currentColor)) {
-			float nearestColoredPixel = 10000.0;
-			vec4 nearbyColor = currentColor;
-			int nearbys = 0;
-			for (int x = 0; x < (size * 2 + 1); x++)
-				{
-						for (int y = 0; y < (size * 2 + 1); y++)
-						{
-								vec2 offset = vec2(float(x - size), float(y - size)) / uInputSize.xy * 2.0;
-								vec4 tryColor = texture(uTexture, vTextureCoord+offset);
-
-								if (isNG(tryColor)) {
-									nearestColoredPixel = min(nearestColoredPixel, (pow(float(x - size), 2.) + pow(float(y - size), 2.))); // squared distance
-									if (nearbys == 0) {
-										nearbyColor = tryColor;
-									} else {
-										nearbyColor += tryColor;
-									}
-									nearbys += 1;
-								}
-						}
-				}
-
-			if (nearbys > 1) {
-				nearbyColor /= vec4(float(nearbys), float(nearbys), float(nearbys), 1.0);
-			}
-			float distance = pow(nearestColoredPixel, 0.5);
-			float noiseProportion = getNoise(uv);
-			float proximityProportion = pow(1. - clamp(distance / 12., 0., 1.), 2.) * noiseProportion * 0.75;
-			// return vec4(proximityProportion, proximityProportion, proximityProportion, 1.);
-			currentColor = nearbyColor * proximityProportion + currentColor * (1. - proximityProportion);
+		if (isNG(currentColor)) {
+			float aaa = mod(vTextureCoord.x * 20., 1.) / 2.;
+			float bbb = mod(vTextureCoord.y * 20., 1.) / 2.;
+			currentColor = vec4(aaa+bbb, aaa+bbb, aaa+bbb, 1);
 		}
 
 		return currentColor;

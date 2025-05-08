@@ -3,26 +3,33 @@ import CameraFrame from "../CameraFrame";
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
 
-const VERTEX_SHADER = `// an attribute will receive data from a buffer
+const VERTEX_SHADER = `
   attribute vec4 a_position;
+  varying vec4 position;
 
   // all shaders have a main function
   void main() {
-
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
     gl_Position = a_position;
+    position = a_position;
   }`;
 
-const FRAGMENT_SHADER = `// fragment shaders don't have a default precision so we need
-  // to pick one. mediump is a good default
+const FRAGMENT_SHADER = `
   precision mediump float;
   uniform vec4 uColor;
+  varying vec4 position;
+
+  bool isNG(vec4 color) {
+    return color.r != color.b || color.r != color.g || color.g != color.b;
+  }
 
   void main() {
-    // gl_FragColor is a special variable a fragment shader
-    // is responsible for setting
-    gl_FragColor = uColor;
+    float width = 60.;
+    float height = 900.;
+    float pixelX = position.x * width / 2.;
+    float pixelY = position.y * height / 2.;
+    float aaa = mod(pixelX, 20.) / 40.;
+		float bbb = mod(pixelY, 20.) / 40.;
+    gl_FragColor = vec4(aaa+bbb, aaa+bbb, aaa+bbb, 1.);
   }`;
 
 function createShader(gl: WebGLRenderingContext, type: number, source: string) {
@@ -86,7 +93,7 @@ class FilterCameraFrameRenderer {
     photoCanvas.height = CAMERA_FRAME_HEIGHT;
     targetElement.appendChild(photoCanvas);
 
-    const gl = photoCanvas.getContext("webgl");
+    const gl = photoCanvas.getContext("webgl2");
     if (!gl) return;
     this.gl = gl;
 
