@@ -33,7 +33,12 @@ export class ColorblindFilter extends Filter {
   public grayscaleRadius: number = 0;
 
   constructor() {
-    const replaced = fragmentShader.replace("__COLOR1__", "1., 0., 0.");
+    const colorNameTest = "#de60f2";
+    const r = parseInt(colorNameTest.slice(1, 3), 16).toFixed(1);
+    const g = parseInt(colorNameTest.slice(3, 5), 16).toFixed(1);
+    const b = parseInt(colorNameTest.slice(5, 7), 16).toFixed(1);
+
+    const replaced = fragmentShader.replace("__COLOR1__", `${r}, ${g}, ${b}`);
     const glProgram = GlProgram.from({
       vertex: basicVertexShader,
       fragment: replaced,

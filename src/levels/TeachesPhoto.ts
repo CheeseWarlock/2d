@@ -50,7 +50,7 @@ const colorGeometries: ColorGeometryProps[] = [
     ],
     origin: { x: 750, y: 200 },
     rotation: 0.3,
-    color: "#ff0000",
+    color: "#DE60F2",
   },
 ];
 
@@ -64,7 +64,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0.32,
       end: 0.68,
-      color: "#ff0000",
+      color: "#DE60F2",
     },
     { start: 0.68, end: 1, color: "empty" },
   ],

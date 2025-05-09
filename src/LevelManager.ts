@@ -8,6 +8,7 @@ import ILevelFormat from "./types";
 import Game from "./Game";
 import SafetyToggler from "./gameObjects/SafetyToggler";
 import { GAME_LEVELS } from "./LevelIndex";
+import { VIVID_COLORS } from "./levels/COLOR_SCHEME";
 
 export class LevelManager {
   currentLevelIndex: number = 0;
@@ -30,6 +31,9 @@ export class LevelManager {
 
   loadLevel = (levelData: ILevelFormat) => {
     const world = new World(this.game);
+
+    const colorsSeen = new Map<string, string>();
+
     levelData.ground.forEach((g) => {
       const geo = new GroundGeometry(
         [...g.points.map((m) => ({ x: m.x, y: m.y }))],
@@ -42,6 +46,13 @@ export class LevelManager {
       world.addGeometry(geo);
     });
     levelData.colors.forEach((c) => {
+      if (!colorsSeen.has(c.color)) {
+        const newIndex = colorsSeen.size;
+        colorsSeen.set(c.color, VIVID_COLORS[newIndex]);
+        c.color = VIVID_COLORS[newIndex];
+      } else {
+        c.color = colorsSeen.get(c.color)!;
+      }
       const geo = new ColorGeometry(
         [...c.points.map((m) => ({ x: m.x, y: m.y }))],
         c.color,
@@ -59,7 +70,15 @@ export class LevelManager {
     );
     world.objects.push(player);
 
-    const goals = levelData.goals.map((goal) => new CameraFrame(goal));
+    const goals = levelData.goals.map((goal) => {
+      goal.forEach((g) => {
+        if (colorsSeen.get(g.color)) {
+          g.color = colorsSeen.get(g.color)!;
+        }
+        return g;
+      });
+      return new CameraFrame(goal);
+    });
 
     levelData.timerPositions.forEach((pos) => {
       const timer = new SafetyToggler(pos);

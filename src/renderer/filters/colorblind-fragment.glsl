@@ -23,12 +23,12 @@ bool isGreyscale(vec4 color) {
 void main(void)
 {
   vec4 currentColor = texture(uTexture, vTextureCoord);
-  vec4 colorInts = currentColor;
+  vec4 colorInts = vec4(currentColor.rgb * 255., 1.);
   if (!isGreyscale(currentColor)) {
+    float pixelX = vTextureCoord.x * uInputSize.x;
+    float pixelY = vTextureCoord.y * uInputSize.y;
     if (colorInts == vec4(__COLOR1__, 1.)) {
-      float pixelX = vTextureCoord.x * uInputSize.x;
-      float pixelY = vTextureCoord.y * uInputSize.y;
-
+      
       float aaa = mod(pixelX, 20.) / 40.;
       float bbb = mod(pixelY, 20.) / 40.;
       currentColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);

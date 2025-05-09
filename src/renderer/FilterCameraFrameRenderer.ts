@@ -1,5 +1,4 @@
 import CameraFrame from "../CameraFrame";
-import { COLORBLIND_MODE } from "../config";
 
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
@@ -27,10 +26,17 @@ const COLORLIND_MODE_FRAGMENT_SHADER = `
     if (isGreyscale(uColor)) {
       gl_FragColor = uColor;
     } else {
-      if (uColor == vec4(1., 0., 0., 1.)) {
-        gl_FragColor = vec4(1., 1., 0., 1.);
+      float width = ${CAMERA_FRAME_WIDTH}.;
+      float height = ${CAMERA_FRAME_HEIGHT}.;
+      float pixelX = position.x * width / 2.;
+      float pixelY = position.y * height / 2.;
+      vec4 colorInts = vec4(uColor.rgb * 255., 1.);
+      if (colorInts == vec4(__COLOR1__, 1.)) {
+        float aaa = mod(pixelX, 20.) / 40.;
+        float bbb = mod(pixelY, 20.) / 40.;
+        gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
       } else {
-       gl_FragColor = vec4(1., 0., 1., 1.);
+       gl_FragColor = vec4(1., 1., 1., 1.);
       }
   }
 }`;
@@ -128,6 +134,16 @@ class FilterCameraFrameRenderer {
     if (!gl) return;
     this.gl = gl;
 
+    const colorNameTest = "#de60f2";
+    const r = parseInt(colorNameTest.slice(1, 3), 16).toFixed(1);
+    const g = parseInt(colorNameTest.slice(3, 5), 16).toFixed(1);
+    const b = parseInt(colorNameTest.slice(5, 7), 16).toFixed(1);
+
+    const replaced = COLORLIND_MODE_FRAGMENT_SHADER.replace(
+      "__COLOR1__",
+      `${r}, ${g}, ${b}`
+    );
+
     const vertexShader = createShader(
       gl,
       gl.VERTEX_SHADER,
@@ -136,7 +152,7 @@ class FilterCameraFrameRenderer {
     const fragmentShader = createShader(
       gl,
       gl.FRAGMENT_SHADER,
-      colorblindMode ? COLORLIND_MODE_FRAGMENT_SHADER : FRAGMENT_SHADER
+      colorblindMode ? replaced : FRAGMENT_SHADER
     );
 
     if (!vertexShader || !fragmentShader) return;
