@@ -29,7 +29,7 @@ export class LevelManager {
     return GAME_LEVELS[index];
   }
 
-  loadLevel = (levelData: ILevelFormat) => {
+  loadLevel = (levelData: ILevelFormat, standardizeColors: boolean = false) => {
     const world = new World(this.game);
 
     const colorsSeen = new Map<string, string>();
@@ -46,13 +46,16 @@ export class LevelManager {
       world.addGeometry(geo);
     });
     levelData.colors.forEach((c) => {
-      if (!colorsSeen.has(c.color)) {
-        const newIndex = colorsSeen.size;
-        colorsSeen.set(c.color, VIVID_COLORS[newIndex]);
-        c.color = VIVID_COLORS[newIndex];
-      } else {
-        c.color = colorsSeen.get(c.color)!;
+      if (standardizeColors) {
+        if (!colorsSeen.has(c.color)) {
+          const newIndex = colorsSeen.size;
+          colorsSeen.set(c.color, VIVID_COLORS[newIndex]);
+          c.color = VIVID_COLORS[newIndex];
+        } else {
+          c.color = colorsSeen.get(c.color)!;
+        }
       }
+
       const geo = new ColorGeometry(
         [...c.points.map((m) => ({ x: m.x, y: m.y }))],
         c.color,
@@ -71,12 +74,15 @@ export class LevelManager {
     world.objects.push(player);
 
     const goals = levelData.goals.map((goal) => {
-      goal.forEach((g) => {
-        if (colorsSeen.get(g.color)) {
-          g.color = colorsSeen.get(g.color)!;
-        }
-        return g;
-      });
+      if (standardizeColors) {
+        goal.forEach((g) => {
+          if (colorsSeen.get(g.color)) {
+            g.color = colorsSeen.get(g.color)!;
+          }
+          return g;
+        });
+      }
+
       return new CameraFrame(goal);
     });
 

@@ -1,4 +1,6 @@
 import CameraFrame from "../CameraFrame";
+import { DEBUG_MODE } from "../config";
+import { VIVID_COLORS_RGB } from "../levels/COLOR_SCHEME";
 
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
@@ -28,16 +30,30 @@ const COLORLIND_MODE_FRAGMENT_SHADER = `
     } else {
       float width = ${CAMERA_FRAME_WIDTH}.;
       float height = ${CAMERA_FRAME_HEIGHT}.;
-      float pixelX = position.x * width / 2.;
-      float pixelY = position.y * height / 2.;
+      float pixelX = floor(position.x * width / 2.);
+      float pixelY = floor(position.y * height / 2.);
       vec4 colorInts = vec4(uColor.rgb * 255., 1.);
       if (colorInts == vec4(__COLOR1__, 1.)) {
-        float aaa = mod(pixelX, 20.) / 40.;
-        float bbb = mod(pixelY, 20.) / 40.;
-        gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
-      } else {
-       gl_FragColor = vec4(1., 1., 1., 1.);
-      }
+      float aaa = mod(pixelX, 20.) / 40.;
+      float bbb = mod(pixelY, 20.) / 40.;
+      gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
+    } else if (colorInts == vec4(__COLOR2__, 1.)) {
+      float aaa = mod(pixelX, 20.);
+      float bbb = mod(pixelY, 20.);
+      bool white = aaa < 18. && bbb < 18.;
+      float rc = white ? 0.85 : 0.;
+      gl_FragColor = vec4(rc, rc, rc, 1);
+    } else if (colorInts == vec4(__COLOR3__, 1.)) {
+      bool white = mod(abs(pixelX - pixelY + 1024.), 20.) > 2.;
+      float rc = white ? 0.85 : 0.;
+      gl_FragColor = vec4(rc, rc, rc, 1);
+    } else if (colorInts == vec4(__COLOR4__, 1.)) {
+      bool white = mod(abs(pixelX + pixelY + 1024.), 20.) > 2.;
+      float rc = white ? 0.85 : 0.;
+      gl_FragColor = vec4(rc, rc, rc, 1);
+    } else {
+      gl_FragColor = vec4(1., 1., 1., 1.);
+    }
   }
 }`;
 
@@ -131,7 +147,11 @@ class FilterCameraFrameRenderer {
     targetElement.appendChild(photoCanvas);
 
     const gl = photoCanvas.getContext("webgl2");
-    if (!gl) return;
+    if (!gl) {
+      if (DEBUG_MODE) console.log("GL init failed");
+      return;
+    }
+
     this.gl = gl;
 
     const colorNameTest = "#de60f2";
@@ -139,10 +159,13 @@ class FilterCameraFrameRenderer {
     const g = parseInt(colorNameTest.slice(3, 5), 16).toFixed(1);
     const b = parseInt(colorNameTest.slice(5, 7), 16).toFixed(1);
 
-    const replaced = COLORLIND_MODE_FRAGMENT_SHADER.replace(
-      "__COLOR1__",
-      `${r}, ${g}, ${b}`
-    );
+    let replaced = COLORLIND_MODE_FRAGMENT_SHADER;
+    VIVID_COLORS_RGB.forEach((c, i) => {
+      replaced = replaced.replace(
+        `__COLOR${i + 1}__`,
+        `${c.r}, ${c.g}, ${c.b}`
+      );
+    });
 
     const vertexShader = createShader(
       gl,
@@ -155,10 +178,20 @@ class FilterCameraFrameRenderer {
       colorblindMode ? replaced : FRAGMENT_SHADER
     );
 
-    if (!vertexShader || !fragmentShader) return;
+    if (!vertexShader) {
+      if (DEBUG_MODE) console.log("Vertex shader failed");
+      return;
+    }
+    if (!fragmentShader) {
+      if (DEBUG_MODE) console.log("Fragment shader failed");
+      return;
+    }
 
     const program = createProgram(gl, vertexShader, fragmentShader);
-    if (!program) return;
+    if (!program) {
+      if (DEBUG_MODE) console.log("Program failed");
+      return;
+    }
 
     this.program = program;
     gl.useProgram(program);

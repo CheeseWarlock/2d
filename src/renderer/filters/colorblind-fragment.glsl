@@ -25,13 +25,26 @@ void main(void)
   vec4 currentColor = texture(uTexture, vTextureCoord);
   vec4 colorInts = vec4(currentColor.rgb * 255., 1.);
   if (!isGreyscale(currentColor)) {
-    float pixelX = vTextureCoord.x * uInputSize.x;
-    float pixelY = vTextureCoord.y * uInputSize.y;
+    float pixelX = round(vTextureCoord.x * uInputSize.x);
+    float pixelY = round(vTextureCoord.y * uInputSize.y);
     if (colorInts == vec4(__COLOR1__, 1.)) {
-      
       float aaa = mod(pixelX, 20.) / 40.;
       float bbb = mod(pixelY, 20.) / 40.;
       currentColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
+    } else if (colorInts == vec4(__COLOR2__, 1.)) {
+      float aaa = mod(pixelX, 20.);
+      float bbb = mod(pixelY, 20.);
+      bool white = aaa < 18. && bbb < 18.;
+      float rc = white ? 0.85 : 0.;
+      currentColor = vec4(rc, rc, rc, 1);
+    } else if (colorInts == vec4(__COLOR3__, 1.)) {
+      bool white = mod(abs(pixelX - pixelY + 1024.), 20.) > 2.;
+      float rc = white ? 0.85 : 0.;
+      currentColor = vec4(rc, rc, rc, 1);
+    } else if (colorInts == vec4(__COLOR4__, 1.)) {
+      bool white = mod(abs(pixelX + pixelY + 1024.), 20.) > 2.;
+      float rc = white ? 0.85 : 0.;
+      currentColor = vec4(rc, rc, rc, 1);
     } else {
       currentColor = vec4(1., 1., 1., 1.);
     }

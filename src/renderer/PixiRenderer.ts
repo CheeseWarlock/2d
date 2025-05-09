@@ -275,6 +275,7 @@ class PixiRenderer {
     this.overlayManager.buttons.add(newGreyscaleButton);
     newGreyscaleButton.on("click", () => {
       this.greyscaleEnabled = !this.greyscaleEnabled;
+      this.game.standardizeColors = this.greyscaleEnabled;
       if (this.greyscaleEnabled) {
         this.glowFilter = new ColorblindFilter();
       } else {

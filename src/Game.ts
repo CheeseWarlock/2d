@@ -64,6 +64,7 @@ class Game {
   animationEvents?: EventDispatcher<RendererAnimationEvents>;
   colorObjectsSafe: boolean = false;
   timeUntilColorObjectsUnsafe = 0;
+  standardizeColors: boolean = false;
 
   constructor() {
     this.loadLevelByIndex(0);
@@ -107,7 +108,8 @@ class Game {
     this.levelManager.currentLevelIndex = index;
 
     const data = this.levelManager.loadLevel(
-      this.levelManager.getLevelData(index)
+      this.levelManager.getLevelData(index),
+      this.standardizeColors
     );
 
     this.player = data.player;
