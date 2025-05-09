@@ -80,7 +80,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0.5,
       end: 1,
-      color: "black",
+      color: "#000000",
     },
   ],
   [
@@ -92,7 +92,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0.5,
       end: 1,
-      color: "black",
+      color: "#000000",
     },
   ],
   [
@@ -148,7 +148,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0.844358411837284,
       end: 1,
-      color: "black",
+      color: "#000000",
     },
   ],
 ];

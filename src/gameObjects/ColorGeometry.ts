@@ -13,7 +13,7 @@ const DEFAULT_MOTION: Motion = {
 };
 
 class ColorGeometry extends BaseGeometry {
-  color: string = "black";
+  color: string = "#000000";
   transform: Point = {
     x: 0,
     y: 0,

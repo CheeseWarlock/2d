@@ -24,13 +24,16 @@ const COLORLIND_MODE_FRAGMENT_SHADER = `
   }
 
   void main() {
-    // if (isGreyscale(uColor)) {
-    //   gl_FragColor = vec4(1., 1., 0., 1.);
-    // } else {
-    //   gl_FragColor = vec4(1., 0., 1., 1.);
-    // }
-    gl_FragColor = uColor;
-  }`;
+    if (isGreyscale(uColor)) {
+      gl_FragColor = uColor;
+    } else {
+      if (uColor == vec4(1., 0., 0., 1.)) {
+        gl_FragColor = vec4(1., 1., 0., 1.);
+      } else {
+       gl_FragColor = vec4(1., 0., 1., 1.);
+      }
+  }
+}`;
 
 const VERTEX_SHADER = `// an attribute will receive data from a buffer
   attribute vec4 a_position;

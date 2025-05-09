@@ -15,7 +15,7 @@ class BaseGeometry implements GameObject {
 
   constructor() {}
 
-  color: string = "black";
+  color: string = "#000000";
 
   tick() {}
 

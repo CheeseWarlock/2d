@@ -34,7 +34,7 @@ const groundGeometries: GeometryProps[] = [
       { x: 120, y: 740 },
       { x: 120, y: 800 },
     ],
-    color: "#666",
+    color: "#666666",
   },
 ];
 

@@ -32,7 +32,7 @@ const goals = [
     { start: 0.5, end: 1, color: "#7799ff" },
   ],
   [
-    { start: 0, end: 0.5, color: "black" },
+    { start: 0, end: 0.5, color: "#000000" },
     { start: 0.5, end: 1, color: "#7799ff" },
   ],
 ];

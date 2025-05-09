@@ -10,7 +10,7 @@ class ColorLineGeometry extends BaseGeometry {
   x2: number;
   y1: number;
   y2: number;
-  color: string = "black";
+  color: string = "#000000";
 
   constructor(
     from: { x: number; y: number },
