@@ -35,7 +35,7 @@ const colorGeometries: ColorGeometryProps[] = [
       { x: 33, y: 33 },
       { x: 33, y: -33 },
     ],
-    color: "#ff0000",
+    color: "#ff9050",
     rotation: -0.1,
     origin: { x: 580, y: 640 },
     motion: {
@@ -52,7 +52,7 @@ const colorGeometries: ColorGeometryProps[] = [
       { x: 41, y: 156 },
       { x: 41, y: -156 },
     ],
-    color: "#ffff00",
+    color: "#ddee22",
     rotation: 0.15,
     origin: { x: 770, y: 600 },
     motion: {
@@ -66,24 +66,24 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 0.3,
-      color: "#ffff00",
+      color: "#ddee22",
     },
     {
       start: 0.3,
       end: 0.7,
-      color: "#ff0000",
+      color: "#ff9050",
     },
     {
       start: 0.7,
       end: 1,
-      color: "#ffff00",
+      color: "#ddee22",
     },
   ],
   [
     {
       start: 0,
       end: 1,
-      color: "#ff0000",
+      color: "#ff9050",
     },
   ],
 ];

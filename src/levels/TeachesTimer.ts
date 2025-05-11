@@ -53,7 +53,7 @@ const colorGeometries: ColorGeometryProps[] = [
     },
   },
   {
-    color: "blue",
+    color: "#0000ff",
     points: [
       { x: -50, y: -50 },
       { x: 50, y: -50 },
@@ -73,7 +73,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 1,
-      color: "blue",
+      color: "#0000ff",
     },
   ],
 ];

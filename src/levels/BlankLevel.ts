@@ -35,7 +35,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 1,
-      color: "blue",
+      color: "#0000ff",
     },
   ],
 ];

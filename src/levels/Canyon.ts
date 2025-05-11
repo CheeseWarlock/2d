@@ -59,7 +59,7 @@ const colorGeometries: ColorGeometryProps[] = [
       { x: 400, y: 400 },
       { x: 200, y: 400 },
     ],
-    color: "blue",
+    color: "#0000ff",
   },
 ];
 
@@ -68,7 +68,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 1,
-      color: "blue",
+      color: "#0000ff",
     },
   ],
   [
@@ -87,7 +87,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 0.5,
-      color: "blue",
+      color: "#0000ff",
     },
     {
       start: 0.5,
@@ -104,7 +104,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0.5,
       end: 1,
-      color: "blue",
+      color: "#0000ff",
     },
   ],
   [
@@ -128,7 +128,7 @@ const goals: CameraFrameProps[] = [
     {
       start: 0,
       end: 0.1740706460704038,
-      color: "blue",
+      color: "#0000ff",
     },
     {
       start: 0.1740706460704038,
