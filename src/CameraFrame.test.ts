@@ -1,15 +1,5 @@
 import CameraFrame from "./CameraFrame";
 
-const jestConsole = console;
-
-beforeEach(() => {
-  global.console = require("console");
-});
-
-afterEach(() => {
-  global.console = jestConsole;
-});
-
 describe("CameraFrame.flip", () => {
   it("should not change an empty camera frame", () => {
     const frame = new CameraFrame();
