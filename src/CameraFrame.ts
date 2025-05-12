@@ -102,6 +102,9 @@ export default class CameraFrame {
     return similarity;
   }
 
+  /**
+   * Whether the zones that exist are the same as another frame's, regardless of positioning.
+   */
   areZonesEqual(otherFrame: CameraFrame) {
     if (this.segments.length !== otherFrame.segments.length) return false;
     for (let i = 0; i != this.segments.length; i++) {

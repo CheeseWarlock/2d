@@ -1,4 +1,4 @@
-import BaseGeometry from "./BaseGeometry.js";
+import BaseGeometry from "./BaseGeometry";
 
 type Point = {
   x: number;

@@ -1,6 +1,6 @@
-import { Motion, Point } from "../types.js";
-import applyDefaults from "../utils/applyDefaults.js";
-import BaseGeometry from "./BaseGeometry.js";
+import { Motion, Point } from "../types";
+import applyDefaults from "../utils/applyDefaults";
+import BaseGeometry from "./BaseGeometry";
 
 const DEFAULT_MOTION: Motion = {
   offset: {

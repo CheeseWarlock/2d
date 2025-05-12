@@ -1,5 +1,5 @@
-import { Point } from "../types.js";
-import GameObject from "./IGameObject.js";
+import { Point } from "../types";
+import GameObject from "./IGameObject";
 
 /**
  * An object with some kind of physical properties in the scene.

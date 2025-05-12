@@ -1,3 +1,3 @@
-import { loadPixi } from "./Loader.js";
+import { loadPixi } from "./Loader";
 
 loadPixi();

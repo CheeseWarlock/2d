@@ -1,14 +1,14 @@
-import Player from "./gameObjects/Player.js";
-import CameraFrame, { Segment } from "./CameraFrame.js";
-import { limitNearVerticalDirection } from "./utils.js";
-import World from "./World.js";
-import { Point, RendererAnimationEvents } from "./types.js";
+import Player from "./gameObjects/Player";
+import CameraFrame from "./CameraFrame";
+import { limitNearVerticalDirection } from "./utils";
+import World from "./World";
+import { Point, RendererAnimationEvents } from "./types";
 
-import { LevelManager } from "./LevelManager.js";
-import { EventDispatcher } from "./utils/EventDispatcher.js";
-import { BUTTONS, Controls } from "./Controls.js";
-import GameObject from "./gameObjects/IGameObject.js";
-import { DEBUG_MODE, FOV } from "./config.js";
+import { LevelManager } from "./LevelManager";
+import { EventDispatcher } from "./utils/EventDispatcher";
+import { BUTTONS, Controls } from "./Controls";
+import GameObject from "./gameObjects/IGameObject";
+import { DEBUG_MODE, FOV } from "./config";
 
 const SIMILARITY_THRESHOLD_WITH_SAME_ZONES = 0.825;
 

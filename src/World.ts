@@ -1,14 +1,14 @@
-import CameraFrame from "./CameraFrame.js";
-import { GAME_HEIGHT, GAME_WIDTH } from "./config.js";
-import Game from "./Game.js";
-import BaseGeometry from "./gameObjects/BaseGeometry.js";
-import ColorGeometry from "./gameObjects/ColorGeometry.js";
-import ColorLineGeometry from "./gameObjects/ColorLineGeometry.js";
-import GroundGeometry from "./gameObjects/GroundGeometry.js";
-import GameObject from "./gameObjects/IGameObject.js";
-import SafetyToggler from "./gameObjects/SafetyToggler.js";
-import { Point } from "./types.js";
-import { distance, intersects, lineSegmentsIntersect } from "./utils.js";
+import CameraFrame from "./CameraFrame";
+import { GAME_HEIGHT, GAME_WIDTH } from "./config";
+import Game from "./Game";
+import BaseGeometry from "./gameObjects/BaseGeometry";
+import ColorGeometry from "./gameObjects/ColorGeometry";
+import ColorLineGeometry from "./gameObjects/ColorLineGeometry";
+import GroundGeometry from "./gameObjects/GroundGeometry";
+import GameObject from "./gameObjects/IGameObject";
+import SafetyToggler from "./gameObjects/SafetyToggler";
+import { Point } from "./types";
+import { distance, intersects, lineSegmentsIntersect } from "./utils";
 import { Quadtree, Rectangle } from "@timohausmann/quadtree-ts";
 
 const rangesOverlap = (

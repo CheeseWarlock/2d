@@ -1,7 +1,6 @@
-import GameObject from "./IGameObject.js";
-import World, { CollisionGroups } from "../World.js";
-import { GAME_HEIGHT, GAME_WIDTH } from "../config.js";
-import SafetyToggler from "./SafetyToggler.js";
+import GameObject from "./IGameObject";
+import World, { CollisionGroups } from "../World";
+import { GAME_HEIGHT, GAME_WIDTH } from "../config";
 
 /**
  * The vertical distance that the player will "stick" to a surface, per tick.

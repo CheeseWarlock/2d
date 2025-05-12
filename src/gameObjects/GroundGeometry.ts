@@ -1,5 +1,5 @@
-import { Point } from "../types.js";
-import BaseGeometry from "./BaseGeometry.js";
+import { Point } from "../types";
+import BaseGeometry from "./BaseGeometry";
 
 class GroundGeometry extends BaseGeometry {
   constructor(points: Point[], color?: string) {

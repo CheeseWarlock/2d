@@ -4,7 +4,7 @@ import {
   ColorGeometryProps,
   GeometryProps,
   LineGeometryProps,
-} from "../types.js";
+} from "../types";
 
 const groundGeometries: GeometryProps[] = [
   {

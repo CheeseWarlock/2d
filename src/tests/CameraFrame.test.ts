@@ -1,4 +1,6 @@
-import CameraFrame from "./CameraFrame";
+import CameraFrame from "../CameraFrame";
+
+jest.mock("../config");
 
 describe("CameraFrame.flip", () => {
   it("should not change an empty camera frame", () => {
@@ -137,5 +139,111 @@ describe("CameraFrame.compare", () => {
     });
     const comparison = frameA.compare(frameB);
     expect(comparison).toBeCloseTo(0.2);
+  });
+});
+
+describe("CameraFrame.areZonesEqual", () => {
+  it("should return true when frames are exactly the same", () => {
+    const frameA = new CameraFrame();
+    frameA.segments.push({
+      start: 0.2,
+      end: 0.8,
+      color: "#ff0000",
+    });
+    expect(frameA.areZonesEqual(frameA)).toBe(true);
+  });
+
+  it("should return false if the frames' contents are of different length", () => {
+    const frameA = new CameraFrame();
+    const frameB = new CameraFrame();
+    frameA.segments.push({
+      start: 0,
+      end: 1,
+      color: "empty",
+    });
+    frameB.segments.push({
+      start: 0,
+      end: 0.5,
+      color: "#0000ff",
+    });
+    frameB.segments.push({
+      start: 0.5,
+      end: 1,
+      color: "#ff00ff",
+    });
+    expect(frameA.areZonesEqual(frameB)).toBe(false);
+  });
+
+  it("should return false if the frames' colors differ", () => {
+    const frameA = new CameraFrame();
+    const frameB = new CameraFrame();
+    frameA.segments.push({
+      start: 0,
+      end: 0.5,
+      color: "#ff0000",
+    });
+    frameA.segments.push({
+      start: 0.5,
+      end: 1,
+      color: "#0000ff",
+    });
+    frameB.segments.push({
+      start: 0,
+      end: 0.5,
+      color: "#ff0000",
+    });
+    frameB.segments.push({
+      start: 0.5,
+      end: 1,
+      color: "#00ff00",
+    });
+    expect(frameA.areZonesEqual(frameB)).toBe(false);
+  });
+
+  it("should return false if one frame has an extra blank section", () => {
+    const frameA = new CameraFrame();
+    const frameB = new CameraFrame();
+    frameA.segments.push({
+      start: 0,
+      end: 0.5,
+      color: "empty",
+    });
+    frameA.segments.push({
+      start: 0.5,
+      end: 1,
+      color: "#0000ff",
+    });
+    frameB.segments.push({
+      start: 0,
+      end: 1,
+      color: "#0000ff",
+    });
+    expect(frameA.areZonesEqual(frameB)).toBe(false);
+  });
+
+  it("should return true if the frames have the same zones but different positions", () => {
+    const frameA = new CameraFrame();
+    const frameB = new CameraFrame();
+    frameA.segments.push({
+      start: 0,
+      end: 0.5,
+      color: "#ff0000",
+    });
+    frameA.segments.push({
+      start: 0.5,
+      end: 1,
+      color: "#0000ff",
+    });
+    frameB.segments.push({
+      start: 0,
+      end: 0.9,
+      color: "#ff0000",
+    });
+    frameB.segments.push({
+      start: 0.9,
+      end: 1,
+      color: "#0000ff",
+    });
+    expect(frameA.areZonesEqual(frameA)).toBe(true);
   });
 });
