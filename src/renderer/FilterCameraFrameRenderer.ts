@@ -98,11 +98,6 @@ class FilterCameraFrameRenderer {
 
     this.gl = gl;
 
-    const colorNameTest = "#de60f2";
-    const r = parseInt(colorNameTest.slice(1, 3), 16).toFixed(1);
-    const g = parseInt(colorNameTest.slice(3, 5), 16).toFixed(1);
-    const b = parseInt(colorNameTest.slice(5, 7), 16).toFixed(1);
-
     let replaced = COLORBLIND_MODE_FRAGMENT_SHADER;
     replaced = replaced.replace(
       "__CAMERA_FRAME_WIDTH__",
@@ -163,6 +158,18 @@ class FilterCameraFrameRenderer {
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+  }
+
+  shake() {
+    this.element.classList.remove("view-container-shake");
+    this.element.offsetHeight;
+    this.element.classList.add("view-container-shake");
+  }
+
+  bounce() {
+    this.element.classList.remove("camera-container-bounce");
+    this.element.offsetHeight;
+    this.element.classList.add("camera-container-bounce");
   }
 
   drawCamera(frame?: CameraFrame) {

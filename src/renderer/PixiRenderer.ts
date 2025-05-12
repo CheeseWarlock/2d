@@ -67,7 +67,7 @@ class PixiRenderer {
   overlayManager: OverlayManager = new OverlayManager();
   renderedOverlayItems: Map<Button, Container> = new Map();
   audioButton?: Button;
-  greyscaleButton?: Button;
+  colorblindButton?: Button;
   greyscaleEnabled: boolean = COLORBLIND_MODE;
 
   constructor(options: { app: Application; sprites: Sprites }) {
@@ -144,9 +144,7 @@ class PixiRenderer {
   setupGame() {
     this.game.setupAnimationCallbacks(this.animationEvents);
     this.game.events.on("goalAchieved", () => {
-      this.goalRenderer.element.classList.remove("camera-container-bounce");
-      this.goalRenderer.element.offsetHeight;
-      this.goalRenderer.element.classList.add("camera-container-bounce");
+      this.goalRenderer.bounce();
       this.game.gameIsActive = false;
       this.animations.push(
         new RendererAnimation({
@@ -159,9 +157,7 @@ class PixiRenderer {
     });
     this.game.events.on("photoFailed", () => {
       this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_REJECTED);
-      this.viewRenderer.element.classList.remove("view-container-shake");
-      this.viewRenderer.element.offsetHeight;
-      this.viewRenderer.element.classList.add("view-container-shake");
+      this.viewRenderer.shake();
     });
     this.game.events.on("photoTaken", (ev) => {
       this.animations.push(
@@ -180,9 +176,7 @@ class PixiRenderer {
         this.audioManager.playSoundEffect(SOUND_EFFECTS.CAMERA_SHUTTER);
       } else {
         this.audioManager.playSoundEffect(SOUND_EFFECTS.LEVEL_CHANGE);
-        this.goalRenderer.element.classList.remove("camera-container-bounce");
-        this.goalRenderer.element.offsetHeight;
-        this.goalRenderer.element.classList.add("camera-container-bounce");
+        this.goalRenderer.bounce();
         // start fading out the screen
         this.animations.push(
           new RendererAnimation({
@@ -235,7 +229,7 @@ class PixiRenderer {
       }
     });
     this.createAudioButtons();
-    this.createGreyscaleButton();
+    this.createColorblindButton();
   }
 
   createAudioButtons() {
@@ -259,11 +253,11 @@ class PixiRenderer {
     this.audioButton = newAudioButton;
   }
 
-  createGreyscaleButton() {
-    if (this.greyscaleButton) {
-      this.overlayManager.buttons.delete(this.greyscaleButton);
+  createColorblindButton() {
+    if (this.colorblindButton) {
+      this.overlayManager.buttons.delete(this.colorblindButton);
     }
-    const newGreyscaleButton = new Button(
+    const newcolorblindButton = new Button(
       `Colorblind Mode: O${this.greyscaleEnabled ? "n" : "ff"}`,
       {
         centerX: 650,
@@ -272,40 +266,44 @@ class PixiRenderer {
         height: 80,
       }
     );
-    this.overlayManager.buttons.add(newGreyscaleButton);
-    newGreyscaleButton.on("click", () => {
-      this.greyscaleEnabled = !this.greyscaleEnabled;
-      this.game.standardizeColors = this.greyscaleEnabled;
-      if (this.greyscaleEnabled) {
-        this.glowFilter = new ColorblindFilter();
-      } else {
-        this.glowFilter = new GlowFilter();
-      }
-
-      this.app.stage.filters = [
-        this.glowFilter,
-        this.timeStopFilter,
-        this.bloomFilter,
-      ];
-      const viewContainer = document.getElementById("view-camera-container")!;
-      const goalContainer = document.getElementById("goal-camera-container")!;
-      viewContainer.removeChild(viewContainer.childNodes[0]);
-      viewContainer.removeChild(viewContainer.childNodes[0]);
-      goalContainer.removeChild(goalContainer.childNodes[0]);
-      goalContainer.removeChild(goalContainer.childNodes[0]);
-      this.viewRenderer = new FilterCameraFrameRenderer(
-        viewContainer,
-        "View",
-        this.greyscaleEnabled
-      );
-      this.goalRenderer = new FilterCameraFrameRenderer(
-        goalContainer,
-        "Goal",
-        this.greyscaleEnabled
-      );
-      this.createGreyscaleButton();
+    this.overlayManager.buttons.add(newcolorblindButton);
+    newcolorblindButton.on("click", () => {
+      this.toggleColorblindMode();
     });
-    this.greyscaleButton = newGreyscaleButton;
+    this.colorblindButton = newcolorblindButton;
+  }
+
+  toggleColorblindMode() {
+    this.greyscaleEnabled = !this.greyscaleEnabled;
+    this.game.standardizeColors = this.greyscaleEnabled;
+    if (this.greyscaleEnabled) {
+      this.glowFilter = new ColorblindFilter();
+    } else {
+      this.glowFilter = new GlowFilter();
+    }
+
+    this.app.stage.filters = [
+      this.glowFilter,
+      this.timeStopFilter,
+      this.bloomFilter,
+    ];
+    const viewContainer = document.getElementById("view-camera-container")!;
+    const goalContainer = document.getElementById("goal-camera-container")!;
+    viewContainer.removeChild(viewContainer.childNodes[0]);
+    viewContainer.removeChild(viewContainer.childNodes[0]);
+    goalContainer.removeChild(goalContainer.childNodes[0]);
+    goalContainer.removeChild(goalContainer.childNodes[0]);
+    this.viewRenderer = new FilterCameraFrameRenderer(
+      viewContainer,
+      "View",
+      this.greyscaleEnabled
+    );
+    this.goalRenderer = new FilterCameraFrameRenderer(
+      goalContainer,
+      "Goal",
+      this.greyscaleEnabled
+    );
+    this.createColorblindButton();
   }
 
   setupInteractionEvents() {
