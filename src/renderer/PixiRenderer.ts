@@ -372,10 +372,16 @@ class PixiRenderer {
 
     document.body.onkeydown = (ev) => {
       this.game.controls.pressFromKey(ev.key);
+      if (ev.key === " ") {
+        ev.preventDefault();
+      }
     };
 
     document.body.onkeyup = (ev) => {
       this.game.controls.unpressFromKey(ev.key);
+      if (ev.key === " ") {
+        ev.preventDefault();
+      }
     };
   }
 
