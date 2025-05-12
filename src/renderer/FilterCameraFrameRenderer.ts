@@ -1,81 +1,25 @@
 import CameraFrame from "../CameraFrame";
 import { DEBUG_MODE } from "../config";
 import { VIVID_COLORS_RGB } from "../levels/COLOR_SCHEME";
+import COLORBLIND_MODE_VERTEX_SHADER from "./filters/camera-frame-vertex.glsl";
+import COLORBLIND_MODE_FRAGMENT_SHADER from "./filters/camera-frame-fragment.glsl";
+import COLOR_REPLACER from "./filters/color-replacer.glsl";
 
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
 
-const COLORBLIND_MODE_VERTEX_SHADER = `
-  attribute vec4 a_position;
-  varying vec4 position;
-
-  // all shaders have a main function
-  void main() {
-    gl_Position = a_position;
-    position = a_position * vec4(1, -1, 1, 1);
-  }`;
-
-const COLORLIND_MODE_FRAGMENT_SHADER = `
-  precision mediump float;
-  uniform vec4 uColor;
-  varying vec4 position;
-
-  bool isGreyscale(vec4 color) {
-    return color.r == color.b && color.r == color.g && color.g == color.b;
-  }
-
-  void main() {
-    if (isGreyscale(uColor)) {
-      gl_FragColor = uColor;
-    } else {
-      float width = ${CAMERA_FRAME_WIDTH}.;
-      float height = ${CAMERA_FRAME_HEIGHT}.;
-      float pixelX = floor(position.x * width / 2.);
-      float pixelY = floor(position.y * height / 2.);
-      vec4 colorInts = vec4(uColor.rgb * 255., 1.);
-      if (colorInts == vec4(__COLOR1__, 1.)) {
-      float aaa = mod(pixelX, 20.) / 40.;
-      float bbb = mod(pixelY, 20.) / 40.;
-      gl_FragColor = vec4(aaa+bbb,aaa+bbb,aaa+bbb, 1);
-    } else if (colorInts == vec4(__COLOR2__, 1.)) {
-      float aaa = mod(pixelX, 20.);
-      float bbb = mod(pixelY, 20.);
-      bool white = aaa < 18. && bbb < 18.;
-      float rc = white ? 0.85 : 0.;
-      gl_FragColor = vec4(rc, rc, rc, 1);
-    } else if (colorInts == vec4(__COLOR3__, 1.)) {
-      bool white = mod(abs(pixelX - pixelY + 1024.), 20.) > 2.;
-      float rc = white ? 0.85 : 0.;
-      gl_FragColor = vec4(rc, rc, rc, 1);
-    } else if (colorInts == vec4(__COLOR4__, 1.)) {
-      bool white = mod(abs(pixelX + pixelY + 1024.), 20.) > 2.;
-      float rc = white ? 0.85 : 0.;
-      gl_FragColor = vec4(rc, rc, rc, 1);
-    } else {
-      gl_FragColor = vec4(1., 1., 1., 1.);
-    }
-  }
-}`;
-
-const VERTEX_SHADER = `// an attribute will receive data from a buffer
+const VERTEX_SHADER = `
   attribute vec4 a_position;
 
-  // all shaders have a main function
   void main() {
-
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
     gl_Position = a_position;
   }`;
 
-const FRAGMENT_SHADER = `// fragment shaders don't have a default precision so we need
-  // to pick one. mediump is a good default
+const FRAGMENT_SHADER = `
   precision mediump float;
   uniform vec4 uColor;
 
   void main() {
-    // gl_FragColor is a special variable a fragment shader
-    // is responsible for setting
     gl_FragColor = uColor;
   }`;
 
@@ -159,7 +103,16 @@ class FilterCameraFrameRenderer {
     const g = parseInt(colorNameTest.slice(3, 5), 16).toFixed(1);
     const b = parseInt(colorNameTest.slice(5, 7), 16).toFixed(1);
 
-    let replaced = COLORLIND_MODE_FRAGMENT_SHADER;
+    let replaced = COLORBLIND_MODE_FRAGMENT_SHADER;
+    replaced = replaced.replace(
+      "__CAMERA_FRAME_WIDTH__",
+      `${CAMERA_FRAME_WIDTH}`
+    );
+    replaced = replaced.replace(
+      "__CAMERA_FRAME_HEIGHT__",
+      `${CAMERA_FRAME_HEIGHT}`
+    );
+    replaced = replaced.replace("__COLOR_REPLACER__", COLOR_REPLACER);
     VIVID_COLORS_RGB.forEach((c, i) => {
       replaced = replaced.replace(
         `__COLOR${i + 1}__`,

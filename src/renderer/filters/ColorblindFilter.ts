@@ -1,6 +1,7 @@
 import { VIVID_COLORS_RGB } from "../../levels/COLOR_SCHEME";
-import fragmentShader from "./colorblind-fragment.glsl";
-import basicVertexShader from "./vertex.glsl";
+import FRAGMENT_SHADER from "./colorblind-fragment.glsl";
+import BASIC_VERTEX_SHADER from "./vertex.glsl";
+import COLOR_REPLACER from "./color-replacer.glsl";
 
 import {
   Filter,
@@ -34,7 +35,8 @@ export class ColorblindFilter extends Filter {
   public grayscaleRadius: number = 0;
 
   constructor() {
-    let replaced = fragmentShader;
+    let replaced = FRAGMENT_SHADER;
+    replaced = replaced.replace("__COLOR_REPLACER__", COLOR_REPLACER);
     VIVID_COLORS_RGB.forEach((c, i) => {
       replaced = replaced.replace(
         `__COLOR${i + 1}__`,
@@ -42,7 +44,7 @@ export class ColorblindFilter extends Filter {
       );
     });
     const glProgram = GlProgram.from({
-      vertex: basicVertexShader,
+      vertex: BASIC_VERTEX_SHADER,
       fragment: replaced,
       name: "glow-filter",
     });
