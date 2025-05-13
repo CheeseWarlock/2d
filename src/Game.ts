@@ -186,16 +186,14 @@ class Game {
     }
     if (this.takePhoto) {
       this.takePhoto = false;
-      this.cameraFrame.simplify();
-      const similarity = this.cameraFrame.compare(
-        this.goals[this.currentGoalIndex]
-      );
-      const areZonesEqual = this.cameraFrame.areZonesEqual(
+      const simplified = this.cameraFrame.simplify();
+      const similarity = simplified.compare(this.goals[this.currentGoalIndex]);
+      const areZonesEqual = simplified.areZonesEqual(
         this.goals[this.currentGoalIndex]
       );
 
       if (DEBUG_MODE) {
-        console.log(this.cameraFrame, areZonesEqual, similarity);
+        console.log(simplified, areZonesEqual, similarity);
       }
       if (
         (similarity >= SIMILARITY_THRESHOLD_WITH_SAME_ZONES && areZonesEqual) ||

@@ -41,8 +41,7 @@ export default class CameraFrame {
   /**
    * Join all adjacent segments of the same color into a single segment.
    */
-  simplify() {
-    const oldlen = this.segments.length;
+  simplify(): CameraFrame {
     const newSegments: Segment[] = [];
     let lastColor = "none";
     let lastEnd = 0;
@@ -50,12 +49,14 @@ export default class CameraFrame {
       if (seg.color === lastColor && seg.start === lastEnd) {
         newSegments[newSegments.length - 1].end = seg.end;
       } else {
-        newSegments.push(seg);
+        newSegments.push({ ...seg });
       }
       lastColor = seg.color;
       lastEnd = seg.end;
     });
-    this.segments = newSegments;
+    const simplifiedFrame = new CameraFrame();
+    simplifiedFrame.segments = newSegments;
+    return simplifiedFrame;
   }
 
   at(position: number): string {

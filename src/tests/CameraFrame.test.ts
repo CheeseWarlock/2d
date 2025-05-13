@@ -36,9 +36,9 @@ describe("CameraFrame.simplify", () => {
       startDistance: 0,
       endDistance: 0,
     });
-    frame.simplify();
-    expect(frame.segments[0].start).toBe(0.25);
-    expect(frame.segments[0].end).toBe(0.75);
+    const simplified = frame.simplify();
+    expect(simplified.segments[0].start).toBe(0.25);
+    expect(simplified.segments[0].end).toBe(0.75);
   });
 
   it("should connect two segments of the same colour", () => {
@@ -57,9 +57,9 @@ describe("CameraFrame.simplify", () => {
       startDistance: 0,
       endDistance: 0,
     });
-    frame.simplify();
-    expect(frame.segments[0].start).toBe(0.25);
-    expect(frame.segments[0].end).toBe(0.75);
+    const simplified = frame.simplify();
+    expect(simplified.segments[0].start).toBe(0.25);
+    expect(simplified.segments[0].end).toBe(0.75);
   });
 
   it("should not connect two segments of different colours", () => {
@@ -78,9 +78,9 @@ describe("CameraFrame.simplify", () => {
       startDistance: 0,
       endDistance: 0,
     });
-    frame.simplify();
-    expect(frame.segments[0].start).toBe(0.25);
-    expect(frame.segments[0].end).toBe(0.5);
+    const simplified = frame.simplify();
+    expect(simplified.segments[0].start).toBe(0.25);
+    expect(simplified.segments[0].end).toBe(0.5);
   });
 
   it("should not connect non-adjacent segments", () => {
@@ -99,10 +99,10 @@ describe("CameraFrame.simplify", () => {
       startDistance: 0,
       endDistance: 0,
     });
-    frame.simplify();
-    expect(frame.segments.length).toBe(2);
-    expect(frame.segments[0].start).toBe(0.25);
-    expect(frame.segments[0].end).toBe(0.4);
+    const simplified = frame.simplify();
+    expect(simplified.segments.length).toBe(2);
+    expect(simplified.segments[0].start).toBe(0.25);
+    expect(simplified.segments[0].end).toBe(0.4);
   });
 });
 
