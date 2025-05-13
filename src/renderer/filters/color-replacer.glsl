@@ -5,21 +5,19 @@ bool isGreyscale(vec4 color) {
 vec4 findReplacementColor(vec4 color, vec2 pos) {
   vec3 colorInts = vec3(color.rgb * 255.);
   if (colorInts == vec3(__COLOR1__)) {
-    float amount = (mod(pos.x, 20.) + mod(pos.y, 20.)) / 40.;
-    return vec4(amount, amount, amount, 1);
+    float rc = mod(floor(pos.x / 10.) + floor(pos.y / 10.), 2.) == 0. ? 0.8 : 0.5;
+    return vec4(rc, rc, rc, 1);
   } else if (colorInts == vec3(__COLOR2__)) {
-    float aaa = mod(pos.x, 20.);
-    float bbb = mod(pos.y, 20.);
-    bool white = aaa < 18. && bbb < 18.;
-    float rc = white ? 0.85 : 0.;
+    float radius = 5.0;
+    vec2 center = vec2(mod(pos.x, 20.0), mod(pos.y, 20.0));
+    float dist = length(center - vec2(10.0));
+    float rc = dist < radius ? 0.2 : 0.9;
     return vec4(rc, rc, rc, 1);
   } else if (colorInts == vec3(__COLOR3__)) {
-    bool white = mod(abs(pos.x - pos.y + 1024.), 20.) > 2.;
-    float rc = white ? 0.85 : 0.;
+    float rc = mod(floor((pos.x + pos.y) / 20.), 2.) == 0. ? 0.3 : 0.7;
     return vec4(rc, rc, rc, 1);
   } else if (colorInts == vec3(__COLOR4__)) {
-    bool white = mod(abs(pos.x + pos.y + 1024.), 20.) > 2.;
-    float rc = white ? 0.85 : 0.;
+    float rc = mod(floor((pos.x - pos.y + 0.2) / 4.), 4.) == 0. ? 0.2 : 0.85;
     return vec4(rc, rc, rc, 1);
   } else {
     return vec4(1.);

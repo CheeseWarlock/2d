@@ -258,7 +258,7 @@ class PixiRenderer {
       this.overlayManager.buttons.delete(this.colorblindButton);
     }
     const newcolorblindButton = new Button(
-      `Colorblind Mode: O${this.greyscaleEnabled ? "n" : "ff"}`,
+      `Greyscale Mode: O${this.greyscaleEnabled ? "n" : "ff"}`,
       {
         centerX: 650,
         centerY: 800,

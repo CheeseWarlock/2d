@@ -8,14 +8,14 @@ import COLOR_REPLACER from "./filters/color-replacer.glsl";
 const CAMERA_FRAME_WIDTH = 60;
 const CAMERA_FRAME_HEIGHT = 900;
 
-const VERTEX_SHADER = `
+const PLAIN_VERTEX_SHADER = `
   attribute vec4 a_position;
 
   void main() {
     gl_Position = a_position;
   }`;
 
-const FRAGMENT_SHADER = `
+const PLAIN_FRAGMENT_SHADER = `
   precision mediump float;
   uniform vec4 uColor;
 
@@ -65,7 +65,7 @@ function makeZone(gl: WebGLRenderingContext, from: number, to: number) {
 
 /**
  * Special renderer for a camera frame (the view or the goal).
- * Uses a canvas under the hood.
+ * Uses WebGL.
  */
 class FilterCameraFrameRenderer {
   element: HTMLElement;
@@ -118,12 +118,12 @@ class FilterCameraFrameRenderer {
     const vertexShader = createShader(
       gl,
       gl.VERTEX_SHADER,
-      colorblindMode ? COLORBLIND_MODE_VERTEX_SHADER : VERTEX_SHADER
+      colorblindMode ? COLORBLIND_MODE_VERTEX_SHADER : PLAIN_VERTEX_SHADER
     );
     const fragmentShader = createShader(
       gl,
       gl.FRAGMENT_SHADER,
-      colorblindMode ? replaced : FRAGMENT_SHADER
+      colorblindMode ? replaced : PLAIN_FRAGMENT_SHADER
     );
 
     if (!vertexShader) {
@@ -160,12 +160,18 @@ class FilterCameraFrameRenderer {
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
   }
 
+  /**
+   * Shake (move horizontally) the container.
+   */
   shake() {
     this.element.classList.remove("view-container-shake");
     this.element.offsetHeight;
     this.element.classList.add("view-container-shake");
   }
 
+  /**
+   * Bounce (move vertically) the container.
+   */
   bounce() {
     this.element.classList.remove("camera-container-bounce");
     this.element.offsetHeight;
