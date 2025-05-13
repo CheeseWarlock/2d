@@ -5,6 +5,8 @@ export type Segment = {
   start: number;
   end: number;
   color: string;
+  startDistance: number;
+  endDistance: number;
 };
 
 /**
@@ -29,6 +31,8 @@ export default class CameraFrame {
         start: 1 - seg.end,
         end: 1 - seg.start,
         color: seg.color,
+        startDistance: seg.endDistance,
+        endDistance: seg.startDistance,
       });
     });
     this.segments = newSegments;

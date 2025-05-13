@@ -83,7 +83,9 @@ export class LevelManager {
         });
       }
 
-      return new CameraFrame(goal);
+      return new CameraFrame(
+        goal.map((seg) => ({ ...seg, startDistance: 0, endDistance: 0 }))
+      );
     });
 
     levelData.timerPositions.forEach((pos) => {

@@ -215,6 +215,8 @@ export default class World {
       const midpoint = (to + from) / 2;
       let closest = Infinity;
       let color = "empty";
+      let startDistance = Infinity;
+      let endDistance = Infinity;
       segmentsToConsider.forEach((seg) => {
         const intersection = lineSegmentsIntersect(
           origin.x,
@@ -236,6 +238,39 @@ export default class World {
           if (thisDistance < closest) {
             closest = thisDistance;
             color = seg.color;
+
+            const startIntersection = lineSegmentsIntersect(
+              origin.x,
+              origin.y,
+              origin.x + Math.cos(from) * MAX_SIZE,
+              origin.y + Math.sin(from) * MAX_SIZE,
+              seg.x1,
+              seg.y1,
+              seg.x2,
+              seg.y2
+            );
+            startDistance = distance(
+              startIntersection.point[0],
+              startIntersection.point[1],
+              origin.x,
+              origin.y
+            );
+            const endIntersection = lineSegmentsIntersect(
+              origin.x,
+              origin.y,
+              origin.x + Math.cos(to) * MAX_SIZE,
+              origin.y + Math.sin(to) * MAX_SIZE,
+              seg.x1,
+              seg.y1,
+              seg.x2,
+              seg.y2
+            );
+            endDistance = distance(
+              endIntersection.point[0],
+              endIntersection.point[1],
+              origin.x,
+              origin.y
+            );
           }
         }
       });
@@ -246,6 +281,8 @@ export default class World {
         start: startProportion,
         end: endProportion,
         color,
+        startDistance,
+        endDistance,
       });
     });
     // if it's outside -.5, .5, flip

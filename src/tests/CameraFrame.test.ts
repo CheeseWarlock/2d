@@ -16,6 +16,8 @@ describe("CameraFrame.flip", () => {
       start: 0.25,
       end: 0.75,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
 
     frame.flip();
@@ -31,6 +33,8 @@ describe("CameraFrame.simplify", () => {
       start: 0.25,
       end: 0.75,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -43,11 +47,15 @@ describe("CameraFrame.simplify", () => {
       start: 0.25,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -60,11 +68,15 @@ describe("CameraFrame.simplify", () => {
       start: 0.25,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.simplify();
     expect(frame.segments[0].start).toBe(0.25);
@@ -77,11 +89,15 @@ describe("CameraFrame.simplify", () => {
       start: 0.25,
       end: 0.4,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.segments.push({
       start: 0.5,
       end: 0.75,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frame.simplify();
     expect(frame.segments.length).toBe(2);
@@ -104,11 +120,15 @@ describe("CameraFrame.compare", () => {
       start: 0.25,
       end: 0.75,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0.25,
       end: 0.75,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     const comparison = frameA.compare(frameB);
     expect(comparison).toBe(0.5);
@@ -126,16 +146,22 @@ describe("CameraFrame.compare", () => {
       start: 0,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameA.segments.push({
       start: 0.6,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0.3,
       end: 0.8,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     const comparison = frameA.compare(frameB);
     expect(comparison).toBeCloseTo(0.2);
@@ -149,6 +175,8 @@ describe("CameraFrame.areZonesEqual", () => {
       start: 0.2,
       end: 0.8,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     expect(frameA.areZonesEqual(frameA)).toBe(true);
   });
@@ -160,16 +188,22 @@ describe("CameraFrame.areZonesEqual", () => {
       start: 0,
       end: 1,
       color: "empty",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0,
       end: 0.5,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0.5,
       end: 1,
       color: "#ff00ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     expect(frameA.areZonesEqual(frameB)).toBe(false);
   });
@@ -181,21 +215,29 @@ describe("CameraFrame.areZonesEqual", () => {
       start: 0,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameA.segments.push({
       start: 0.5,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0.5,
       end: 1,
       color: "#00ff00",
+      startDistance: 0,
+      endDistance: 0,
     });
     expect(frameA.areZonesEqual(frameB)).toBe(false);
   });
@@ -207,16 +249,22 @@ describe("CameraFrame.areZonesEqual", () => {
       start: 0,
       end: 0.5,
       color: "empty",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameA.segments.push({
       start: 0.5,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     expect(frameA.areZonesEqual(frameB)).toBe(false);
   });
@@ -228,21 +276,29 @@ describe("CameraFrame.areZonesEqual", () => {
       start: 0,
       end: 0.5,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameA.segments.push({
       start: 0.5,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0,
       end: 0.9,
       color: "#ff0000",
+      startDistance: 0,
+      endDistance: 0,
     });
     frameB.segments.push({
       start: 0.9,
       end: 1,
       color: "#0000ff",
+      startDistance: 0,
+      endDistance: 0,
     });
     expect(frameA.areZonesEqual(frameA)).toBe(true);
   });

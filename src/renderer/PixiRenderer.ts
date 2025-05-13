@@ -23,6 +23,7 @@ import {
   GAME_HEIGHT,
   DEBUG_MODE,
   COLORBLIND_MODE,
+  FOV,
 } from "../config";
 import { RendererAnimation } from "../Animation";
 import SafetyToggler from "../gameObjects/SafetyToggler";
@@ -69,6 +70,8 @@ class PixiRenderer {
   audioButton?: Button;
   colorblindButton?: Button;
   greyscaleEnabled: boolean = COLORBLIND_MODE;
+  viewConeMaskContainer: Container;
+  currentViewConeMask: Graphics;
 
   constructor(options: { app: Application; sprites: Sprites }) {
     this.app = options.app;
@@ -132,7 +135,23 @@ class PixiRenderer {
 
     this.setupInteractionEvents();
     this.app.stage.addChild(this.sprites.playerWalkSprite);
-    this.app.stage.addChild(this.sprites.viewCone);
+
+    this.viewConeMaskContainer = new Container();
+    this.app.stage.addChild(this.viewConeMaskContainer);
+
+    let mask = new Graphics()
+      // Add the rectangular area to show
+      .rect(-200, -200, 2000, 2000)
+      .fill(0xffffff);
+    this.currentViewConeMask = mask;
+
+    // Add container that will hold our masked content
+
+    // Set the mask to use our graphics object from above
+    this.viewConeMaskContainer.mask = mask;
+    // Add the mask as a child, so that the mask is positioned relative to its parent
+    this.viewConeMaskContainer.addChild(mask);
+    this.viewConeMaskContainer.addChild(this.sprites.viewCone);
 
     this.app.ticker.add(() => {
       this.update();
@@ -164,7 +183,7 @@ class PixiRenderer {
         new RendererAnimation({
           frames: 50,
           onUpdate: (framesRemaining: number) => {
-            this.sprites.viewCone.alpha = Math.max(
+            this.viewConeMaskContainer.alpha = Math.max(
               0.5,
               0.5 + framesRemaining / 100
             );
@@ -500,7 +519,7 @@ class PixiRenderer {
       }
       this.glowFilter.focusX = this.game.player.x;
       this.glowFilter.focusY = this.game.player.y;
-      this.sprites.viewCone.visible = false;
+      this.viewConeMaskContainer.visible = false;
       this.app?.stage.removeChild(this.sprites.playerWalkSprite);
       this.app?.stage.addChild(this.sprites.playerDeadSprite);
       this.sprites.playerDeadSprite.scale.x =
@@ -547,12 +566,12 @@ class PixiRenderer {
       this.sprites.playerWalkSprite.y = this.game.player.y;
 
       if (this.game.viewOrigin) {
-        this.sprites.viewCone.visible = true;
-        this.sprites.viewCone.x = this.game.viewOrigin.x || 0;
-        this.sprites.viewCone.y = this.game.viewOrigin.y || 0;
-        this.sprites.viewCone.rotation = this.game.viewDirection || 0;
+        this.viewConeMaskContainer.visible = true;
+        this.viewConeMaskContainer.x = this.game.viewOrigin.x || 0;
+        this.viewConeMaskContainer.y = this.game.viewOrigin.y || 0;
+        this.viewConeMaskContainer.rotation = this.game.viewDirection || 0;
       } else {
-        this.sprites.viewCone.visible = false;
+        this.viewConeMaskContainer.visible = false;
       }
     }
 
@@ -613,6 +632,42 @@ class PixiRenderer {
         }
       }
     });
+
+    if (this.game.focusPoint) {
+      const points = [{ x: 0, y: 0 }];
+      const centerToFocusPoint = Math.atan2(
+        this.game.focusPoint!.y - this.game.player.y,
+        this.game.focusPoint!.x - this.game.player.x
+      );
+      const isLeft =
+        centerToFocusPoint < -(Math.PI / 2) || centerToFocusPoint > Math.PI / 2
+          ? -1
+          : 1;
+      this.game.cameraFrame.segments.forEach((seg) => {
+        if (seg.start === seg.end) return;
+        const angle = FOV * 2 * seg.start - FOV;
+        const angle2 = FOV * 2 * seg.end - FOV;
+        const start = seg.startDistance == Infinity ? 10000 : seg.startDistance;
+        const end = seg.endDistance == Infinity ? 10000 : seg.endDistance;
+        const startPoint = {
+          x: Math.cos(angle) * start,
+          y: Math.sin(angle) * start * isLeft,
+        };
+        const endPoint = {
+          x: Math.cos(angle2) * end,
+          y: Math.sin(angle2) * end * isLeft,
+        };
+        points.push(startPoint, endPoint);
+      });
+      this.viewConeMaskContainer.removeChild(this.currentViewConeMask);
+
+      this.viewConeMaskContainer.mask = null;
+
+      let mask = new Graphics().poly(points).fill(0xffffff);
+      this.currentViewConeMask = mask;
+      this.viewConeMaskContainer.mask = mask;
+      this.viewConeMaskContainer.addChild(mask);
+    }
 
     this.drawOverlay();
   }

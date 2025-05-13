@@ -186,6 +186,7 @@ class Game {
     }
     if (this.takePhoto) {
       this.takePhoto = false;
+      this.cameraFrame.simplify();
       const similarity = this.cameraFrame.compare(
         this.goals[this.currentGoalIndex]
       );
@@ -266,7 +267,7 @@ class Game {
       this.viewDirection,
       FOV
     );
-    cameraFrame.simplify();
+    // cameraFrame.simplify();
     this.cameraFrame = cameraFrame;
   }
 }
