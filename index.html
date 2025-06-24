@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="icon" type="image/png" href="./favicon.svg" />
     <title>Perfect Shot</title>
     <style type="text/css">
       @keyframes bounce {
-        0% { transform: translateY(0); }
-        100% { transform: translateY(-40px); }
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(-40px);
+        }
       }
 
       @keyframes shake {
-        0% { transform: translateX(0); }
-        33% { transform: translateX(-10px); }
-        100% { transform: translateX(20px); }
+        0% {
+          transform: translateX(0);
+        }
+        33% {
+          transform: translateX(-10px);
+        }
+        100% {
+          transform: translateX(20px);
+        }
       }
 
       body {
@@ -24,7 +35,7 @@
         margin: 0 30px;
         border-radius: 12px;
         background-color: #000;
-        box-shadow: 1px 3px 6px 1px rgba(0,0,0,40%);
+        box-shadow: 1px 3px 6px 1px rgba(0, 0, 0, 40%);
       }
 
       #container {
@@ -58,11 +69,11 @@
       }
 
       .camera-container-bounce {
-        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate bounce;
+        animation: 0.15s cubic-bezier(0, 0.1, 0.5, 1) 2 alternate bounce;
       }
 
       .view-container-shake {
-        animation: .15s cubic-bezier(0, .1, .5, 1.00) 2 alternate shake;
+        animation: 0.15s cubic-bezier(0, 0.1, 0.5, 1) 2 alternate shake;
       }
 
       #debug-container {
@@ -84,9 +95,7 @@
       <div id="view-camera-container" class="camera-container"></div>
       <div id="goal-camera-container" class="camera-container"></div>
     </div>
-    <div id="debug-container">
-
-    </div>
+    <div id="debug-container"></div>
     <script type="module" src="./src/index.ts"></script>
   </body>
-  </html>
+</html>
