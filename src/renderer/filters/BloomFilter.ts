@@ -20,7 +20,7 @@ export class BloomFilter extends Filter {
 
   public white: number = 1;
 
-  constructor() {
+  constructor(options: { antialias?: boolean }) {
     const glProgram = GlProgram.from({
       vertex: basicVertexShader,
       fragment: fragmentShader,
@@ -29,6 +29,7 @@ export class BloomFilter extends Filter {
 
     super({
       glProgram,
+      antialias: options.antialias,
       resources: {
         glowUniforms: {
           uTime: { value: 1, type: "f32" },

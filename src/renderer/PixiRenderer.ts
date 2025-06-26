@@ -109,7 +109,7 @@ class PixiRenderer {
       COLORBLIND_MODE
     );
 
-    this.timeStopFilter = new TimeStopFilter({
+    const timeStopFilterOptions = {
       center: {
         x: 0.5,
         y: 0.5,
@@ -119,19 +119,37 @@ class PixiRenderer {
       wavelength: 250,
       brightness: 1.15,
       radius: 2000,
-    });
-    this.bloomFilter = new BloomFilter();
+    };
+
     if (COLORBLIND_MODE) {
-      this.glowFilter = new ColorblindFilter();
+      this.bloomFilter = new BloomFilter({ antialias: false });
+      this.glowFilter = new ColorblindFilter({ antialias: false });
+      this.timeStopFilter = new TimeStopFilter({
+        ...timeStopFilterOptions,
+        antialias: false,
+      });
     } else {
-      this.glowFilter = new GlowFilter();
+      this.bloomFilter = new BloomFilter({ antialias: true });
+      this.glowFilter = new GlowFilter({ antialias: true });
+      this.timeStopFilter = new TimeStopFilter({
+        ...timeStopFilterOptions,
+        antialias: true,
+      });
     }
 
-    this.app.stage.filters = [
-      this.glowFilter,
-      this.timeStopFilter,
-      this.bloomFilter,
-    ];
+    if (COLORBLIND_MODE) {
+      this.app.stage.filters = [
+        this.glowFilter,
+        this.timeStopFilter,
+        this.bloomFilter,
+      ];
+    } else {
+      this.app.stage.filters = [
+        this.glowFilter,
+        this.timeStopFilter,
+        this.bloomFilter,
+      ];
+    }
 
     this.setupInteractionEvents();
     this.app.stage.addChild(this.sprites.playerWalkSprite);
@@ -295,10 +313,33 @@ class PixiRenderer {
   toggleColorblindMode() {
     this.greyscaleEnabled = !this.greyscaleEnabled;
     this.game.standardizeColors = this.greyscaleEnabled;
+
+    const timeStopFilterOptions = {
+      center: {
+        x: 0.5,
+        y: 0.5,
+      },
+      speed: 1,
+      amplitude: 12,
+      wavelength: 250,
+      brightness: 1.15,
+      radius: 2000,
+    };
+
     if (this.greyscaleEnabled) {
-      this.glowFilter = new ColorblindFilter();
+      this.bloomFilter = new BloomFilter({ antialias: false });
+      this.glowFilter = new ColorblindFilter({ antialias: false });
+      this.timeStopFilter = new TimeStopFilter({
+        ...timeStopFilterOptions,
+        antialias: false,
+      });
     } else {
-      this.glowFilter = new GlowFilter();
+      this.bloomFilter = new BloomFilter({ antialias: true });
+      this.glowFilter = new GlowFilter({ antialias: true });
+      this.timeStopFilter = new TimeStopFilter({
+        ...timeStopFilterOptions,
+        antialias: true,
+      });
     }
 
     this.app.stage.filters = [
@@ -306,6 +347,7 @@ class PixiRenderer {
       this.timeStopFilter,
       this.bloomFilter,
     ];
+
     const viewContainer = document.getElementById("view-camera-container")!;
     const goalContainer = document.getElementById("goal-camera-container")!;
     viewContainer.removeChild(viewContainer.childNodes[0]);

@@ -38,12 +38,14 @@ class TimeStopFilter extends Filter {
     wavelength: number;
     brightness: number;
     radius: number;
+    antialias?: boolean;
   }) {
     const glProgram = GlProgram.from({
       fragment: fragment,
       vertex: vertex,
     });
     super({
+      antialias: options.antialias,
       glProgram,
       resources: {
         timeStopUniforms: {

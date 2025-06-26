@@ -34,7 +34,7 @@ export class ColorblindFilter extends Filter {
   public focusDistance: number = 0;
   public grayscaleRadius: number = 0;
 
-  constructor() {
+  constructor(options: { antialias?: boolean }) {
     let replaced = FRAGMENT_SHADER;
     replaced = replaced.replace("__COLOR_REPLACER__", COLOR_REPLACER);
     VIVID_COLORS_RGB.forEach((c, i) => {
@@ -51,6 +51,7 @@ export class ColorblindFilter extends Filter {
 
     super({
       glProgram,
+      antialias: options.antialias,
       resources: {
         glowUniforms: {
           uTime: { value: 0, type: "f32" },

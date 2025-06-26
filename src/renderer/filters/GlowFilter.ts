@@ -32,7 +32,7 @@ export class GlowFilter extends Filter {
   public focusDistance: number = 0;
   public grayscaleRadius: number = 0;
 
-  constructor() {
+  constructor(options: { antialias?: boolean }) {
     const glProgram = GlProgram.from({
       vertex: basicVertexShader,
       fragment: fragmentShader,
@@ -40,6 +40,7 @@ export class GlowFilter extends Filter {
     });
 
     super({
+      antialias: false,
       glProgram,
       resources: {
         glowUniforms: {
